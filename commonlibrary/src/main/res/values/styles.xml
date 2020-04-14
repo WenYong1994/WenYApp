@@ -1,0 +1,15 @@
+<resources>
+
+    <style name="popwin_anim_style" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/pop_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/pop_exit_anim</item>
+    </style>
+
+
+    <style name="popwin_vertical_anim_style" parent="android:Animation">
+        <item name="android:windowEnterAnimation">@anim/pop_vertical_enter_anim</item>
+        <item name="android:windowExitAnimation">@anim/pop_vertical_exit_anim</item>
+    </style>
+
+
+</resources>

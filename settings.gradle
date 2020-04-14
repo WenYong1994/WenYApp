@@ -1,2 +1,2 @@
-include ':app'
+include ':app', ':commonlibrary', ':netlibrary', ':calendar'
 rootProject.name='WenYApplication'
