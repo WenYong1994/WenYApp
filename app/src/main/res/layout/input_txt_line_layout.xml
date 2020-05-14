@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:gravity="center_vertical"
+    >
+
+    <TextView
+        android:id="@+id/is_must_input"
+        android:layout_width="5dp"
+        android:layout_height="wrap_content"
+        android:text="*"
+        android:textSize="12sp"
+        android:textColor="#F92D2D"
+        android:layout_marginLeft="5dp"
+        />
+
+    <TextView
+        android:id="@+id/input_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="日程标题"
+        android:textColor="#333333"
+        android:textSize="15sp"
+        android:layout_marginLeft="5dp"
+        />
+    <EditText
+        android:id="@+id/input_edit"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:textColorHint="#999999"
+        android:textSize="13dp"
+        android:textColor="#666666"
+        android:layout_weight="1"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="15dp"
+        android:background="@null"
+        android:gravity="center|right"
+        android:hint="请输入日程标题"
+        android:lines="1"
+        android:inputType=""
+        />
+
+</LinearLayout>
