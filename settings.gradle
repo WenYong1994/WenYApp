@@ -1,2 +1,2 @@
-include ':app', ':whenylibrary', ':netlibrary', ':calendar', ':dblibary'
+include ':app', ':whenylibrary', ':netlibrary',  ':dblibary', ':whenycompilerlib', ':whenyannotationlib'
 rootProject.name='WenYApplication'

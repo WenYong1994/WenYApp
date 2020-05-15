@@ -24,6 +24,19 @@ allprojects {
         jcenter()
         maven { url "https://jitpack.io" }
     }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+//    tasks.withType(Javadoc) {
+//        options {
+//            encoding "UTF-8"
+//            charSet 'UTF-8'
+//            links "http://docs.oracle.com/javase/8/docs/api"
+//        }
+//    }
+
     ext {
         compile_sdk_version = 29
         build_tools_version = '29.0.2'

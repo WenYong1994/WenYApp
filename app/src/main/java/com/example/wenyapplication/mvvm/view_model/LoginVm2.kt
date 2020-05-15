@@ -82,7 +82,8 @@ fun getGenericType(type: ParameterizedType): Type {
 }
 
 // 使用反射技术得到T的真实类型
-fun getRealType(type: Class<*>): Type? {
+fun getRealType(any: Any): Type? {
+    var type = any::class.java
     // 获取当前new的对象的泛型的父类类型
     var pt: ParameterizedType? = null
     val genericSuperclass: Type = type.genericSuperclass!!
@@ -97,6 +98,6 @@ fun getRealType(type: Class<*>): Type? {
 
 fun main(args: Array<String>) {
     val list =object :LinkedList<LoginVm2>(){}
-    val type = getRealType(list::class.java)
+    val type = getRealType(list)
     println(type)
 }

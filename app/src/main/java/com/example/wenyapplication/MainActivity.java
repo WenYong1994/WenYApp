@@ -8,6 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.example.commonlibrary.annotation_api.ViewInject;
+import com.example.commonlibrary.annotation_api.ViewInjector;
 import com.example.commonlibrary.rxjava.RxSchedulers;
 import com.example.netlibrary.api.ApiService;
 import com.example.netlibrary.data.BaseResp;
@@ -15,6 +17,7 @@ import com.example.netlibrary.entity.UserInfo;
 import com.example.netlibrary.manager.RetrofitServiceManager;
 import com.example.wenyapplication.databind.TestDataBindActivity;
 import com.example.wenyapplication.mvvm.view.LoginActivity;
+import com.example.whenyannotationlib.TestAn;
 
 import org.reactivestreams.Publisher;
 
@@ -36,13 +39,18 @@ import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 
+
 public class MainActivity extends AppCompatActivity {
 
+    @TestAn("哈哈哈")
+    public String s;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ViewInjector.injectView(this);
+
         findViewById(R.id.btn_dataBinding)
                 .setOnClickListener(new View.OnClickListener() {
                     @Override
