@@ -11,15 +11,12 @@ import com.example.commonlibrary.rxjava.RxSchedulers
 import com.example.wenyapplication.R
 import com.example.wenyapplication.databinding.ActivityDataBindBinding
 import com.example.wenyapplication.entity.UserEntity
-import com.example.whenyannotationlib.TestAn
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.FlowableOnSubscribe
 import io.reactivex.disposables.CompositeDisposable
 
 public class TestDataBindActivity : AppCompatActivity() {
-    @TestAn("ccccc")
-    var s2=""
 
     var mCompositeDisposable = CompositeDisposable()
     var userEntity : UserEntity?= null;

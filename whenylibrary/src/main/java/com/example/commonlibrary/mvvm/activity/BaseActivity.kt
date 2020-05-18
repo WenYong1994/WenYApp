@@ -16,7 +16,7 @@ abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity(){
         val layoutId = getLayoutId()
         setContentView(layoutId)
         mDataBing = DataBindingUtil.setContentView<T>(this,layoutId)
-        mDataBing.lifecycleOwner = this
+        mDataBing.setLifecycleOwner(this)
         init(savedInstanceState)
     }
 
