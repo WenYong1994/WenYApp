@@ -156,13 +156,11 @@ public class WhenYProvessor extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.WARNING,"variableElementsSize-------"+variableElements.size());
 
         for(VariableElement variableElement:variableElements){
-            String simpleName = variableElement.getSimpleName().toString();
+            String outFileName = variableElement.getSimpleName().toString();
             InjectViewModel annotation = variableElement.getAnnotation(InjectViewModel.class);
             String fieldName = annotation.name();
-            String name = variableElement.asType().toString();
-            String className = name;
+            String className = variableElement.asType().toString();
             messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+className);
-            String outFileName = simpleName;
             ClassName nameVm = ClassName.get(getPackNameByClassName(className),getSimpleClassByClassName(className));
             injectBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
             injectBulid.addStatement("int variableId = $T."+fieldName,nameBR);
