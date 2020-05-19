@@ -17,7 +17,6 @@ import com.example.wenyapplication.mvvm.view.LoginActivity;
 import com.example.wenyapplication.mvvm.view_model.LoginVm;
 import com.example.whenyannotationlib.InjectViewModel;
 import com.example.whenyannotationlib.Route;
-import com.hubin.helloworld.HelloWorld;
 
 import org.reactivestreams.Publisher;
 
@@ -28,8 +27,6 @@ import okhttp3.RequestBody;
 
 public class MainActivity extends AppCompatActivity {
 
-    @InjectViewModel(value = LoginVm.class, name = "loginVm")
-    LoginVm loginVm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

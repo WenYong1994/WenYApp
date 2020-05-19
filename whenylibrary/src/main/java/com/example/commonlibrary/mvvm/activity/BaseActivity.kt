@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.databinding.library.baseAdapters.DataBinderMapperImpl
+import com.example.commonlibrary.annotation_api.ViewModelInjector
 
 abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity(){
 
@@ -16,7 +17,8 @@ abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity(){
         val layoutId = getLayoutId()
         setContentView(layoutId)
         mDataBing = DataBindingUtil.setContentView<T>(this,layoutId)
-        mDataBing.setLifecycleOwner(this)
+        mDataBing.lifecycleOwner = this
+        ViewModelInjector.inject(this,mDataBing)
         init(savedInstanceState)
     }
 

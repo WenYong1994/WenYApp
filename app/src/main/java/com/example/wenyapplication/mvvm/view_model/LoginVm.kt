@@ -16,6 +16,8 @@ import com.example.wenyapplication.mvvm.model.LoginModel
 import io.reactivex.Flowable
 
 class LoginVm() : ViewModel(){
+
+
     private var loginModel = LoginModel()
 
     var loginBean = MutableLiveData<LoginBean>()
