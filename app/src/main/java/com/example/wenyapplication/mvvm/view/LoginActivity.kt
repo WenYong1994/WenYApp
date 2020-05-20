@@ -1,19 +1,11 @@
 package com.example.wenyapplication.mvvm.view
 
 import android.os.Bundle
-import androidx.databinding.ViewDataBinding
-import androidx.databinding.library.baseAdapters.BR
-import androidx.lifecycle.ViewModelProviders
-import com.example.commonlibrary.annotation_api.ViewModelInjector
 import com.example.commonlibrary.mvvm.activity.BaseActivity
 import com.example.wenyapplication.R
-import com.example.wenyapplication.application.App
 import com.example.wenyapplication.databinding.ActivityLoginBinding
 import com.example.wenyapplication.mvvm.view_model.LoginVm
-import com.example.wenyapplication.mvvm.view_model.LoginVm2
-import com.example.wenyapplication.mvvm.view_model.LoginVm2Factory
 import com.example.whenyannotationlib.InjectViewModel
-import com.wheny.viewModel.LoginActivity_ViewModelInjector
 
 class LoginActivity : BaseActivity<ActivityLoginBinding>() {
 

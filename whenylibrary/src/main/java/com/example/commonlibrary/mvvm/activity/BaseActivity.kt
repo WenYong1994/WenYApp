@@ -9,7 +9,7 @@ import com.example.commonlibrary.annotation_api.ViewModelInjector
 
 abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity(){
 
-    protected lateinit var mDataBing : T
+    lateinit var mDataBing : T
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
