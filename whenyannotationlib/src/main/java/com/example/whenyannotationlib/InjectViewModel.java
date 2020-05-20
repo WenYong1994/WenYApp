@@ -11,7 +11,6 @@ public  @interface  InjectViewModel {
 
     String name();
 
-
-
+    boolean needFactory() default false;
 
 }

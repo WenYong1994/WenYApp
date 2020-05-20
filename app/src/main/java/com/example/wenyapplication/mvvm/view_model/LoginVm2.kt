@@ -33,7 +33,6 @@ class LoginVm2(string:String,app: Application) : AndroidViewModel(app){
                 /*通知Activity刷新数据*/
                 loginBean.value = loginModel.login(account)
                 msg = loginBean.value?.message.toString()
-
             }
         }, 3000)
     }

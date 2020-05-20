@@ -3,6 +3,7 @@ package com.example.whenycompilerlib;
 import com.example.whenyannotationlib.AnnotationConstant;
 import com.example.whenyannotationlib.InjectViewModel;
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -103,14 +104,13 @@ public class WhenYProvessor extends AbstractProcessor {
         ClassName nameField = ClassName.get("java.lang.reflect","Field");
         ClassName nameBR = ClassName.get("androidx.databinding.library.baseAdapters","BR");
         ClassName nameInjectViewModel = ClassName.get("com.example.whenyannotationlib","InjectViewModel");
-        ClassName nameViewModelInjectorImp = ClassName.get("com.example.commonlibrary.annotation_api","ViewModelInjectorImp");
+        ClassName nameViewModelInjectorApi = ClassName.get("com.example.commonlibrary.annotation_api","ViewModelInjectorApi");
+        ClassName nameDataBindingUtils = ClassName.get("androidx.databinding","DataBindingUtil");
         TypeVariableName Type = TypeVariableName.get("T",nameViewModel);
         TypeVariableName mapType = TypeVariableName.get("HashMap<String,Field>");
+        TypeVariableName TypeViewDataBinding = TypeVariableName.get("VDB",nameViewDataBinding);
+        ClassName nameViewModelFactory = ClassName.get("androidx.lifecycle","ViewModelProvider","NewInstanceFactory");
 
-        //创建一个变量 todo 反射可以优化一下。通过缓存的方式
-        FieldSpec mapBuild = FieldSpec.builder(mapType,"fieldMap",Modifier.PUBLIC,Modifier.STATIC, Modifier.FINAL)
-                .initializer("new $T<String,$T>()",HashMap.class,nameField)
-                .build();
 
 
 
@@ -121,9 +121,15 @@ public class WhenYProvessor extends AbstractProcessor {
                 .addTypeVariable(Type)
                 .addParameter(nameAppCompatActivity,"activity") //添加参数 AppCompatActivity activity
                 .addParameter(Class.class,"clazz")//添加参数 Class clazz
+                .addParameter(boolean.class,"needFactory")//添加参数 Class clazz
                 .addStatement("$T.out.println(activity.getClass().getName())", System.class) //添加内容： System.out.println("Hello, JavaPoet!");
-                .addStatement("T viewModel= (T) $T.of(activity).get(clazz)",nameViewModelProviders)
-                .addStatement("return viewModel");
+                .addCode(
+                        "if(!needFactory){\n" +
+                        "   T viewModel= (T) $T.of(activity).get(clazz);\n" +
+                        "   return viewModel;\n" +
+                        "}else {\n" +
+                        "   return null;\n" +
+                        "}",nameViewModelProviders);
 
         //创建一个针对每个变量
         MethodSpec.Builder handBulid = MethodSpec.methodBuilder("handViewModel")
@@ -136,48 +142,78 @@ public class WhenYProvessor extends AbstractProcessor {
                 .addParameter(String.class,"fieldName")//添加参数 String  fieldName
                 .addParameter(Integer.class,"variableId")//添加参数 String  fieldName
                 .addParameter(Class.class,"clazz")//添加参数 Class clazz
+                .addParameter(boolean.class,"needFactory")//添加参数 Class clazz
                 .addCode("\n")
                 .addCode(
                         "\n" +
-                        "   T viewModel = initViewModel(activity,clazz);\n" +
+                        "   T viewModel = initViewModel(activity,clazz,needFactory);\n" +
                         "\n" +
                         "   viewDataBinding.setVariable(variableId,viewModel);\n" +
                         "   return viewModel;\n"
                         ,nameInjectViewModel,nameInjectViewModel,nameInjectViewModel,nameBR,nameBR)
-                .addCode("\n")
-                ;
-
+                .addCode("\n");
         //创建一个初始化方法
         MethodSpec.Builder injectBulid = MethodSpec.methodBuilder("injectViewModels")
                 .addModifiers(Modifier.PUBLIC) //public static
-                .returns(void.class)  //返回值  Type
+                .addTypeVariable(TypeViewDataBinding)
+                .returns(TypeViewDataBinding)  //返回值  Type
+                .addAnnotation(Override.class)
                 .addParameter(nameAppCompatActivity,"activity") //添加参数 AppCompatActivity activity
-                .addParameter(nameViewDataBinding,"viewDataBinding");//添加参数 ViewDataBinding viewDataBinding
+                .addParameter(int.class,"layoutId");//添加参数 ViewDataBinding viewDataBinding
+        messager.printMessage(Diagnostic.Kind.WARNING,"variableElementsSize-------"+variableElements.size());
+        injectBulid.addStatement("VDB viewDataBinding = null");
+
+        //创建一个初始化方法
+        MethodSpec.Builder injectByFactoryBulid = MethodSpec.methodBuilder("injectViewModelByFactory")
+                .addModifiers(Modifier.PUBLIC) //public static
+                .returns(void.class)  //返回值  Type
+                .addAnnotation(Override.class)
+                .addParameter(nameAppCompatActivity,"activity") //添加参数 AppCompatActivity activity
+                .addParameter(nameViewModelFactory,"factory") //添加参数 ViewModelProvider.NewInstanceFactory factory
+                .addParameter(nameViewDataBinding,"viewDataBinding"); //添加参数 ViewDataBinding viewDataBinding
         messager.printMessage(Diagnostic.Kind.WARNING,"variableElementsSize-------"+variableElements.size());
 
-        for(VariableElement variableElement:variableElements){
+
+
+        for(int i=0;i<variableElements.size();i++){
+            VariableElement variableElement = variableElements.get(i);
             String outFileName = variableElement.getSimpleName().toString();
             InjectViewModel annotation = variableElement.getAnnotation(InjectViewModel.class);
             String fieldName = annotation.name();
+            boolean needFactory = annotation.needFactory();
             String className = variableElement.asType().toString();
             messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+className);
             ClassName nameVm = ClassName.get(getPackNameByClassName(className),getSimpleClassByClassName(className));
-            injectBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
-            injectBulid.addStatement("int variableId = $T."+fieldName,nameBR);
-            injectBulid.addStatement("ViewModel viewModel = handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"variableId,$T.class)",nameVm);
-            injectBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"((LoginVm) viewModel)");
+            if(i==0){
+                injectBulid.addStatement("viewDataBinding = $T.setContentView(activity,layoutId)",nameDataBindingUtils);
+                injectBulid.addStatement("viewDataBinding.setLifecycleOwner(activity)");
+                injectBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
+
+                injectByFactoryBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
+            }
+            if(!needFactory){
+                injectBulid.addStatement("int variableId"+fieldName+" = $T."+fieldName,nameBR);
+                injectBulid.addStatement("ViewModel viewModel"+fieldName+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"variableId"+fieldName+",$T.class,"+needFactory+")",nameVm);
+                injectBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+")",nameVm);
+            }else {
+                injectByFactoryBulid.addStatement("int variableId"+fieldName+" = $T."+fieldName,nameBR);
+                injectByFactoryBulid.addStatement("ViewModel viewModel"+fieldName+" = factory.create($T.class)",nameVm);
+                injectByFactoryBulid.addStatement("viewDataBinding.setVariable(variableId"+fieldName+", viewModel"+fieldName+");");
+                injectByFactoryBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+")",nameVm);
+            }
         }
+        injectBulid.addStatement("return viewDataBinding");
 
 
 
         //创建一个类
         TypeSpec viewModelInjector = TypeSpec.classBuilder(newActivityName)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-                .addSuperinterface(nameViewModelInjectorImp)
-                .addField(mapBuild)
+                .addSuperinterface(nameViewModelInjectorApi)
                 .addMethod(initBulid.build())
                 .addMethod(handBulid.build())
                 .addMethod(injectBulid.build())
+                .addMethod(injectByFactoryBulid.build())
                 .build();
 
 

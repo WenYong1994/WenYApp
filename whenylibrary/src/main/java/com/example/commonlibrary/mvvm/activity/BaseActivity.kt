@@ -7,25 +7,19 @@ import androidx.databinding.ViewDataBinding
 import androidx.databinding.library.baseAdapters.DataBinderMapperImpl
 import com.example.commonlibrary.annotation_api.ViewModelInjector
 
-abstract class BaseActivity<T : ViewDataBinding> : AppCompatActivity(){
+abstract class BaseMVVMActivity<T : ViewDataBinding> : AppCompatActivity(){
 
     lateinit var mDataBing : T
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val layoutId = getLayoutId()
+        val layoutId = layoutId()
         setContentView(layoutId)
-        mDataBing = DataBindingUtil.setContentView<T>(this,layoutId)
-        mDataBing.lifecycleOwner = this
-        ViewModelInjector.inject(this,mDataBing)
-        init(savedInstanceState)
+        mDataBing = ViewModelInjector.inject(this,layoutId)
     }
 
-    abstract fun getLayoutId():Int
-
-    abstract fun init(savedInstanceState: Bundle?);
-
+    abstract fun layoutId():Int
 
 
 }

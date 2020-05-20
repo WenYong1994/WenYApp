@@ -2,16 +2,25 @@ package com.example.commonlibrary.annotation_api;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.ViewDataBinding;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.whenyannotationlib.AnnotationConstant;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ViewModelInjector {
-    public static void inject(AppCompatActivity activity, ViewDataBinding viewDataBinding){
-        ViewModelInjectorImp viewModelInjector = null;
+    private static Map<String,ViewModelInjectorApi> map = new HashMap<>();
+    public static <T extends ViewDataBinding> T inject(AppCompatActivity activity, int layoutId){
+        ViewModelInjectorApi viewModelInjector = null;
         String className = AnnotationConstant.VIEW_MODEL_PACKNAME+"."+activity.getClass().getSimpleName()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
         try {
-            Class<?> aClass = Class.forName(className);
-            viewModelInjector = (ViewModelInjectorImp) aClass.newInstance();
+            viewModelInjector = map.get(className);
+            if(viewModelInjector==null){
+                Class<?> aClass = Class.forName(className);
+                viewModelInjector = (ViewModelInjectorApi) aClass.newInstance();
+                map.put(className,viewModelInjector);
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
@@ -20,7 +29,31 @@ public class ViewModelInjector {
             e.printStackTrace();
         }
         if(viewModelInjector!=null){
-            viewModelInjector.injectViewModels(activity,viewDataBinding);
+            return viewModelInjector.injectViewModels(activity,layoutId);//里面没有强引用Activity 所以不用担心内存泄漏
+        }
+        return null;
+    }
+
+
+    public static void injectByFactory(AppCompatActivity activity,ViewModelProvider.NewInstanceFactory factory, ViewDataBinding viewDataBinding){
+        ViewModelInjectorApi viewModelInjector = null;
+        String className = AnnotationConstant.VIEW_MODEL_PACKNAME+"."+activity.getClass().getSimpleName()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
+        try {
+            viewModelInjector = map.get(className);
+            if(viewModelInjector==null){
+                Class<?> aClass = Class.forName(className);
+                viewModelInjector = (ViewModelInjectorApi) aClass.newInstance();
+                map.put(className,viewModelInjector);
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        if(viewModelInjector!=null){
+            viewModelInjector.injectViewModelByFactory(activity,factory,viewDataBinding);//里面没有强引用Activity 所以不用担心内存泄漏
         }
     }
 
