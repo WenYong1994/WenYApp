@@ -37,6 +37,13 @@ class LoginVm2(string:String,app: Application) : AndroidViewModel(app){
         }, 3000)
     }
 
+    fun test(){
+        Handler().postDelayed(object : Runnable {
+            override fun run() {
+                loginBean.value?.message?.postValue(loginBean.value?.message?.value+"1")
+            }
+        }, 2000)
+    }
 
     override fun onCleared() {
         super.onCleared()
@@ -50,53 +57,3 @@ class LoginVm2Factory(private val string:String,private val app: Application) : 
     }
 }
 
-
-fun getType(type: Type): Type {
-    when (type) {
-        is ParameterizedType -> {
-            return getGenericType(type)
-        }
-        is TypeVariable<*> -> {
-            return getType(type.bounds[0])
-        }
-    }
-    return type
-}
-
-fun getGenericType(type: ParameterizedType): Type {
-    if (type.actualTypeArguments.isEmpty()) return type
-    val actualType = type.actualTypeArguments[0]
-    when (actualType) {
-        is ParameterizedType -> {
-            return actualType.rawType
-        }
-        is GenericArrayType -> {
-            return actualType.genericComponentType
-        }
-        is TypeVariable<*> -> {
-            return getType(actualType.bounds[0])
-        }
-    }
-    return actualType
-}
-
-// 使用反射技术得到T的真实类型
-fun getRealType(any: Any): Type? {
-    var type = any::class.java
-    // 获取当前new的对象的泛型的父类类型
-    var pt: ParameterizedType? = null
-    val genericSuperclass: Type = type.genericSuperclass!!
-    if (genericSuperclass is ParameterizedType) {
-        pt = genericSuperclass
-        // 获取第一个类型参数的真实类型
-        return pt!!.actualTypeArguments[0]
-    }
-    return genericSuperclass
-}
-
-
-fun main(args: Array<String>) {
-    val list =object :LinkedList<LoginVm2>(){}
-    val type = getRealType(list)
-    println(type)
-}

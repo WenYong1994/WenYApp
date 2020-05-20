@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="账号"
-            android:text="@={LoginVm.account}"
+            android:text="@={LoginVm2.account}"
             />
 
         <EditText
@@ -36,13 +36,13 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->LoginVm.doLogin()}"
+            android:onClick="@{()->LoginVm2.doLogin()}"
             android:text="登录"
             />
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->LoginVm.test()}"
+            android:onClick="@{()->LoginVm2.test()}"
             android:text="test"
             />
 
@@ -50,7 +50,7 @@
             android:id="@+id/tvMsg"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{LoginVm.loginBean.message}"
+            android:text="@{LoginVm2.loginBean.message}"
             />
 
 
@@ -58,7 +58,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:single_input_title="sassss"
-            app:single_input_text="@={LoginVm.loginBean.message}"
+            app:single_input_text="@={LoginVm2.loginBean.message}"
             />
 
     </LinearLayout>
