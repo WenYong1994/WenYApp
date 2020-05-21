@@ -13,14 +13,13 @@ import com.example.commonlibrary.rxjava.RxSchedulers
 import com.example.netlibrary.api.ApiService
 import com.example.netlibrary.manager.RetrofitServiceManager
 import com.example.wenyapplication.mvvm.data.LoginBean
+import com.example.wenyapplication.mvvm.model.LoginModel
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
-
-
 
     var loginBean = MutableLiveData<LoginBean>()
 
@@ -47,7 +46,7 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
                 },{
                     loginBean.value=LoginBean(0,it.message.toString())
                 })
-        mCompositeDisposable.add(compose)
+        addDisposable(compose)
     }
 
 

@@ -112,6 +112,7 @@ public class WhenYProvessor extends AbstractProcessor {
         TypeVariableName mapType = TypeVariableName.get("HashMap<String,Field>");
         TypeVariableName TypeViewDataBinding = TypeVariableName.get("VDB",nameViewDataBinding);
         ClassName nameViewModelFactory = ClassName.get("androidx.lifecycle","ViewModelProvider","NewInstanceFactory");
+        ClassName nameDefaultLifecycleObserver = ClassName.get("androidx.lifecycle","DefaultLifecycleObserver");
 
 
 
@@ -194,13 +195,22 @@ public class WhenYProvessor extends AbstractProcessor {
 
                 injectByFactoryBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
             }
+            String format = "if(viewModel" + fieldName + i + "!=null && viewModel" + fieldName + i + " instanceof $T){\n" +
+                    "   activity.getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
+                    "}\n";
+
             if(!needFactory){
                 if(fieldName.length()>0){
                     injectBulid.addStatement("int variableId"+fieldName+" = $T."+fieldName,nameBR);
                     injectBulid.addStatement("ViewModel viewModel"+fieldName+i+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"variableId"+fieldName+",$T.class,"+needFactory+")",nameVm);
                 }else {
-                    injectBulid.addStatement("ViewModel viewModel"+fieldName+fieldName+i+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"-1,$T.class,"+needFactory+")",nameVm);
+                    injectBulid.addStatement("ViewModel viewModel"+fieldName+i+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"-1,$T.class,"+needFactory+")",nameVm);
                 }
+
+
+                injectBulid.addCode(
+                        format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver);
+
                 injectBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+i+")",nameVm);
             }else {
                 if(fieldName.length()>0){
@@ -208,6 +218,8 @@ public class WhenYProvessor extends AbstractProcessor {
                 }
                 injectByFactoryBulid.addCode("if(fieldName == \""+outFileName+"\"){\n");
                 injectByFactoryBulid.addStatement("     ViewModel viewModel"+fieldName+i+" = factory.create($T.class)",nameVm);
+                injectByFactoryBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver);
+
                 if(fieldName.length()>0){
                     injectByFactoryBulid.addStatement("     if(viewDataBinding!=null) viewDataBinding.setVariable(variableId"+fieldName+i+", viewModel"+fieldName+i+");");
                 }else {
