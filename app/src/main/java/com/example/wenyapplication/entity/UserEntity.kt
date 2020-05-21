@@ -26,7 +26,7 @@ open class UserEntity : BaseObservable() {
     }
 
     override fun toString(): String {
-        return "UserEntity(id=$id, eid=$eid, age=$age, name=$name, tag=$tag)"
+        return "UserEntity(id=$id, eid=$eid, age=$age, dataBindFieldName=$name, tag=$tag)"
     }
 
 

@@ -1,5 +1,7 @@
 package com.example.netlibrary.entity;
 
+import androidx.annotation.NonNull;
+
 public class UserInfo {
     private int roleId;
     private int directLeaderId;
@@ -83,4 +85,18 @@ public class UserInfo {
         this.roleName = roleName;
     }
 
+    @Override
+    public String toString() {
+        return "UserInfo{" +
+                "roleId=" + roleId +
+                ", directLeaderId=" + directLeaderId +
+                ", directLeaderName='" + directLeaderName + '\'' +
+                ", phone='" + phone + '\'' +
+                ", enable=" + enable +
+                ", roleName='" + roleName + '\'' +
+                ", email='" + email + '\'' +
+                ", id=" + id +
+                ", functionaryId=" + functionaryId +
+                '}';
+    }
 }

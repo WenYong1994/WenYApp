@@ -73,7 +73,7 @@
                  {@link android.text.InputType#TYPE_CLASS_TEXT} |
                  {@link android.text.InputType#TYPE_TEXT_VARIATION_LONG_MESSAGE}. -->
             <flag name="textLongMessage" value="0x00000051" />
-            <!-- Text that is the name of a person.  Corresponds to
+            <!-- Text that is the dataBindFieldName of a person.  Corresponds to
                  {@link android.text.InputType#TYPE_CLASS_TEXT} |
                  {@link android.text.InputType#TYPE_TEXT_VARIATION_PERSON_NAME}. -->
             <flag name="textPersonName" value="0x00000061" />
@@ -97,7 +97,7 @@
                  {@link android.text.InputType#TYPE_CLASS_TEXT} |
                  {@link android.text.InputType#TYPE_TEXT_VARIATION_FILTER}. -->
             <flag name="textFilter" value="0x000000b1" />
-            <!-- Text that is for phonetic pronunciation, such as a phonetic name
+            <!-- Text that is for phonetic pronunciation, such as a phonetic dataBindFieldName
                  field in a contact entry.  Corresponds to
                  {@link android.text.InputType#TYPE_CLASS_TEXT} |
                  {@link android.text.InputType#TYPE_TEXT_VARIATION_PHONETIC}. -->

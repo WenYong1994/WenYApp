@@ -22,6 +22,7 @@ import org.reactivestreams.Publisher;
 
 import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import okhttp3.RequestBody;
 
@@ -68,12 +69,15 @@ public class MainActivity extends AppCompatActivity {
         Flowable<BaseResp<UserInfo>> login = apiService.login(body);
         Disposable subscribe = login
                 .flatMap((Function<BaseResp<UserInfo>, Publisher<String>>) userInfoBaseResp -> Flowable.just(userInfoBaseResp.toString()))
+                .flatMap((Function<String, Publisher<String>>) s -> Flowable.just(s))
                 .compose(RxSchedulers.io_main())
-                .subscribe(userInfoBaseResp -> {
+                .subscribe(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
 
-
-
+                    }
                 });
     }
+
 
 }

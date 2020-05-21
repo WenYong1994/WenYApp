@@ -2,23 +2,27 @@ package com.example.wenyapplication.mvvm.view_model
 
 import android.app.Application
 import android.os.Handler
+import android.os.SystemClock
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.commonlibrary.mvvm.vm.BaseAndroidViewModel
+import com.example.commonlibrary.rxjava.RxSchedulers
+import com.example.netlibrary.api.ApiService
+import com.example.netlibrary.manager.RetrofitServiceManager
 import com.example.wenyapplication.mvvm.data.LoginBean
-import com.example.wenyapplication.mvvm.model.LoginModel
-import java.lang.reflect.GenericArrayType
-import java.lang.reflect.ParameterizedType
-import java.lang.reflect.Type
-import java.lang.reflect.TypeVariable
-import java.util.*
+import io.reactivex.Flowable
+import io.reactivex.disposables.CompositeDisposable
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 
-class LoginVm2(string:String,app: Application) : AndroidViewModel(app){
-    private var loginModel = LoginModel()
+class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
+
+
 
     var loginBean = MutableLiveData<LoginBean>()
-
 
     var account:String = ""
     var pwd : String =""
@@ -27,29 +31,33 @@ class LoginVm2(string:String,app: Application) : AndroidViewModel(app){
             field = value
         }
 
-    fun doLogin(){
-        Handler().postDelayed(object : Runnable {
-            override fun run() {
-                /*通知Activity刷新数据*/
-                loginBean.value = loginModel.login(account)
-                msg = loginBean.value?.message.toString()
-            }
-        }, 3000)
+    fun doLogin() {
+        var json = "{\"channel\":\"android\",\"data\":\"{\\\"password\\\":\\\"123456\\\",\\\"os\\\":\\\"android\\\",\\\"uid\\\":0,\\\"username\\\":\\\"kred001\\\"}\",\"salt\":\"064797\",\"service\":\"functionaryLoginService\",\"test\":true,\"time\":1590024509,\"version\":\"1.0\"}"
+        val requestBody = json.toRequestBody("application/json; charset=utf-8;".toMediaTypeOrNull())
+        val compose = RetrofitServiceManager.getInstance().create(ApiService::class.java)
+                .login(requestBody)
+                .flatMap {
+                    SystemClock.sleep(2000)
+                    Flowable.just(it.data.toString())
+                }
+                .compose(RxSchedulers.io_main())
+                .subscribe({
+                    Log.e("doLogin","doLogindoLogindoLogindoLogindoLogindoLogindoLogin");
+                    loginBean.value=LoginBean(0,it)
+                },{
+                    loginBean.value=LoginBean(0,it.message.toString())
+                })
+        mCompositeDisposable.add(compose)
     }
+
 
     fun test(){
-        Handler().postDelayed(object : Runnable {
-            override fun run() {
-                loginBean.value?.message?.postValue(loginBean.value?.message?.value+"1")
-            }
-        }, 2000)
+        Handler().postDelayed({ loginBean.value?.message?.postValue(loginBean.value?.message?.value+"1") }, 2000)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-    }
 
 }
+
 
 class LoginVm2Factory(private val string:String,private val app: Application) : ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

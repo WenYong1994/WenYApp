@@ -3,9 +3,7 @@ package com.example.whenycompilerlib;
 import com.example.whenyannotationlib.AnnotationConstant;
 import com.example.whenyannotationlib.InjectViewModel;
 import com.google.auto.service.AutoService;
-import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -51,6 +49,7 @@ public class WhenYProvessor extends AbstractProcessor {
         filer = processingEnvironment.getFiler();
         messager = processingEnvironment.getMessager();
         messager.printMessage(Diagnostic.Kind.WARNING, "WhenYProvessor----init-------------------------------------------------------------!");
+
     }
 
     @Override
@@ -73,26 +72,29 @@ public class WhenYProvessor extends AbstractProcessor {
         messager.printMessage(Diagnostic.Kind.WARNING,"WhenYProvessor----process,start process");
         //获取所有使用SimpleBindView的集合
         Set<? extends Element> elementSet = roundEnvironment.getElementsAnnotatedWith(InjectViewModel.class);
-        //key是activity的名字
-        //value是这个activity里面所有使用SimpleBindView注解的集合
-        Map<String, List<VariableElement>> elementMap = handleElementIntoMap(elementSet);
-        //开始准备写XXActivity$ViewBinder内部类的java文件
-        Iterator<String> iterator = elementMap.keySet().iterator();
-        while (iterator.hasNext()) {
-            String activityName = iterator.next();
-            //获取activity的所有元素
-            List<VariableElement> variableElements = elementMap.get(activityName);
-            //获取包名
-            String packageName = getPackageName(variableElements.get(0));
-            //获取我们要写的内部类java文件名
-            TypeElement typeElement = (TypeElement) variableElements.get(0).getEnclosingElement();
-            String newActivityName = typeElement.getSimpleName().toString()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
-            Name qualifiedName = typeElement.getQualifiedName();
-            messager.printMessage(Diagnostic.Kind.WARNING,"newActivityName-------"+newActivityName);
-            //用流来写内部类的文件
-            generateJavaCode (qualifiedName.toString(),newActivityName, variableElements);
+        if(elementSet.size()>0){
+            //key是activity的名字
+            //value是这个activity里面所有使用SimpleBindView注解的集合
+            Map<String, List<VariableElement>> elementMap = handleElementIntoMap(elementSet);
+            //开始准备写XXActivity$ViewBinder内部类的java文件
+            Iterator<String> iterator = elementMap.keySet().iterator();
+            while (iterator.hasNext()) {
+                String activityName = iterator.next();
+                //获取activity的所有元素
+                List<VariableElement> variableElements = elementMap.get(activityName);
+                //获取包名
+                String packageName = getPackageName(variableElements.get(0));
+                //获取我们要写的内部类java文件名
+                TypeElement typeElement = (TypeElement) variableElements.get(0).getEnclosingElement();
+                String newActivityName = typeElement.getSimpleName().toString()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
+                Name qualifiedName = typeElement.getQualifiedName();
+                messager.printMessage(Diagnostic.Kind.WARNING,"newActivityName-------"+newActivityName);
+                //用流来写内部类的文件
+                generateJavaCode (qualifiedName.toString(),newActivityName, variableElements);
+            }
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void generateJavaCode(String outClassName,String newActivityName, List<VariableElement> variableElements) {
@@ -148,7 +150,7 @@ public class WhenYProvessor extends AbstractProcessor {
                         "\n" +
                         "   T viewModel = initViewModel(activity,clazz,needFactory);\n" +
                         "\n" +
-                        "   viewDataBinding.setVariable(variableId,viewModel);\n" +
+                        "   if(viewDataBinding!=null) viewDataBinding.setVariable(variableId,viewModel);\n" +
                         "   return viewModel;\n"
                         ,nameInjectViewModel,nameInjectViewModel,nameInjectViewModel,nameBR,nameBR)
                 .addCode("\n");
@@ -170,6 +172,7 @@ public class WhenYProvessor extends AbstractProcessor {
                 .addAnnotation(Override.class)
                 .addParameter(nameAppCompatActivity,"activity") //添加参数 AppCompatActivity activity
                 .addParameter(nameViewModelFactory,"factory") //添加参数 ViewModelProvider.NewInstanceFactory factory
+                .addParameter(String.class,"fieldName") //添加参数 ViewModelProvider.NewInstanceFactory factory
                 .addParameter(nameViewDataBinding,"viewDataBinding"); //添加参数 ViewDataBinding viewDataBinding
         messager.printMessage(Diagnostic.Kind.WARNING,"variableElementsSize-------"+variableElements.size());
 
@@ -179,27 +182,39 @@ public class WhenYProvessor extends AbstractProcessor {
             VariableElement variableElement = variableElements.get(i);
             String outFileName = variableElement.getSimpleName().toString();
             InjectViewModel annotation = variableElement.getAnnotation(InjectViewModel.class);
-            String fieldName = annotation.name();
+            String fieldName = annotation.dataBindFieldName();
             boolean needFactory = annotation.needFactory();
             String className = variableElement.asType().toString();
             messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+className);
             ClassName nameVm = ClassName.get(getPackNameByClassName(className),getSimpleClassByClassName(className));
             if(i==0){
                 injectBulid.addStatement("viewDataBinding = $T.setContentView(activity,layoutId)",nameDataBindingUtils);
-                injectBulid.addStatement("viewDataBinding.setLifecycleOwner(activity)");
+                injectBulid.addStatement("if(viewDataBinding!=null) viewDataBinding.setLifecycleOwner(activity)");
                 injectBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
 
                 injectByFactoryBulid.addStatement(getSimpleClassByClassName(outClassName)+" realActivity = ("+getSimpleClassByClassName(outClassName)+") activity");
             }
             if(!needFactory){
-                injectBulid.addStatement("int variableId"+fieldName+" = $T."+fieldName,nameBR);
-                injectBulid.addStatement("ViewModel viewModel"+fieldName+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"variableId"+fieldName+",$T.class,"+needFactory+")",nameVm);
-                injectBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+")",nameVm);
+                if(fieldName.length()>0){
+                    injectBulid.addStatement("int variableId"+fieldName+" = $T."+fieldName,nameBR);
+                    injectBulid.addStatement("ViewModel viewModel"+fieldName+i+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"variableId"+fieldName+",$T.class,"+needFactory+")",nameVm);
+                }else {
+                    injectBulid.addStatement("ViewModel viewModel"+fieldName+fieldName+i+"= handViewModel(realActivity,viewDataBinding,\""+outFileName+"\",\""+fieldName+"\","+"-1,$T.class,"+needFactory+")",nameVm);
+                }
+                injectBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+i+")",nameVm);
             }else {
-                injectByFactoryBulid.addStatement("int variableId"+fieldName+" = $T."+fieldName,nameBR);
-                injectByFactoryBulid.addStatement("ViewModel viewModel"+fieldName+" = factory.create($T.class)",nameVm);
-                injectByFactoryBulid.addStatement("viewDataBinding.setVariable(variableId"+fieldName+", viewModel"+fieldName+");");
-                injectByFactoryBulid.addStatement("realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+")",nameVm);
+                if(fieldName.length()>0){
+                    injectByFactoryBulid.addStatement("int variableId"+fieldName+i+" = $T."+fieldName,nameBR);
+                }
+                injectByFactoryBulid.addCode("if(fieldName == \""+outFileName+"\"){\n");
+                injectByFactoryBulid.addStatement("     ViewModel viewModel"+fieldName+i+" = factory.create($T.class)",nameVm);
+                if(fieldName.length()>0){
+                    injectByFactoryBulid.addStatement("     if(viewDataBinding!=null) viewDataBinding.setVariable(variableId"+fieldName+i+", viewModel"+fieldName+i+");");
+                }else {
+                    injectByFactoryBulid.addStatement("     if(viewDataBinding!=null) viewDataBinding.setVariable(-1, viewModel"+fieldName+i+");");
+                }
+                injectByFactoryBulid.addStatement("     realActivity.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+i+")",nameVm);
+                injectByFactoryBulid.addCode("}");
             }
         }
         injectBulid.addStatement("return viewDataBinding");

@@ -20,7 +20,7 @@ interface ApiService {
 
     @Headers("Content-Type: application/json")//需要添加头
     @POST("/umc/doService")
-    fun login(@Body req : RequestBody) : Flowable<BaseResp<UserInfo>>?
+    fun login(@Body req : RequestBody) : Flowable<BaseResp<UserInfo?>>
 
 
 

@@ -35,7 +35,7 @@ public class ViewModelInjector {
     }
 
 
-    public static void injectByFactory(AppCompatActivity activity,ViewModelProvider.NewInstanceFactory factory, ViewDataBinding viewDataBinding){
+    public static void injectByFactory(AppCompatActivity activity,ViewModelProvider.NewInstanceFactory factory, String fieldName,ViewDataBinding viewDataBinding){
         ViewModelInjectorApi viewModelInjector = null;
         String className = AnnotationConstant.VIEW_MODEL_PACKNAME+"."+activity.getClass().getSimpleName()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
         try {
@@ -53,7 +53,7 @@ public class ViewModelInjector {
             e.printStackTrace();
         }
         if(viewModelInjector!=null){
-            viewModelInjector.injectViewModelByFactory(activity,factory,viewDataBinding);//里面没有强引用Activity 所以不用担心内存泄漏
+            viewModelInjector.injectViewModelByFactory(activity,factory,fieldName,viewDataBinding);//里面没有强引用Activity 所以不用担心内存泄漏
         }
     }
 

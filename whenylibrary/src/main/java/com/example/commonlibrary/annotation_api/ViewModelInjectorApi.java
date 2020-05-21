@@ -10,6 +10,6 @@ public interface ViewModelInjectorApi {
 
     <T extends ViewDataBinding> T injectViewModels(AppCompatActivity activity, int layoutId);
 
-    void injectViewModelByFactory(AppCompatActivity activity, ViewModelProvider.NewInstanceFactory factory, ViewDataBinding viewDataBinding);
+    void injectViewModelByFactory(AppCompatActivity activity, ViewModelProvider.NewInstanceFactory factory,String filedName, ViewDataBinding viewDataBinding);
 
 }

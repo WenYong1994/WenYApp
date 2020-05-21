@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS) //默认的保留策略，注解会在class字节码文件中存在，但运行时无法获得，
 public  @interface  InjectViewModel {
 
-    String name();
+    String dataBindFieldName() default "";
 
     boolean needFactory() default false;
 
