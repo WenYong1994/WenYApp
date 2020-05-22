@@ -40,15 +40,15 @@ android {
     }
 
 
-
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(path: ':netlibrary')
     implementation project(path: ':whenylibrary')
-    kapt project(':whenycompilerlib')//引入注解处理器模块
-    implementation project(':whenyannotationlib')//引入自己定义的注解
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    kapt project(':wheny_compiler_lib')//引入注解处理器模块
+    implementation project(':wheny_annotation_lib')//引入自己定义的注解
 
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -84,6 +84,7 @@ dependencies {
 
 
     implementation group: 'androidx.lifecycle', name: 'lifecycle-common-java8', version: '2.2.0'
+    implementation project(path: ':wheny_annotation_apilib')
 
 }
 repositories {

@@ -42,7 +42,7 @@
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="@{()->LoginVm2.test()}"
+            android:onClick="@{(view) -> LoginVm2.test()}"
             android:text="test"
             />
 

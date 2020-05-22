@@ -2,10 +2,8 @@ package com.example.commonlibrary.mvvm.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.databinding.library.baseAdapters.DataBinderMapperImpl
-import com.example.commonlibrary.annotation_api.ViewModelInjector
+import com.example.whenyannotationapilib.ViewModelInjector
 
 abstract class BaseMVVMActivity<T : ViewDataBinding> : AppCompatActivity(){
 

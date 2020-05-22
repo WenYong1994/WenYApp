@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".mvvm.view.LoginActivity"></activity>
         <activity android:name=".databind.TestDataBindActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".mvvm.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

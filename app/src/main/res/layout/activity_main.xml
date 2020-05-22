@@ -1,34 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical"
+    tools:context=".mvvm.main.MainActivity"
     >
 
-    <Button
-        android:id="@+id/btn_dataBinding"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="DataBind"
-        />
-    <Button
-        android:id="@+id/btn_mvvm"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="LOginVm"
-        />
+    <data>
 
-    <Button
-        android:id="@+id/test_net"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="测试网2络"
-        />
+        <variable
+            name="mainVm"
+            type="com.example.wenyapplication.mvvm.main.MainVm" />
+
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+
+        <Button
+            android:id="@+id/btn_dataBinding"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{mainVm.dataBindingBtnTxt}"
+            android:onClick="@{ (view) -> mainVm.testTest(view,mainVm.testNetTxt) }"
+            />
+
+        <Button
+            android:id="@+id/btn_mvvm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{mainVm.loginVmTxt}"
+            android:onClick="@{(view) -> mainVm.testLogin(view)}"
+            />
+
+        <Button
+            android:id="@+id/test_net"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{mainVm.testNetTxt}"
+            />
+
+        <FrameLayout
+            android:id="@+id/main_fra"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
 
 
-
-
-</LinearLayout>
+</layout>

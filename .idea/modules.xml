@@ -7,8 +7,9 @@
       <module fileurl="file://$PROJECT_DIR$/calendar/calendar.iml" filepath="$PROJECT_DIR$/calendar/calendar.iml" />
       <module fileurl="file://$PROJECT_DIR$/dblibary/dblibary.iml" filepath="$PROJECT_DIR$/dblibary/dblibary.iml" />
       <module fileurl="file://$PROJECT_DIR$/netlibrary/netlibrary.iml" filepath="$PROJECT_DIR$/netlibrary/netlibrary.iml" />
-      <module fileurl="file://$PROJECT_DIR$/whenyannotationlib/whenyannotationlib.iml" filepath="$PROJECT_DIR$/whenyannotationlib/whenyannotationlib.iml" />
-      <module fileurl="file://$PROJECT_DIR$/whenycompilerlib/whenycompilerlib.iml" filepath="$PROJECT_DIR$/whenycompilerlib/whenycompilerlib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wheny_annotation_apilib/wheny_annotation_apilib.iml" filepath="$PROJECT_DIR$/wheny_annotation_apilib/wheny_annotation_apilib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wheny_annotation_lib/wheny_annotation_lib.iml" filepath="$PROJECT_DIR$/wheny_annotation_lib/wheny_annotation_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/wheny_compiler_lib/wheny_compiler_lib.iml" filepath="$PROJECT_DIR$/wheny_compiler_lib/wheny_compiler_lib.iml" />
       <module fileurl="file://$PROJECT_DIR$/whenylibrary/whenylibrary.iml" filepath="$PROJECT_DIR$/whenylibrary/whenylibrary.iml" />
     </modules>
   </component>

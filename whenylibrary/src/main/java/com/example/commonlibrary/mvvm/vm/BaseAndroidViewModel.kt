@@ -14,10 +14,6 @@ open class BaseAndroidViewModel(application: Application) : AndroidViewModel(app
         mCompositeDisposable.add(compose)
     }
 
-    override fun onDestroy() {
-        mCompositeDisposable.clear()
-    }
-
     override fun onDestroy(owner: LifecycleOwner) {
         mCompositeDisposable.clear()
     }
