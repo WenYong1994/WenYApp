@@ -1,4 +1,4 @@
-package com.example.wenyapplication.mvvm.main
+package com.example.wenyapplication.mvvm.view.main
 
 import com.example.commonlibrary.mvvm.vm.BaseViewModel
 

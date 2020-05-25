@@ -1,10 +1,9 @@
-package com.example.wenyapplication.mvvm.view_model
+package com.example.wenyapplication.mvvm.view.login
 
 import android.app.Application
 import android.os.Handler
 import android.os.SystemClock
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,10 +11,8 @@ import com.example.commonlibrary.mvvm.vm.BaseAndroidViewModel
 import com.example.commonlibrary.rxjava.RxSchedulers
 import com.example.netlibrary.api.ApiService
 import com.example.netlibrary.manager.RetrofitServiceManager
-import com.example.wenyapplication.mvvm.data.LoginBean
-import com.example.wenyapplication.mvvm.model.LoginModel
+import com.example.wenyapplication.data.LoginBean
 import io.reactivex.Flowable
-import io.reactivex.disposables.CompositeDisposable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -42,7 +39,7 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
                 .compose(RxSchedulers.io_main())
                 .subscribe({
                     Log.e("doLogin","doLogindoLogindoLogindoLogindoLogindoLogindoLogin");
-                    loginBean.value=LoginBean(0,it)
+                    loginBean.value= LoginBean(0, it)
                 },{
                     loginBean.value=LoginBean(0,it.message.toString())
                 })
@@ -60,7 +57,7 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
 
 class LoginVm2Factory(private val string:String,private val app: Application) : ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return LoginVm2(string,app) as T
+        return LoginVm2(string, app) as T
     }
 }
 

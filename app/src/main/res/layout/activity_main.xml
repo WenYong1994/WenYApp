@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".mvvm.main.MainActivity"
+    tools:context=".mvvm.view.main.MainActivity"
     >
 
     <data>
 
         <variable
             name="mainVm"
-            type="com.example.wenyapplication.mvvm.main.MainVm" />
+            type="com.example.wenyapplication.mvvm.view.main.MainVm" />
+
+        <variable
+            name="testFraVm"
+            type="com.example.wenyapplication.mvvm.view.main.TestFraVm" />
 
     </data>
 
@@ -41,10 +45,31 @@
             android:text="@{mainVm.testNetTxt}"
             />
 
+        <Button
+            android:id="@+id/test_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{mainVm.testListTxt}"
+            android:onClick="@{(view) -> mainVm.testList(view)}"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{testFraVm.test}"
+            />
+
+
+
         <FrameLayout
             android:id="@+id/main_fra"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="200dp"/>
+
+        <FrameLayout
+            android:id="@+id/main_fra_2"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"/>
 
     </LinearLayout>
 

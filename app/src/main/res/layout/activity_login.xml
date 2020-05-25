@@ -2,16 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".mvvm.view.LoginActivity">
+    tools:context=".mvvm.view.login.LoginActivity">
 
     <data>
         <variable
             name="LoginVm"
-            type="com.example.wenyapplication.mvvm.view_model.LoginVm" />
+            type="com.example.wenyapplication.mvvm.view.login.LoginVm" />
 
         <variable
             name="LoginVm2"
-            type="com.example.wenyapplication.mvvm.view_model.LoginVm2" />
+            type="com.example.wenyapplication.mvvm.view.login.LoginVm2" />
 
     </data>
 

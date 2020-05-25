@@ -1,13 +1,10 @@
-package com.example.wenyapplication.mvvm.view
+package com.example.wenyapplication.mvvm.view.login
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.example.wenyapplication.R
 import com.example.wenyapplication.application.App
 import com.example.wenyapplication.databinding.ActivityLoginBinding
-import com.example.wenyapplication.mvvm.view_model.LoginVm
-import com.example.wenyapplication.mvvm.view_model.LoginVm2
-import com.example.wenyapplication.mvvm.view_model.LoginVm2Factory
 import com.example.whenyannotationapilib.ViewModelInjector
 import com.example.whenyannotationlib.InjectViewModel
 
