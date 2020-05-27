@@ -1,6 +1,8 @@
 package com.example.wenyapplication.mvvm.view.main;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 
@@ -9,6 +11,8 @@ import com.example.whenyannotationapilib.ViewModelInjector;
 import com.example.whenyannotationlib.InjectViewModel;
 
 public class MainActivity extends AppCompatActivity {
+
+
 
     @InjectViewModel(dataBindFieldName = "mainVm")
     MainVm mainVm;

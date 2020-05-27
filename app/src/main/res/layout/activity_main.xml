@@ -23,11 +23,11 @@
         >
 
         <Button
-            android:id="@+id/btn_dataBinding"
+            android:id="@+id/btn_databinding"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@{mainVm.dataBindingBtnTxt}"
-            android:onClick="@{ (view) -> mainVm.testTest(view,mainVm.testNetTxt) }"
+            android:onClick="@{(view) -> mainVm.testDataBinding(view)}"
             />
 
         <Button
@@ -65,6 +65,9 @@
             android:id="@+id/main_fra"
             android:layout_width="match_parent"
             android:layout_height="200dp"/>
+
+
+
 
         <FrameLayout
             android:id="@+id/main_fra_2"

@@ -60,6 +60,10 @@ dependencies {
     implementation project(path: ':wheny_annotation_lib')
     implementation group: 'androidx.lifecycle', name: 'lifecycle-common-java8', version: '2.2.0'
     implementation project(path: ':wheny_annotation_apilib')
+
+    api 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+
 }
 repositories {
     mavenCentral()

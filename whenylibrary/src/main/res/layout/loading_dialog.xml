@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_view"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:minWidth="104dp"
+    android:minHeight="87dp"
+    android:orientation="vertical"
+    android:paddingLeft="20dp"
+    android:paddingTop="26dp"
+    android:paddingRight="20dp"
+    android:paddingBottom="22dp">
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
+        android:src="@drawable/jxgoo_loading" />
+
+    <TextView
+        android:id="@+id/tipTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:includeFontPadding="false"
+        android:maxWidth="208dp"
+        tools:text="请稍后..."
+        android:textColor="#ffffff"
+        android:textSize="13sp"
+        android:visibility="visible" />
+
+</LinearLayout>

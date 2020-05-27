@@ -18,6 +18,7 @@
         >
 
         <TextView
+            android:id="@+id/tv_txt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@{TestListVm.txt2}"

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <include layout="@layout/jxgoo_rclview_loading" />
+
+    <include layout="@layout/jxgoo_rclview_loadend_once" />
+
+    <include layout="@layout/jxgoo_rclview_loadend_all" />
+
+    <include layout="@layout/jxgoo_rclview_loadfailed" />
+
+    <include layout="@layout/jxgoo_rclview_loadempty" />
+
+</FrameLayout>
