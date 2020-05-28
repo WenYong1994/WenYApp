@@ -28,7 +28,6 @@ class TestListActivity : AppCompatActivity() {
                 TestListBean("1"),TestListBean("1"),TestListBean("1"),TestListBean("1"),TestListBean("1"),
                 TestListBean("1"),TestListBean("1"),TestListBean("1"),TestListBean("1"),TestListBean("1"))
 
-
         val addItemViewDelegate = MultiTypeItemAdapter(list)
                 .addItemViewDelegate(object : SimpleItemViewDelegate<TestListBean, TestListItemLayoutBinding>() {
 
@@ -46,12 +45,14 @@ class TestListActivity : AppCompatActivity() {
 
                     override fun convert(holder: ViewHolder<TestListItemLayoutBinding>?, t: TestListBean?, position: Int) {
                         holder?.viewDataBinding?.testListVm?.txt2 = t?.txt.toString()
+
+
+
                     }
 
                 })
         rv.layoutManager = SafeLinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
         rv.adapter = addItemViewDelegate
-
 
     }
 
