@@ -1,7 +1,8 @@
 apply plugin: 'java-library'
 
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.WenYong1994'
+group='com.github.WenYong1994.WenYApp'
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation project(':wheny_annotation_lib')

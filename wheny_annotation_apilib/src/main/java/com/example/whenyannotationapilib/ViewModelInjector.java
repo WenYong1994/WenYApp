@@ -1,7 +1,6 @@
 package com.example.whenyannotationapilib;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
