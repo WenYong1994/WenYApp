@@ -87,7 +87,7 @@ dependencies {
     implementation group: 'androidx.lifecycle', name: 'lifecycle-common-java8', version: '2.2.0'
     implementation project(path: ':wheny_annotation_apilib')
 
-
+    //配置之后可以让github可以远程依赖
     api 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
