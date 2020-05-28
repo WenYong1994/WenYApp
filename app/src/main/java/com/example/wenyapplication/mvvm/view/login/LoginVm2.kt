@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.commonlibrary.mvvm.vm.BaseAndroidViewModel
 import com.example.commonlibrary.rxjava.RxSchedulers
-import com.example.netlibrary.api.ApiService
+import com.example.netlibrary.api.WhenYApiService
 import com.example.netlibrary.manager.RetrofitServiceManager
 import com.example.wenyapplication.data.LoginBean
 import io.reactivex.Flowable
@@ -30,7 +30,7 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
     fun doLogin() {
         var json = "{\"channel\":\"android\",\"data\":\"{\\\"password\\\":\\\"123456\\\",\\\"os\\\":\\\"android\\\",\\\"uid\\\":0,\\\"username\\\":\\\"kred001\\\"}\",\"salt\":\"064797\",\"service\":\"functionaryLoginService\",\"test\":true,\"time\":1590024509,\"version\":\"1.0\"}"
         val requestBody = json.toRequestBody("application/json; charset=utf-8;".toMediaTypeOrNull())
-        val compose = RetrofitServiceManager.getInstance().create(ApiService::class.java)
+        val compose = RetrofitServiceManager.getInstance().create(WhenYApiService::class.java)
                 .login(requestBody)
                 .flatMap {
                     SystemClock.sleep(2000)
