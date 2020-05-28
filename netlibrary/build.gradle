@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.WenYong1994.WenYApp'
+group='com.github.WenYong1994'
 
 android {
     compileSdkVersion compile_sdk_version
