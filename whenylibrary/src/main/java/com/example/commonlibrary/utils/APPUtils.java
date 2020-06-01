@@ -1,7 +1,11 @@
 package com.example.commonlibrary.utils;
 
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Build;
+
 public class APPUtils {
     public static boolean
-            isOpenLog=true;
+            isOpenLog= true;
 
 }
