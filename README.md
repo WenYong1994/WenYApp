@@ -1,6 +1,7 @@
 # WenYApp。一款MVVM的极简框架
 
 ## 怎么使用
+
 在项目build.gradle文件中添加
 ```
 allprojects {
@@ -49,7 +50,9 @@ dependencies {
 
 ```
 
+
 ###注意
+
 如果想使用某一个部分功能请看下面的注释
 ```
 {
@@ -64,7 +67,9 @@ dependencies {
 }
 ```
 
-###MVVM初始化示例
+
+MVVM初始化示例
+
 ```
 class MainActivity : AppCompatActivity() {
 	...
@@ -90,7 +95,8 @@ class MainActivity : AppCompatActivity() {
 
 
 
-###RxJava2+Retrofit2示例
+RxJava2+Retrofit2示例
+
 ```
 
 class TestMainVm : BaseViewModel() {
@@ -123,7 +129,8 @@ class TestMainVm : BaseViewModel() {
 
 ```
 
-###万能Adapter示例
+万能Adapter示例
+
 ```
 adapter.addItemViewDelegate(object : SimpleItemViewDelegate<String, TestListLayoutBinding>() {
 
