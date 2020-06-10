@@ -115,6 +115,7 @@ public class WhenYProvessor extends AbstractProcessor {
         ClassName nameViewGoup = ClassName.get("android.view","ViewGroup");
         ClassName baseViewModel = ClassName.get("com.example.commonlibrary.mvvm.vm","BaseViewModel");
         ClassName baseAndroidViewModel = ClassName.get("com.example.commonlibrary.mvvm.vm","BaseAndroidViewModel");
+        ClassName vmContract = ClassName.get("com.example.commonlibrary.mvvm.contract","VmContract");
 
 
 
@@ -154,14 +155,14 @@ public class WhenYProvessor extends AbstractProcessor {
                         "   T viewModel = initViewModel(activity,clazz,needFactory);\n" +
                         "\n" +
                         "   if(viewModel instanceof $T){\n" +
-                        "          (($T)viewModel).setAcitivity(activity);\n" +
+                        "          (($T)viewModel).setContract(($T)activity);\n" +
                         "   }\n" +
                         "   if(viewModel instanceof $T){\n" +
-                        "          (($T)viewModel).setAcitivity(activity);\n" +
+                        "          (($T)viewModel).setContract(($T)activity);\n" +
                         "   }\n" +
                         "   if(viewDataBinding!=null) viewDataBinding.setVariable(variableId,viewModel);\n" +
                         "   return viewModel;\n"
-                        ,baseViewModel,baseViewModel,baseAndroidViewModel,baseAndroidViewModel)
+                        ,baseViewModel,baseViewModel,vmContract,baseAndroidViewModel,baseAndroidViewModel,vmContract)
                 .addCode("\n",nameInjectViewModel,nameInjectViewModel,nameInjectViewModel,nameBR,nameBR);
 
 
@@ -202,6 +203,7 @@ public class WhenYProvessor extends AbstractProcessor {
             boolean needFactory = annotation.needFactory();
             String className = variableElement.asType().toString();
             messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+className);
+            className = removeGenericity(className);
             ClassName nameVm = ClassName.get(getPackNameByClassName(className),getSimpleClassByClassName(className));
             if(i==0){
 
@@ -220,10 +222,10 @@ public class WhenYProvessor extends AbstractProcessor {
                     "   activity.getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
                     "\n" +
                     "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
-                    "          (($T)viewModel"+fieldName + i +").setAcitivity(activity);\n" +
+                    "          (($T)viewModel"+fieldName + i +").setContract(($T)activity);\n" +
                     "   }\n" +
                     "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
-                    "          (($T)viewModel"+fieldName + i +").setAcitivity(activity);\n" +
+                    "          (($T)viewModel"+fieldName + i +").setContract(($T)activity);\n" +
                     "   }\n" +
                     "}\n";
 
@@ -239,7 +241,7 @@ public class WhenYProvessor extends AbstractProcessor {
                 }
 
 
-                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,baseAndroidViewModel,baseAndroidViewModel);
+                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,vmContract,baseAndroidViewModel,baseAndroidViewModel,vmContract);
 
 
                 injectBulid.addStatement("realTag.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+i+")",nameVm);
@@ -253,7 +255,7 @@ public class WhenYProvessor extends AbstractProcessor {
 
                 injectByFactory.addCode("if(fieldName == \""+outFileName+"\"){\n");
                 injectByFactory.addStatement("     ViewModel viewModel"+fieldName+i+" = factory.create($T.class)",nameVm);
-                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,baseAndroidViewModel,baseAndroidViewModel);
+                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,vmContract,baseAndroidViewModel,baseAndroidViewModel,vmContract);
 
                 if(fieldName.length()>0){
 
@@ -328,6 +330,15 @@ public class WhenYProvessor extends AbstractProcessor {
             return String.valueOf(chars);
         }
         return s;
+    }
+
+    private String removeGenericity(String className){
+        int i = className.indexOf("<");
+        if(i>0){
+            String substring = className.substring(0,i);
+            return substring;
+        }
+        return className;
     }
 
     private String getPackNameByClassName(String className){

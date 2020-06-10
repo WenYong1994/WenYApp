@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.commonlibrary.mvvm.contract.VmContract
 import com.example.wenyapplication.R
 import com.example.wenyapplication.databinding.FragmentTest2Binding
 import com.example.whenyannotationapilib.ViewModelInjector
@@ -15,12 +16,12 @@ import com.example.whenyannotationlib.InjectViewModel
 /**
  * A simple [Fragment] subclass.
  */
-class TestFragment2 : Fragment() {
+class TestFragment2 : Fragment(),VmContract {
 
     @InjectViewModel(dataBindFieldName = "testFraVm")
-    var testFraVm:TestFraVm?=null
+    var testFraVm:TestFraVm<TestFragment2>?=null
     @InjectViewModel
-    var mainVm: MainVm? = null
+    var mainVm: MainVm<MainActivity>? = null
 
 
 

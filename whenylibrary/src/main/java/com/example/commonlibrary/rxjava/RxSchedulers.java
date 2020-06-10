@@ -27,9 +27,15 @@ public class RxSchedulers {
                 .observeOn(NetThreadManager.INSTANCE.getIo_ThreadPool());
     }
 
-    public static <T> FlowableTransformer<T, T> io_main() {
+    public static <T> FlowableTransformer<T, T> netio_main() {
         return upstream -> upstream.subscribeOn(NetThreadManager.INSTANCE.getIo_ThreadPool())
                 .unsubscribeOn(NetThreadManager.INSTANCE.getIo_ThreadPool())
+                .observeOn(AndroidSchedulers.mainThread());
+    }
+
+    public static <T> FlowableTransformer<T, T> io_main() {
+        return upstream -> upstream.subscribeOn(Schedulers.io())
+                .unsubscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread());
     }
 

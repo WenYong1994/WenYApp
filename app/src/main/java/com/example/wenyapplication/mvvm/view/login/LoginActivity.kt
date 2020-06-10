@@ -1,24 +1,22 @@
 package com.example.wenyapplication.mvvm.view.login
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.*
+import com.example.commonlibrary.mvvm.contract.VmContract
 import com.example.wenyapplication.R
 import com.example.wenyapplication.application.App
 import com.example.wenyapplication.databinding.ActivityLoginBinding
 import com.example.whenyannotationapilib.ViewModelInjector
 import com.example.whenyannotationlib.InjectViewModel
-import kotlinx.android.synthetic.main.activity_login.*
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(),VmContract {
 
     @InjectViewModel(dataBindFieldName = "LoginVm")
-    var mLoginVm: LoginVm?=null
+    var mLoginVm: LoginVm<LoginActivity>?=null
     @InjectViewModel(dataBindFieldName = "LoginVm2",needFactory = true)
-    var mLoginVm2: LoginVm2?=null
+    var mLoginVm2: LoginVm2<LoginActivity>?=null
     @InjectViewModel(needFactory = true)
-    var mLoginVm3: LoginVm2?=null
+    var mLoginVm3: LoginVm2<LoginActivity>?=null
 
 //    var testLive = MutableLiveData<String>("")
 
@@ -28,8 +26,8 @@ class LoginActivity : AppCompatActivity() {
 //        setContentView(layoutId)
         val loginBinding = ViewModelInjector.inject<ActivityLoginBinding>(this, layoutId)
 
-        ViewModelInjector.injectByFactory(this, LoginVm2Factory("ssss", App.getApplication()),"mLoginVm2",loginBinding)
-        ViewModelInjector.injectByFactory(this, LoginVm2Factory("33333", App.getApplication()),"mLoginVm3",loginBinding)
+        ViewModelInjector.injectByFactory(this, LoginVm2Factory<LoginActivity>("ssss", App.getApplication()),"mLoginVm2",loginBinding)
+        ViewModelInjector.injectByFactory(this, LoginVm2Factory<LoginActivity>("33333", App.getApplication()),"mLoginVm3",loginBinding)
 
 //        mLoginVm2 = LoginVm2Factory("ssss", App.getApplication()).create(LoginVm2::class.java)
 //        loginBinding.loginVm2=mLoginVm2

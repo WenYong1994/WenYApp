@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.commonlibrary.mvvm.contract.VmContract
 import com.example.commonlibrary.mvvm.vm.BaseAndroidViewModel
 import com.example.commonlibrary.rxjava.RxSchedulers
 import com.example.netlibrary.api.WhenYApiService
@@ -16,7 +17,7 @@ import io.reactivex.Flowable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
+class LoginVm2<T : VmContract>(string:String,app: Application) : BaseAndroidViewModel<T>(app){
 
     var loginBean = MutableLiveData<LoginBean>()
 
@@ -36,7 +37,7 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
                     SystemClock.sleep(2000)
                     Flowable.just(it.data.toString())
                 }
-                .compose(RxSchedulers.io_main())
+                .compose(RxSchedulers.netio_main())
                 .subscribe({
                     Log.e("doLogin","doLogindoLogindoLogindoLogindoLogindoLogindoLogin");
                     loginBean.value= LoginBean(0, it)
@@ -49,16 +50,15 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
 
     fun test(){
         Handler().postDelayed({ loginBean.value?.message?.postValue(loginBean.value?.message?.value+"1") }, 2000)
-        getActivity()?.finish()
     }
 
 
 }
 
 
-class LoginVm2Factory(private val string:String,private val app: Application) : ViewModelProvider.NewInstanceFactory(){
+class LoginVm2Factory<C:VmContract>(private val string:String,private val app: Application) : ViewModelProvider.NewInstanceFactory(){
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return LoginVm2(string, app) as T
+        return LoginVm2<C>(string, app) as T
     }
 }
 

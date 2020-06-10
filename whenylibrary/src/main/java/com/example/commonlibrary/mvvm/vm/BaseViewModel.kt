@@ -1,30 +1,28 @@
 package com.example.commonlibrary.mvvm.vm
 
-import android.app.Activity
 import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
+import com.example.commonlibrary.mvvm.contract.VmContract
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.observers.DefaultObserver
 import java.lang.ref.WeakReference
 
-open class BaseViewModel : ViewModel(),BaseViewModelApi, DefaultLifecycleObserver {
+open class BaseViewModel<T : VmContract> : ViewModel(),BaseViewModelApi, DefaultLifecycleObserver {
 
     protected var mCompositeDisposable = CompositeDisposable()
-    private var activityWR:WeakReference<Activity>?=null
+    private var activityWR:WeakReference<T>?=null
 
     fun addDisposable(compose: Disposable){
         mCompositeDisposable.add(compose)
     }
 
-    fun setAcitivity(avtivity:Activity){
-        activityWR = WeakReference(avtivity)
+    fun setContract(contract : T){
+        activityWR = WeakReference(contract)
     }
 
-    fun getActivity() : Activity?{
+    fun contract() : T?{
         return  activityWR?.get()
     }
 
