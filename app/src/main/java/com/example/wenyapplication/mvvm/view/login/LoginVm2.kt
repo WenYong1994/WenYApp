@@ -49,6 +49,7 @@ class LoginVm2(string:String,app: Application) : BaseAndroidViewModel(app){
 
     fun test(){
         Handler().postDelayed({ loginBean.value?.message?.postValue(loginBean.value?.message?.value+"1") }, 2000)
+        getActivity()?.finish()
     }
 
 

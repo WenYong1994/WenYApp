@@ -113,6 +113,8 @@ public class WhenYProvessor extends AbstractProcessor {
         ClassName nameDefaultLifecycleObserver = ClassName.get("androidx.lifecycle","DefaultLifecycleObserver");
         ClassName nameLayoutInflater = ClassName.get("android.view","LayoutInflater");
         ClassName nameViewGoup = ClassName.get("android.view","ViewGroup");
+        ClassName baseViewModel = ClassName.get("com.example.commonlibrary.mvvm.vm","BaseViewModel");
+        ClassName baseAndroidViewModel = ClassName.get("com.example.commonlibrary.mvvm.vm","BaseAndroidViewModel");
 
 
 
@@ -151,10 +153,16 @@ public class WhenYProvessor extends AbstractProcessor {
                         "\n" +
                         "   T viewModel = initViewModel(activity,clazz,needFactory);\n" +
                         "\n" +
+                        "   if(viewModel instanceof $T){\n" +
+                        "          (($T)viewModel).setAcitivity(activity);\n" +
+                        "   }\n" +
+                        "   if(viewModel instanceof $T){\n" +
+                        "          (($T)viewModel).setAcitivity(activity);\n" +
+                        "   }\n" +
                         "   if(viewDataBinding!=null) viewDataBinding.setVariable(variableId,viewModel);\n" +
                         "   return viewModel;\n"
-                        ,nameInjectViewModel,nameInjectViewModel,nameInjectViewModel,nameBR,nameBR)
-                .addCode("\n");
+                        ,baseViewModel,baseViewModel,baseAndroidViewModel,baseAndroidViewModel)
+                .addCode("\n",nameInjectViewModel,nameInjectViewModel,nameInjectViewModel,nameBR,nameBR);
 
 
         //创建一个初始化方法,用在fragment 和自定义View 中的
@@ -210,6 +218,13 @@ public class WhenYProvessor extends AbstractProcessor {
             }
             String format = "if(viewModel" + fieldName + i + "!=null && viewModel" + fieldName + i + " instanceof $T){\n" +
                     "   activity.getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
+                    "\n" +
+                    "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
+                    "          (($T)viewModel"+fieldName + i +").setAcitivity(activity);\n" +
+                    "   }\n" +
+                    "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
+                    "          (($T)viewModel"+fieldName + i +").setAcitivity(activity);\n" +
+                    "   }\n" +
                     "}\n";
 
             if(!needFactory){
@@ -224,7 +239,7 @@ public class WhenYProvessor extends AbstractProcessor {
                 }
 
 
-                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver);
+                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,baseAndroidViewModel,baseAndroidViewModel);
 
 
                 injectBulid.addStatement("realTag.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+i+")",nameVm);
@@ -238,7 +253,7 @@ public class WhenYProvessor extends AbstractProcessor {
 
                 injectByFactory.addCode("if(fieldName == \""+outFileName+"\"){\n");
                 injectByFactory.addStatement("     ViewModel viewModel"+fieldName+i+" = factory.create($T.class)",nameVm);
-                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver);
+                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,baseAndroidViewModel,baseAndroidViewModel);
 
                 if(fieldName.length()>0){
 
