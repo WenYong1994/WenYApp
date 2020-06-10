@@ -14,6 +14,7 @@ allprojects {
 
 ```
 依赖所有模块
+如果使用了kotlin项目，必须添加kapt 'com.github.WenYong1994.WenYApp:wheny_compiler_lib:1.1.0'	
 
 ```
 dependencies {
@@ -22,7 +23,8 @@ dependencies {
 	
 	implementation 'com.github.WenYong1994:WenYApp:1.1.0'
     annotationProcessor 'com.github.WenYong1994.WenYApp:wheny_compiler_lib:1.1.0'
-		
+	kapt 'com.github.WenYong1994.WenYApp:wheny_compiler_lib:1.1.0'	
+	
 	...
 
 		
