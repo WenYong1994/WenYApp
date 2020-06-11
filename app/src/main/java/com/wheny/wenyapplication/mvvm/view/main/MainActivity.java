@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
 
-import com.example.commonlibrary.mvvm.contract.VmContract;
 import com.wheny.wenyapplication.R;
-import com.example.whenyannotationapilib.ViewModelInjector;
-import com.example.whenyannotationlib.InjectViewModel;
+import com.wheny.whenyannotationapilib.ViewModelInjector;
+import com.wheny.whenyannotationlib.InjectViewModel;
+import com.wheny.whenylibrary.mvvm.contract.VmContract;
 
 public class MainActivity extends AppCompatActivity implements VmContract {
 

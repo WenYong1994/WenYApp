@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.wenyapplication">
+    package="com.wheny.wenyapplication">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -15,7 +15,6 @@
         <activity android:name=".mvvm.view.databinding.TestDataBindingActivity"></activity>
         <activity android:name=".mvvm.view.list.TestListActivity" />
         <activity android:name=".mvvm.view.login.LoginActivity" />
-        <activity android:name=".databind.TestDataBindActivity" />
         <activity android:name=".mvvm.view.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

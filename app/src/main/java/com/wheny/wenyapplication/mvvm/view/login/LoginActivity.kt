@@ -2,14 +2,14 @@ package com.wheny.wenyapplication.mvvm.view.login
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.example.commonlibrary.mvvm.contract.VmContract
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.application.App
 import com.wheny.wenyapplication.databinding.ActivityLoginBinding
-import com.example.whenyannotationapilib.ViewModelInjector
-import com.example.whenyannotationlib.InjectViewModel
+import com.wheny.whenyannotationapilib.ViewModelInjector
+import com.wheny.whenyannotationlib.InjectViewModel
+import com.wheny.whenylibrary.mvvm.contract.VmContract
 
-class LoginActivity : AppCompatActivity(),VmContract {
+class LoginActivity : AppCompatActivity(), VmContract {
 
     @InjectViewModel(dataBindFieldName = "LoginVm")
     var mLoginVm: LoginVm<LoginActivity>?=null

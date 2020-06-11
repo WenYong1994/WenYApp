@@ -5,7 +5,6 @@ import androidx.databinding.BaseObservable
 import androidx.databinding.Bindable
 import androidx.databinding.library.baseAdapters.BR
 import androidx.lifecycle.MutableLiveData
-import com.example.commonlibrary.mvvm.vm.BaseViewModel
 import com.wheny.wenyapplication.data.TestListBean
 
 class TestListVm : BaseObservable() {

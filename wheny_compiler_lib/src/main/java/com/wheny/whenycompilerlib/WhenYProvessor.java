@@ -1,13 +1,13 @@
 package com.wheny.whenycompilerlib;
 
-import com.example.whenyannotationlib.AnnotationConstant;
-import com.example.whenyannotationlib.InjectViewModel;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
+import com.wheny.whenyannotationlib.AnnotationConstant;
+import com.wheny.whenyannotationlib.InjectViewModel;
 
 
 import java.io.IOException;
@@ -105,7 +105,7 @@ public class WhenYProvessor extends AbstractProcessor {
         ClassName nameViewModelProviders = ClassName.get("androidx.lifecycle","ViewModelProviders");
         ClassName nameBR = ClassName.get("androidx.databinding.library.baseAdapters","BR");
         ClassName nameInjectViewModel = ClassName.get("com.example.whenyannotationlib","InjectViewModel");
-        ClassName nameViewModelInjectorApi = ClassName.get("com.example.whenyannotationapilib","ViewModelInjectorApi");
+        ClassName nameViewModelInjectorApi = ClassName.get("com.wheny.whenyannotationapilib","ViewModelInjectorApi");
         ClassName nameDataBindingUtils = ClassName.get("androidx.databinding","DataBindingUtil");
         TypeVariableName Type = TypeVariableName.get("T",nameViewModel);
         TypeVariableName TypeViewDataBinding = TypeVariableName.get("VDB",nameViewDataBinding);
@@ -113,9 +113,9 @@ public class WhenYProvessor extends AbstractProcessor {
         ClassName nameDefaultLifecycleObserver = ClassName.get("androidx.lifecycle","DefaultLifecycleObserver");
         ClassName nameLayoutInflater = ClassName.get("android.view","LayoutInflater");
         ClassName nameViewGoup = ClassName.get("android.view","ViewGroup");
-        ClassName baseViewModel = ClassName.get("com.example.commonlibrary.mvvm.vm","BaseViewModel");
-        ClassName baseAndroidViewModel = ClassName.get("com.example.commonlibrary.mvvm.vm","BaseAndroidViewModel");
-        ClassName vmContract = ClassName.get("com.example.commonlibrary.mvvm.contract","VmContract");
+        ClassName baseViewModel = ClassName.get("com.wheny.whenylibrary.mvvm.vm","BaseViewModel");
+        ClassName baseAndroidViewModel = ClassName.get("com.wheny.whenylibrary.mvvm.vm","BaseAndroidViewModel");
+        ClassName vmContract = ClassName.get("com.wheny.whenylibrary.mvvm.contract","VmContract");
 
 
 

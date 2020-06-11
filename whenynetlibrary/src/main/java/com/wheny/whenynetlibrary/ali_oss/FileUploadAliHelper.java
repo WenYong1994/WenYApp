@@ -18,7 +18,7 @@ import com.alibaba.sdk.android.oss.common.utils.IOUtils;
 import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
 import com.alibaba.sdk.android.oss.model.PutObjectRequest;
 import com.alibaba.sdk.android.oss.model.PutObjectResult;
-import com.example.commonlibrary.utils.FileUtils;
+import com.wheny.whenylibrary.utils.FileUtils;
 
 import org.json.JSONObject;
 

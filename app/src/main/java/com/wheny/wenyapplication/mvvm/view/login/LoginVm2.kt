@@ -7,17 +7,17 @@ import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.commonlibrary.mvvm.contract.VmContract
-import com.example.commonlibrary.mvvm.vm.BaseAndroidViewModel
-import com.example.commonlibrary.rxjava.RxSchedulers
-import com.example.whenynetlibrary.api.WhenYApiService
-import com.example.whenynetlibrary.manager.RetrofitServiceManager
 import com.wheny.wenyapplication.data.LoginBean
+import com.wheny.whenylibrary.mvvm.contract.VmContract
+import com.wheny.whenylibrary.mvvm.vm.BaseAndroidViewModel
+import com.wheny.whenylibrary.rxjava.RxSchedulers
+import com.wheny.whenynetlibrary.api.WhenYApiService
+import com.wheny.whenynetlibrary.manager.RetrofitServiceManager
 import io.reactivex.Flowable
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-class LoginVm2<T : VmContract>(string:String,app: Application) : BaseAndroidViewModel<T>(app){
+class LoginVm2<T : VmContract>(string:String, app: Application) : BaseAndroidViewModel<T>(app){
 
     var loginBean = MutableLiveData<LoginBean>()
 

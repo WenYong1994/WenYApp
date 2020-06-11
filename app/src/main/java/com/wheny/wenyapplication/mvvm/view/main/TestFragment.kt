@@ -7,16 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.example.commonlibrary.mvvm.contract.VmContract
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.databinding.FragmentTestBinding
-import com.example.whenyannotationapilib.ViewModelInjector
-import com.example.whenyannotationlib.InjectViewModel
+import com.wheny.whenyannotationapilib.ViewModelInjector
+import com.wheny.whenyannotationlib.InjectViewModel
+import com.wheny.whenylibrary.mvvm.contract.VmContract
 
 /**
  * A simple [Fragment] subclass.
  */
-class TestFragment : Fragment() ,VmContract{
+class TestFragment : Fragment() , VmContract {
 
     @InjectViewModel(dataBindFieldName = "testFraVm")
     var testFraVm:TestFraVm<TestFragment>?=null
@@ -31,7 +31,7 @@ class TestFragment : Fragment() ,VmContract{
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        var dt = ViewModelInjector.inject<FragmentTestBinding>(this,activity as AppCompatActivity,inflater,R.layout.fragment_test,container)
+        var dt = ViewModelInjector.inject<FragmentTestBinding>(this,activity as AppCompatActivity,inflater, R.layout.fragment_test,container)
         rootView = dt.root
         testFraVm?.test?.postValue("212112124")
         return rootView

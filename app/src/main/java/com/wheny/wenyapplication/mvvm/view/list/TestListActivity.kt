@@ -4,12 +4,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.commonlibrary.adapter.*
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.adapter.test_adapter.TestListAdapter
 import com.wheny.wenyapplication.adapter.test_adapter.TestListVm
 import com.wheny.wenyapplication.data.TestListBean
 import com.wheny.wenyapplication.databinding.TestListItemLayoutBinding
+import com.wheny.whenylibrary.adapter.MultiTypeItemAdapter
+import com.wheny.whenylibrary.adapter.SafeLinearLayoutManager
+import com.wheny.whenylibrary.adapter.SimpleItemViewDelegate
+import com.wheny.whenylibrary.adapter.ViewHolder
 import kotlinx.android.synthetic.main.activity_test_list.*
 
 class TestListActivity : AppCompatActivity() {

@@ -10,10 +10,9 @@ import androidx.databinding.Bindable
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.commonlibrary.mvvm.contract.VmContract
-import com.example.commonlibrary.mvvm.vm.BaseViewModel
-import com.example.commonlibrary.utils.ToastUtils
 import com.wheny.wenyapplication.application.App
+import com.wheny.whenylibrary.mvvm.contract.VmContract
+import com.wheny.whenylibrary.mvvm.vm.BaseViewModel
 import io.reactivex.Flowable
 
 class LoginVm<T : VmContract>() : BaseViewModel<LoginActivity>(){

@@ -22,11 +22,9 @@ import androidx.databinding.InverseBindingMethods;
 import androidx.databinding.adapters.ListenerUtil;
 import androidx.databinding.adapters.TextViewBindingAdapter;
 
-import com.example.commonlibrary.utils.StringUtils;
-import com.example.commonlibrary.utils.ToastUtils;
 import com.wheny.wenyapplication.R;
-
-
+import com.wheny.whenylibrary.utils.StringUtils;
+import com.wheny.whenylibrary.utils.ToastUtils;
 
 
 public class InputTextLine extends FrameLayout {

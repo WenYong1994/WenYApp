@@ -3,7 +3,7 @@ package com.wheny.whenylibrary.mvvm.activity
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.ViewDataBinding
-import com.example.whenyannotationapilib.ViewModelInjector
+import com.wheny.whenyannotationapilib.ViewModelInjector
 
 abstract class BaseMVVMActivity<T : ViewDataBinding> : AppCompatActivity(){
 
