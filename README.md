@@ -59,12 +59,15 @@ dependencies {
 ```
 {
 	implementation 'com.github.WenYong1994:WenYApp:1.1.0'//依赖所有模块
-	//    implementation 'com.github.WenYong1994.WenYApp:netlibrary:1.1.0'//网络相关模块
+//    implementation 'com.github.WenYong1994.WenYApp:whenynetlibrary:1.1.4'//网络相关模块
+//
+//    implementation 'com.github.WenYong1994.WenYApp:wheny_annotation_apilib:1.1.4'//MVVM相关注解初始化
+//    implementation 'com.github.WenYong1994.WenYApp:wheny_annotation_lib:1.1.4'//MVVM相关注解初始化
+//
+//    implementation 'com.github.WenYong1994.WenYApp:whenydblibary:1.1.4'//数据库相关模块
+//
+//    implementation 'com.github.WenYong1994.WenYApp:whenylibrary:1.1.4'//工具类相关模块
 
-	//    implementation 'com.github.WenYong1994.WenYApp:wheny_annotation_apilib:1.1.0'//MVVM相关注解初始化
-	//    implementation 'com.github.WenYong1994.WenYApp:wheny_annotation_lib:1.1.0'//MVVM相关注解初始化
-
-	//    implementation 'com.github.WenYong1994.WenYApp:dblibary:1.1.0'//数据库相关模块
 	annotationProcessor 'com.github.WenYong1994.WenYApp:wheny_compiler_lib:1.1.0'//如果使用到MVVM注解初始化 必须添加	
 }
 ```
