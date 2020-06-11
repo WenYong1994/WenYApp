@@ -1,4 +1,4 @@
-package com.example.commonlibrary;
+package com.wheny.commonlibrary;
 
 import org.junit.Test;
 

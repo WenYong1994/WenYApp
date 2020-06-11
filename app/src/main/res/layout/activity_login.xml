@@ -7,11 +7,11 @@
     <data>
         <variable
             name="LoginVm"
-            type="com.example.wenyapplication.mvvm.view.login.LoginVm" />
+            type="com.wheny.wenyapplication.mvvm.view.login.LoginVm" />
 
         <variable
             name="LoginVm2"
-            type="com.example.wenyapplication.mvvm.view.login.LoginVm2" />
+            type="com.wheny.wenyapplication.mvvm.view.login.LoginVm2" />
 
     </data>
 
@@ -61,7 +61,7 @@
             />
 
 
-        <com.example.wenyapplication.view.InputTextLine
+        <com.wheny.wenyapplication.view.InputTextLine
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:single_input_title="sassss"

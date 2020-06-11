@@ -8,11 +8,11 @@
 
         <variable
             name="mainVm"
-            type="com.example.wenyapplication.mvvm.view.main.MainVm" />
+            type="com.wheny.wenyapplication.mvvm.view.main.MainVm" />
 
         <variable
             name="testFraVm"
-            type="com.example.wenyapplication.mvvm.view.main.TestFraVm" />
+            type="com.wheny.wenyapplication.mvvm.view.main.TestFraVm" />
 
     </data>
 

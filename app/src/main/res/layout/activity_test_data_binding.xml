@@ -8,7 +8,7 @@
 
         <variable
             name="testVm"
-            type="com.example.wenyapplication.mvvm.view.databinding.TestVm" />
+            type="com.wheny.wenyapplication.mvvm.view.databinding.TestVm" />
 
 
     </data>

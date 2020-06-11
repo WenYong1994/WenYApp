@@ -7,7 +7,7 @@
     <data>
         <variable
             name="testFraVm"
-            type="com.example.wenyapplication.mvvm.view.main.TestFraVm" />
+            type="com.wheny.wenyapplication.mvvm.view.main.TestFraVm" />
 
     </data>
 

@@ -1,4 +1,4 @@
-package com.example.commonlibrary;
+package com.wheny.commonlibrary;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("com.example.commonlibrary.test", appContext.getPackageName());
+        assertEquals("com.wheny.commonlibrary.test", appContext.getPackageName());
     }
 }

@@ -6,7 +6,7 @@
 
         <variable
             name="TestListVm"
-            type="com.example.wenyapplication.adapter.test_adapter.TestListVm" />
+            type="com.wheny.wenyapplication.adapter.test_adapter.TestListVm" />
 
     </data>
 
