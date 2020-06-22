@@ -31,7 +31,6 @@ open class BaseViewModel<T : VmContract> : ViewModel(),BaseViewModelApi, Default
         mCompositeDisposable.clear()
         activityWR?.clear()
         activityWR=null
-        Log.e("ViewModel","onDestroy")
     }
 
 }

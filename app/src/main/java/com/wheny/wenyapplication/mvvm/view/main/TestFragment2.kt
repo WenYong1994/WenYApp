@@ -35,7 +35,7 @@ class TestFragment2 : Fragment(), VmContract {
         rootView = dt.root
         testFraVm?.test?.postValue("212112124")
         return rootView
-    }
 
+    }
 
 }
