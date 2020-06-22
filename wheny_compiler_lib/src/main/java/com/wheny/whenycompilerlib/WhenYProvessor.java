@@ -154,12 +154,6 @@ public class WhenYProvessor extends AbstractProcessor {
                         "\n" +
                         "   T viewModel = initViewModel(activity,clazz,needFactory);\n" +
                         "\n" +
-                        "   if(viewModel instanceof $T){\n" +
-                        "          (($T)viewModel).setContract(($T)activity);\n" +
-                        "   }\n" +
-                        "   if(viewModel instanceof $T){\n" +
-                        "          (($T)viewModel).setContract(($T)activity);\n" +
-                        "   }\n" +
                         "   if(viewDataBinding!=null) viewDataBinding.setVariable(variableId,viewModel);\n" +
                         "   return viewModel;\n"
                         ,baseViewModel,baseViewModel,vmContract,baseAndroidViewModel,baseAndroidViewModel,vmContract)
@@ -222,10 +216,10 @@ public class WhenYProvessor extends AbstractProcessor {
                     "   activity.getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
                     "\n" +
                     "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
-                    "          (($T)viewModel"+fieldName + i +").setContract(($T)activity);\n" +
+                    "          (($T)viewModel"+fieldName + i +").setContract(($T)tag);\n" +
                     "   }\n" +
                     "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
-                    "          (($T)viewModel"+fieldName + i +").setContract(($T)activity);\n" +
+                    "          (($T)viewModel"+fieldName + i +").setContract(($T)tag);\n" +
                     "   }\n" +
                     "}\n";
 
