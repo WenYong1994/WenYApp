@@ -1,7 +1,9 @@
 package com.wheny.wenyapplication.mvvm.view.main
 
 
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,21 +30,32 @@ class TestFragment : Fragment() , VmContract {
 
     var rootView :View?= null
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.e("ssss","${this.toString()}onAttachFFFFFFFFFFFFFFFFFFF")
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        Log.e("ssss","${this.toString()}onCreateFFFFFFFFFFFFFFFFFFFF")
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
         var dt = ViewModelInjector.inject<FragmentTestBinding>(this,activity as AppCompatActivity,inflater, R.layout.fragment_test,container)
         rootView = dt.root
         testFraVm?.test?.postValue("212112124")
+        Log.e("ssss","${this.toString()}onCreateViewFFFFFFFFFFFFFFFFFFF")
         return rootView
     }
 
-    override fun onPause() {
-        super.onPause()
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Log.e("ssss","${this.toString()}onDestroyViewFFFFFFFFFFFFFFFFFFFFF")
     }
-
-
-
 
 
 }

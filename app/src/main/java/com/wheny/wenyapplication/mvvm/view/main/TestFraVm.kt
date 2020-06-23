@@ -16,12 +16,12 @@ class TestFraVm<T : VmContract> : BaseViewModel<T>() {
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
-        Log.e("ssss","onCreate1111")
+        Log.e("ssss","${this.toString()}onCreate1111")
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        Log.e("ssss","onDestroy1111")
+        Log.e("ssss","${this.toString()}onDestroy1111")
     }
 
 }

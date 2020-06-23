@@ -19,23 +19,34 @@ public class MainActivity extends AppCompatActivity implements VmContract {
     @InjectViewModel(dataBindFieldName = "mainVm")
     MainVm mainVm;
 
-    boolean isAdded = false;
+    boolean isAdded = true;
+    boolean show = true;
 
+    TestFragment testFragment;
+    TestFragment2 testFragment2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ViewModelInjector.inject(this, R.layout.activity_main);
+        testFragment = new TestFragment();
+        testFragment2 = new TestFragment2();
         findViewById(R.id.test_004).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(isAdded){
-                    return;
+                if(!isAdded){
+                    isAdded=true;
+                    getSupportFragmentManager().beginTransaction().add(R.id.main_fra,testFragment).commit();
+                    getSupportFragmentManager().beginTransaction().add(R.id.main_fra_2,testFragment2).commit();
+                }else {
+                    show= !show;
+                    if(show){
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_fra,testFragment).commit();
+                    }else {
+                        getSupportFragmentManager().beginTransaction().replace(R.id.main_fra,testFragment2).commit();
+                    }
                 }
-                isAdded=true;
-                getSupportFragmentManager().beginTransaction().add(R.id.main_fra,new TestFragment()).commit();
-                getSupportFragmentManager().beginTransaction().add(R.id.main_fra_2,new TestFragment2()).commit();
             }
         });
 

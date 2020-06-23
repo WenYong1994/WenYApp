@@ -1,6 +1,5 @@
 package com.wheny.whenylibrary.mvvm.vm
 
-import android.util.Log
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
@@ -26,6 +25,24 @@ open class BaseViewModel<T : VmContract> : ViewModel(),BaseViewModelApi, Default
         return  activityWR?.get()
     }
 
+
+    override fun onCreate(owner: LifecycleOwner) {
+
+    }
+
+    override fun onStart(owner: LifecycleOwner) {
+
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+
+    }
 
     override fun onDestroy(owner: LifecycleOwner) {
         mCompositeDisposable.clear()
