@@ -213,8 +213,8 @@ public class WhenYProvessor extends AbstractProcessor {
                 injectByFactory.addStatement("$T realTag = ($T) tag",nameRealTag,nameRealTag);
             }
             String format = "if(viewModel" + fieldName + i + "!=null && viewModel" + fieldName + i + " instanceof $T ){\n" +
-                    "   if(tag instanceof androidx.activity.ComponentActivity){\n"+
-                    "       ((androidx.activity.ComponentActivity)tag).getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
+                    "   if(tag instanceof androidx.appcompat.app.AppCompatActivity){\n"+
+                    "       ((androidx.appcompat.app.AppCompatActivity)tag).getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
                     "   }\n" +
                     "   if(tag instanceof androidx.fragment.app.Fragment){\n"+
                     "       ((androidx.fragment.app.Fragment)tag).getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +

@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements VmContract {
                 getSupportFragmentManager().beginTransaction().add(R.id.main_fra_2,new TestFragment2()).commit();
             }
         });
+
     }
 
     public void setMainVm(MainVm mainVm) {
