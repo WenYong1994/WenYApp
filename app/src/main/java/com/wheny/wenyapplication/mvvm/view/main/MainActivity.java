@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity implements VmContract {
 
 
     @InjectViewModel(dataBindFieldName = "mainVm")
-    MainVm mainVm;
+    MainVm<MainActivity> mainVm;
 
     boolean isAdded = true;
     boolean show = true;

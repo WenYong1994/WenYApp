@@ -208,6 +208,9 @@ public class WhenYProvessor extends AbstractProcessor {
             className = removeGenericity(className);
             ClassName nameVm = ClassName.get(getPackNameByClassName(className),getSimpleClassByClassName(className));
             ClassName nameVmGenericity = ClassName.get(getPackNameByClassName(genericity),getSimpleClassByClassName(genericity));
+            if(className.equalsIgnoreCase(genericity)){
+                nameVmGenericity= vmContract;
+            }
 
             if(i==0){
 
