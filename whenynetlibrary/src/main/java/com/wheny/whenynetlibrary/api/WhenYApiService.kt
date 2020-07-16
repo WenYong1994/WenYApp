@@ -18,10 +18,10 @@ interface WhenYApiService {
     @POST("user/personal_list_info")
     fun getPersonalListInfo(@Field("cur_page") page: Int): Call<Response<String?>?>?
 
+
     @Headers("Content-Type: application/json")//需要添加头
     @POST("/umc/doService")
     fun login(@Body req : RequestBody) : Flowable<BaseResp<UserInfo?>>
-
 
 
 

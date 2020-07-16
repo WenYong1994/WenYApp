@@ -1,9 +1,8 @@
 package com.wheny.wenyapplication.mvvm.view.list
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.adapter.test_adapter.TestListAdapter
 import com.wheny.wenyapplication.adapter.test_adapter.TestListVm
@@ -14,6 +13,10 @@ import com.wheny.whenylibrary.adapter.SafeLinearLayoutManager
 import com.wheny.whenylibrary.adapter.SimpleItemViewDelegate
 import com.wheny.whenylibrary.adapter.ViewHolder
 import kotlinx.android.synthetic.main.activity_test_list.*
+import okhttp3.*
+import java.io.IOException
+import java.util.concurrent.ThreadPoolExecutor
+import java.util.concurrent.TimeUnit
 
 class TestListActivity : AppCompatActivity() {
 
@@ -48,16 +51,17 @@ class TestListActivity : AppCompatActivity() {
 
                     override fun convert(holder: ViewHolder<TestListItemLayoutBinding>?, t: TestListBean?, position: Int) {
                         holder?.viewDataBinding?.testListVm?.txt2 = t?.txt.toString()
-
-
-
                     }
 
                 })
         rv.layoutManager = SafeLinearLayoutManager(this,LinearLayoutManager.VERTICAL,false)
         rv.adapter = addItemViewDelegate
 
+
     }
+
+
+
 
     override fun onStart() {
         super.onStart()
@@ -70,5 +74,32 @@ class TestListActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
     }
+
+}
+
+
+fun main(){
+    var clazz  = Class.forName("okhttp3.internal.connection.RealConnectionPool");
+    val executor = clazz.getDeclaredField("executor")
+    executor.isAccessible=true
+    val get = executor.get(null)
+    val poll = get as? ThreadPoolExecutor
+    poll?.setKeepAliveTime(1, TimeUnit.SECONDS)
+
+    var req =  Request.Builder().url("http://www.baidu.com").get().build()
+    val okHttpClient = OkHttpClient()
+    val newCall = okHttpClient.newCall(req)
+    newCall.enqueue(object : Callback{
+
+        override fun onFailure(call: Call, e: IOException) {
+            System.out.println("ssssssssssssssssssssssssssss")
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            System.out.println("++++++++++++++++++++++++++++++++")
+
+        }
+
+    })
 
 }

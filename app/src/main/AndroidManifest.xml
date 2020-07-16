@@ -12,7 +12,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mvvm.view.databinding.TestDataBindingActivity"></activity>
+        <activity android:name=".mvvm.view.TestFragment.TestFragmentActivity"></activity>
+        <activity android:name=".mvvm.view.databinding.TestDataBindingActivity" />
         <activity android:name=".mvvm.view.list.TestListActivity" />
         <activity android:name=".mvvm.view.login.LoginActivity" />
         <activity android:name=".mvvm.view.main.MainActivity">

@@ -60,6 +60,13 @@
             android:text="测试"
             />
 
+        <Button
+            android:id="@+id/test_005"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试"
+            />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -4,10 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
 import com.wheny.wenyapplication.R;
+import com.wheny.wenyapplication.mvvm.view.TestFragment.TestFragmentActivity;
 import com.wheny.whenyannotationapilib.ViewModelInjector;
 import com.wheny.whenyannotationlib.InjectViewModel;
 import com.wheny.whenylibrary.mvvm.contract.VmContract;
@@ -35,6 +37,13 @@ public class MainActivity extends AppCompatActivity implements VmContract {
         findViewById(R.id.test_004).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TestFragmentActivity.class);
+                startActivity(intent);
+            }
+        });
+        findViewById(R.id.test_005).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 if(!isAdded){
                     isAdded=true;
                     getSupportFragmentManager().beginTransaction().add(R.id.main_fra,testFragment).commit();
@@ -49,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements VmContract {
                 }
             }
         });
+
 
     }
 

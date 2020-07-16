@@ -32,12 +32,12 @@ class TestFragment : Fragment() , VmContract {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        Log.e("ssss","${this.toString()}onAttachFFFFFFFFFFFFFFFFFFF")
+        Log.e("ssss","${this.toString()}onAttach111111")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.e("ssss","${this.toString()}onCreateFFFFFFFFFFFFFFFFFFFF")
+        Log.e("ssss","${this.toString()}onCreate111111111111")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -45,16 +45,35 @@ class TestFragment : Fragment() , VmContract {
 
         var dt = ViewModelInjector.inject<FragmentTestBinding>(this,activity as AppCompatActivity,inflater, R.layout.fragment_test,container)
         rootView = dt.root
-        testFraVm?.test?.postValue("212112124")
-        Log.e("ssss","${this.toString()}onCreateViewFFFFFFFFFFFFFFFFFFF")
+        Log.e("ssss","${this.toString()}onCreateView111111")
         return rootView
     }
 
 
+    override fun onStart() {
+        super.onStart()
+        Log.e("ssss","${this.toString()}onStart111111")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.e("ssss","${this.toString()}onResume111111")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e("ssss","${this.toString()}onPause111111")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        Log.e("ssss","${this.toString()}onStop111111")
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.e("ssss","${this.toString()}onDestroyViewFFFFFFFFFFFFFFFFFFFFF")
+        Log.e("ssss","${this.toString()}onDestroyView111111")
     }
 
 

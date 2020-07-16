@@ -7,7 +7,7 @@ import com.wheny.whenylibrary.mvvm.contract.VmContract
 import com.wheny.whenylibrary.mvvm.vm.BaseViewModel
 
 class TestFraVm<T : VmContract> : BaseViewModel<T>() {
-    var test = MutableLiveData<String>()
+    var test = MutableLiveData<String>("safasfafasfas")
 
     fun testCl(){
         test.postValue("三餐阿拉基拉萨")
@@ -16,12 +16,32 @@ class TestFraVm<T : VmContract> : BaseViewModel<T>() {
 
     override fun onCreate(owner: LifecycleOwner) {
         super.onCreate(owner)
-        Log.e("ssss","${this.toString()}onCreate1111")
+        Log.e("sss1s","${this.toString()}onCreate1111")
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
-        super.onDestroy(owner)
-        Log.e("ssss","${this.toString()}onDestroy1111")
+        Log.e("sss1s","${this.toString()}onDestroy1111")
     }
+
+
+    override fun onStart(owner: LifecycleOwner) {
+        Log.e("sss1s","${this.toString()}onStart222222")
+    }
+
+    override fun onResume(owner: LifecycleOwner) {
+        Log.e("sss1s","${this.toString()}onResume22222")
+    }
+
+    override fun onPause(owner: LifecycleOwner) {
+        Log.e("sss1s","${this.toString()}onPause222222")
+    }
+
+    override fun onStop(owner: LifecycleOwner) {
+        Log.e("sss1s","${this.toString()}onStop22222")
+    }
+
+
+
+
 
 }

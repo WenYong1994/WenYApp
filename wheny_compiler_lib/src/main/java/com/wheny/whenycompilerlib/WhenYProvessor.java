@@ -11,6 +11,7 @@ import com.wheny.whenyannotationlib.InjectViewModel;
 
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -196,9 +197,18 @@ public class WhenYProvessor extends AbstractProcessor {
             String fieldName = annotation.dataBindFieldName();
             boolean needFactory = annotation.needFactory();
             String className = variableElement.asType().toString();
+            try {
+
+
+            }catch (Exception e){}
             messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+className);
+            String[] genericityArr = getGenericity(className);//获取泛型类名
+            String genericity = genericityArr[0];//目前只取第一个
+            messager.printMessage(Diagnostic.Kind.WARNING,"genericity++++++++++++++++++++++++++++++++"+genericity);
             className = removeGenericity(className);
             ClassName nameVm = ClassName.get(getPackNameByClassName(className),getSimpleClassByClassName(className));
+            ClassName nameVmGenericity = ClassName.get(getPackNameByClassName(genericity),getSimpleClassByClassName(genericity));
+
             if(i==0){
 
                 injectBulid.addCode(
@@ -219,10 +229,10 @@ public class WhenYProvessor extends AbstractProcessor {
                     "   if(tag instanceof androidx.fragment.app.Fragment){\n"+
                     "       ((androidx.fragment.app.Fragment)tag).getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
                     "   }\n" +
-                    "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
+                    "   if(viewModel"+ fieldName + i + " instanceof $T && tag instanceof $T){\n" +
                     "          (($T)viewModel"+fieldName + i +").setContract(($T)tag);\n" +
                     "   }\n" +
-                    "   if(viewModel"+ fieldName + i + " instanceof $T){\n" +
+                    "   if(viewModel"+ fieldName + i + " instanceof $T && tag instanceof $T){\n" +
                     "          (($T)viewModel"+fieldName + i +").setContract(($T)tag);\n" +
                     "   }\n" +
                     "}\n";
@@ -239,7 +249,9 @@ public class WhenYProvessor extends AbstractProcessor {
                 }
 
 
-                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,vmContract,baseAndroidViewModel,baseAndroidViewModel,vmContract);
+                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver
+                        ,nameDefaultLifecycleObserver,baseViewModel,nameVmGenericity
+                        ,baseViewModel,vmContract,baseAndroidViewModel,nameVmGenericity,baseAndroidViewModel,vmContract);
 
 
                 injectBulid.addStatement("realTag.set"+upCasuFirstChar(outFileName)+"(($T) viewModel"+fieldName+i+")",nameVm);
@@ -253,7 +265,10 @@ public class WhenYProvessor extends AbstractProcessor {
 
                 injectByFactory.addCode("if(fieldName == \""+outFileName+"\"){\n");
                 injectByFactory.addStatement("     ViewModel viewModel"+fieldName+i+" = factory.create($T.class)",nameVm);
-                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver,baseViewModel,baseViewModel,vmContract,baseAndroidViewModel,baseAndroidViewModel,vmContract);
+
+                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver
+                        ,nameDefaultLifecycleObserver,baseViewModel,nameVmGenericity
+                        ,baseViewModel,vmContract,baseAndroidViewModel,nameVmGenericity,baseAndroidViewModel,vmContract);
 
                 if(fieldName.length()>0){
 
@@ -329,6 +344,15 @@ public class WhenYProvessor extends AbstractProcessor {
         }
         return s;
     }
+    private String[] getGenericity(String className){
+        int i = className.indexOf("<");
+        if(i>0){
+            String substring = className.substring(i+1,className.length()-1);
+            return substring.split(",");
+        }
+        return new String[]{className};
+    }
+
 
     private String removeGenericity(String className){
         int i = className.indexOf("<");

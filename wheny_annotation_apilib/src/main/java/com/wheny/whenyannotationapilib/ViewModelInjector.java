@@ -1,5 +1,6 @@
 package com.wheny.whenyannotationapilib;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -62,7 +63,7 @@ public class ViewModelInjector {
     }
 
 
-    public static <T extends ViewDataBinding> T inject(Object tag,AppCompatActivity activity,LayoutInflater inflater, int layoutId, ViewGroup group){
+    public static <T extends ViewDataBinding> T inject(Object tag, Activity activity, LayoutInflater inflater, int layoutId, ViewGroup group){
         ViewModelInjectorApi viewModelInjector = null;
         String className = AnnotationConstant.VIEW_MODEL_PACKNAME+"."+tag.getClass().getSimpleName()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
         try {
@@ -80,7 +81,7 @@ public class ViewModelInjector {
             e.printStackTrace();
         }
         if(viewModelInjector!=null){
-            return viewModelInjector.injectViewModels(tag,activity,inflater,layoutId,group);//里面没有强引用Activity 所以不用担心内存泄漏
+            return viewModelInjector.injectViewModels(tag, (AppCompatActivity) activity,inflater,layoutId,group);//里面没有强引用Activity 所以不用担心内存泄漏
         }
         return null;
     }
