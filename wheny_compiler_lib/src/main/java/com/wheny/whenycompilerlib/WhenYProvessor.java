@@ -226,10 +226,10 @@ public class WhenYProvessor extends AbstractProcessor {
                 injectByFactory.addStatement("$T realTag = ($T) tag",nameRealTag,nameRealTag);
             }
             String format = "if(viewModel" + fieldName + i + "!=null && viewModel" + fieldName + i + " instanceof $T ){\n" +
-                    "   if(tag instanceof androidx.appcompat.app.AppCompatActivity){\n"+
+                    "   if(tag instanceof androidx.appcompat.app.AppCompatActivity && tag instanceof $T){\n"+
                     "       ((androidx.appcompat.app.AppCompatActivity)tag).getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
                     "   }\n" +
-                    "   if(tag instanceof androidx.fragment.app.Fragment){\n"+
+                    "   if(tag instanceof androidx.fragment.app.Fragment && tag instanceof $T){\n"+
                     "       ((androidx.fragment.app.Fragment)tag).getLifecycle().addObserver(($T)viewModel" + fieldName + i + ");\n" +
                     "   }\n" +
                     "   if(viewModel"+ fieldName + i + " instanceof $T && tag instanceof $T){\n" +
@@ -252,7 +252,7 @@ public class WhenYProvessor extends AbstractProcessor {
                 }
 
 
-                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver
+                injectBulid.addCode(format,nameDefaultLifecycleObserver,nameVmGenericity,nameDefaultLifecycleObserver,nameVmGenericity
                         ,nameDefaultLifecycleObserver,baseViewModel,nameVmGenericity
                         ,baseViewModel,vmContract,baseAndroidViewModel,nameVmGenericity,baseAndroidViewModel,vmContract);
 
@@ -269,7 +269,7 @@ public class WhenYProvessor extends AbstractProcessor {
                 injectByFactory.addCode("if(fieldName == \""+outFileName+"\"){\n");
                 injectByFactory.addStatement("     ViewModel viewModel"+fieldName+i+" = factory.create($T.class)",nameVm);
 
-                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameDefaultLifecycleObserver
+                injectByFactory.addCode(format,nameDefaultLifecycleObserver,nameVmGenericity,nameDefaultLifecycleObserver,nameVmGenericity
                         ,nameDefaultLifecycleObserver,baseViewModel,nameVmGenericity
                         ,baseViewModel,vmContract,baseAndroidViewModel,nameVmGenericity,baseAndroidViewModel,vmContract);
 
