@@ -32,6 +32,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.Name;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.TypeParameterElement;
 import javax.lang.model.element.VariableElement;
 import javax.tools.Diagnostic;
 
@@ -80,16 +81,19 @@ public class WhenYProvessor extends AbstractProcessor {
             //开始准备写XXActivity$ViewBinder内部类的java文件
             Iterator<String> iterator = elementMap.keySet().iterator();
             while (iterator.hasNext()) {
-                String activityName = iterator.next();
+                String outClassName = iterator.next();
                 //获取activity的所有元素
-                List<VariableElement> variableElements = elementMap.get(activityName);
+                List<VariableElement> variableElements = elementMap.get(outClassName);
                 //获取包名
                 String packageName = getPackageName(variableElements.get(0));
                 //获取我们要写的内部类java文件名
                 TypeElement typeElement = (TypeElement) variableElements.get(0).getEnclosingElement();
                 String newActivityName = typeElement.getSimpleName().toString()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
                 Name qualifiedName = typeElement.getQualifiedName();
-                messager.printMessage(Diagnostic.Kind.WARNING,"newActivityName-------"+newActivityName);
+                List<? extends TypeParameterElement> typeParameters = typeElement.getTypeParameters();
+                messager.printMessage(Diagnostic.Kind.WARNING,"outName==========================="+outClassName);
+                messager.printMessage(Diagnostic.Kind.WARNING,"typeParameters-------"+newActivityName);
+                messager.printMessage(Diagnostic.Kind.WARNING,"qualifiedName-------"+qualifiedName);
                 //用流来写内部类的文件
                 generateJavaCode (qualifiedName.toString(),newActivityName, variableElements);
             }
@@ -201,7 +205,8 @@ public class WhenYProvessor extends AbstractProcessor {
 
 
             }catch (Exception e){}
-            messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+className);
+            messager.printMessage(Diagnostic.Kind.WARNING,"className++++++++++++++++++++++++++++++++"+outFileName);
+            messager.printMessage(Diagnostic.Kind.WARNING,"outClassName++++++++++++++++++++++++++++++++"+className);
             String[] genericityArr = getGenericity(className);//获取泛型类名
             String genericity = genericityArr[0];//目前只取第一个
             messager.printMessage(Diagnostic.Kind.WARNING,"genericity++++++++++++++++++++++++++++++++"+genericity);
@@ -367,13 +372,23 @@ public class WhenYProvessor extends AbstractProcessor {
     }
 
     private String getPackNameByClassName(String className){
-        String substring = className.substring(0, className.lastIndexOf("."));
-        return substring;
+        try {
+            String substring = className.substring(0, className.lastIndexOf("."));
+            return substring;
+        }catch (Exception e){
+
+        }//需要匹配外部类
+        return null;
     }
 
     private String getSimpleClassByClassName(String className){
-        String substring = className.substring(className.lastIndexOf(".")+1);
-        return substring;
+        try {
+            String substring = className.substring(className.lastIndexOf(".")+1);
+            return substring;
+        }catch (Exception e){
+
+        }
+        return null;
     }
 
 

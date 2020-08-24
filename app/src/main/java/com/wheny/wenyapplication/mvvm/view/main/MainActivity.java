@@ -1,8 +1,6 @@
 package com.wheny.wenyapplication.mvvm.view.main;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +8,7 @@ import android.view.View;
 
 import com.wheny.wenyapplication.R;
 import com.wheny.wenyapplication.mvvm.view.TestFragment.TestFragmentActivity;
+import com.wheny.wenyapplication.test_coroutines.TestCoroutinesActivity;
 import com.wheny.whenyannotationapilib.ViewModelInjector;
 import com.wheny.whenyannotationlib.InjectViewModel;
 import com.wheny.whenylibrary.mvvm.contract.VmContract;
@@ -58,8 +57,24 @@ public class MainActivity extends AppCompatActivity implements VmContract {
                 }
             }
         });
+        findViewById(R.id.test_007).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
+        findViewById(R.id.test_008).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, TestCoroutinesActivity.class);
+                startActivity(intent);
+            }
+        });
+        new Thread(){
+            @Override
+            public void run() {
 
-
+            }
+        }.start();
     }
 
     public void setMainVm(MainVm mainVm) {

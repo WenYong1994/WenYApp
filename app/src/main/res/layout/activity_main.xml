@@ -73,7 +73,19 @@
             android:text="@{testFraVm.test}"
             />
 
+        <Button
+            android:id="@+id/test_007"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试弹窗"
+            />
 
+        <Button
+            android:id="@+id/test_008"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试协程"
+            />
 
         <FrameLayout
             android:id="@+id/main_fra"

@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModel
 import com.wheny.whenylibrary.mvvm.contract.VmContract
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.Job
 import java.lang.ref.WeakReference
 
 open class BaseViewModel<T : VmContract> : ViewModel(),BaseViewModelApi, DefaultLifecycleObserver {
 
-    protected var mCompositeDisposable = CompositeDisposable()
+    private var mCompositeDisposable = CompositeDisposable()
     private var activityWR:WeakReference<T>?=null
+    private var jobList = ArrayList<Job>()
 
     fun addDisposable(compose: Disposable){
         mCompositeDisposable.add(compose)
@@ -20,6 +22,11 @@ open class BaseViewModel<T : VmContract> : ViewModel(),BaseViewModelApi, Default
     fun setContract(contract : T){
         activityWR = WeakReference(contract)
     }
+
+    fun addJob(job:Job){
+        jobList.add(job)
+    }
+
 
     fun contract() : T?{
         return  activityWR?.get()
@@ -46,6 +53,9 @@ open class BaseViewModel<T : VmContract> : ViewModel(),BaseViewModelApi, Default
 
     override fun onDestroy(owner: LifecycleOwner) {
         mCompositeDisposable.clear()
+        for (job in jobList){
+            job.cancel()
+        }
         activityWR?.clear()
         activityWR=null
     }
