@@ -23,7 +23,7 @@ class MainVm<T : VmContract> : BaseViewModel<T>() {
         view.context.startActivity(Intent(view.context, LoginActivity::class.java))
     }
 
-    fun testList(view : View){
+    inline fun testList(view : View){
         view.context.startActivity(Intent(view.context, TestListActivity::class.java))
     }
 

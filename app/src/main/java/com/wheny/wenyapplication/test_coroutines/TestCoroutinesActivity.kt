@@ -1,14 +1,19 @@
 package com.wheny.wenyapplication.test_coroutines
 
+import android.annotation.SuppressLint
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.room.util.TableInfo.Column
 import com.wheny.wenyapplication.R
 import com.wheny.whenylibrary.utils.ToastUtils
+import io.reactivex.Flowable
+import io.reactivex.functions.Consumer
 import kotlinx.coroutines.*
 import kotlin.coroutines.EmptyCoroutineContext
+
 class TestCoroutinesActivity : AppCompatActivity() {
 
     val TAG = "test_coroutines"
@@ -108,9 +113,22 @@ class TestCoroutinesActivity : AppCompatActivity() {
     fun testF(hh:String.(x:Int,y:String)->Int){
     }
 
+    @SuppressLint("CheckResult")
+    @RequiresApi(Build.VERSION_CODES.N)
+    fun testRxJavaZip(){
+
+        Flowable.just(1,2,3,4,5)
+                .subscribe(object : Consumer<Int> {
+                    override fun accept(t: Int) {
+
+                    }
+                })
+
+
+    }
+
 
 }
-
 
 
 class sss{

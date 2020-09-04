@@ -87,6 +87,25 @@
             android:text="测试协程"
             />
 
+        <Button
+            android:id="@+id/test_009"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试按钮"
+            />
+        <Button
+            android:id="@+id/test_010"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试fragment嵌套"
+            />
+        <Button
+            android:id="@+id/test_011"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试代理"
+            />
+
         <FrameLayout
             android:id="@+id/main_fra"
             android:layout_width="match_parent"

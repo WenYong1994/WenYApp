@@ -12,7 +12,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".test_coroutines.TestCoroutinesActivity"></activity>
+        <activity android:name=".mvvm.view.test_delegation.TestDeleActivity"></activity>
+        <activity android:name=".mvvm.view.tf.TFActivity" />
+        <activity android:name=".mvvm.view.testHanlder.TestHandlerActivity" />
+        <activity android:name=".test_coroutines.TestCoroutinesActivity" />
         <activity android:name=".mvvm.view.TestFragment.TestFragmentActivity" />
         <activity android:name=".mvvm.view.databinding.TestDataBindingActivity" />
         <activity android:name=".mvvm.view.list.TestListActivity" />

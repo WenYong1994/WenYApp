@@ -8,10 +8,19 @@ import android.view.View;
 
 import com.wheny.wenyapplication.R;
 import com.wheny.wenyapplication.mvvm.view.TestFragment.TestFragmentActivity;
+import com.wheny.wenyapplication.mvvm.view.testHanlder.TestHandlerActivity;
+import com.wheny.wenyapplication.mvvm.view.test_delegation.TestDeleActivity;
+import com.wheny.wenyapplication.mvvm.view.tf.TFActivity;
 import com.wheny.wenyapplication.test_coroutines.TestCoroutinesActivity;
 import com.wheny.whenyannotationapilib.ViewModelInjector;
 import com.wheny.whenyannotationlib.InjectViewModel;
 import com.wheny.whenylibrary.mvvm.contract.VmContract;
+
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+
 
 public class MainActivity extends AppCompatActivity implements VmContract {
 
@@ -57,24 +66,27 @@ public class MainActivity extends AppCompatActivity implements VmContract {
                 }
             }
         });
-        findViewById(R.id.test_007).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-            }
+        findViewById(R.id.test_007).setOnClickListener(v -> {
         });
-        findViewById(R.id.test_008).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, TestCoroutinesActivity.class);
-                startActivity(intent);
-            }
+        findViewById(R.id.test_008).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TestCoroutinesActivity.class);
+            startActivity(intent);
         });
-        new Thread(){
-            @Override
-            public void run() {
+        findViewById(R.id.test_009).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TestHandlerActivity.class);
+            startActivity(intent);
+        });
+        findViewById(R.id.test_010).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TFActivity.class);
+            startActivity(intent);
+        });
 
-            }
-        }.start();
+        findViewById(R.id.test_011).setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, TestDeleActivity.class);
+            startActivity(intent);
+        });
+
+
     }
 
     public void setMainVm(MainVm mainVm) {

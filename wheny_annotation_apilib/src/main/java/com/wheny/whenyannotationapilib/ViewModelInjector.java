@@ -104,9 +104,8 @@ public class ViewModelInjector {
         } catch (InstantiationException e) {
             e.printStackTrace();
         }
-        if(viewModelInjector!=null){
-            viewModelInjector.injectViewModelByFactory(tag,activity,factory,fieldName,viewDataBinding);//里面没有强引用Activity 所以不用担心内存泄漏
-        }
+        if(viewModelInjector!=null)
+            viewModelInjector.injectViewModelByFactory(tag, activity, factory, fieldName, viewDataBinding);//里面没有强引用Activity 所以不用担心内存泄漏
     }
 
 
