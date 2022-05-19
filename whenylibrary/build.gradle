@@ -44,9 +44,6 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation 'androidx.appcompat:appcompat:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     implementation "com.google.code.gson:gson:${gson_version}"
     implementation "com.squareup.okhttp3:okhttp:${okhttp_version}"
     implementation "com.github.hotchemi:permissionsdispatcher:${permissionsdispatcher_version}"
@@ -55,7 +52,7 @@ dependencies {
     implementation 'com.github.imkarl:CharacterPickerView:v0.2.7'
 
     implementation 'com.github.zhouxu88:OkHttp3_MultiFile:v1.0'
-    implementation "androidx.core:core-ktx:+"
+    implementation "androidx.core:core-ktx:1.3.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 
