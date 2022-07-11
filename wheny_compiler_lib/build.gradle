@@ -1,15 +1,23 @@
 apply plugin: 'java-library'
 
+import org.gradle.internal.jvm.Jvm
+
+
 apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.WenYong1994.WenYApp'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation project(':wheny_annotation_lib')
-    implementation 'com.squareup:javapoet:1.11.1'               //引入Javapoet框架
+//    implementation project(':wheny_annotation_lib')
+    implementation 'com.squareup:javapoet:1.13.0'               //引入Javapoet框架
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6'
     implementation 'com.google.auto.service:auto-service-annotations:1.0-rc6'
+    implementation files(Jvm.current().toolsJar)
+    implementation 'com.google.code.gson:gson:2.8.5'
 
 }
-sourceCompatibility = "8"
-targetCompatibility = "8"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}

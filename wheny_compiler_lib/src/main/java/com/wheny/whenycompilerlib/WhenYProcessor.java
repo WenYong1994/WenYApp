@@ -6,11 +6,15 @@ import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeVariableName;
-import com.wheny.whenyannotationlib.AnnotationConstant;
-import com.wheny.whenyannotationlib.InjectViewModel;
+//import com.wheny.whenyannotationlib.AnnotationConstant;
+//import com.wheny.whenyannotationlib.InjectViewModel;
 
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,12 +42,23 @@ import javax.tools.Diagnostic;
 
 @AutoService(Processor.class)//当前注解处理器能够处理的注解 代替 getSupportedAnnotationTypes函数
 @SupportedSourceVersion(SourceVersion.RELEASE_8)//java版本 代替 getSupportedAnnotationTypes 函数
-public class WhenYProvessor extends AbstractProcessor {
+public class WhenYProcessor extends AbstractProcessor {
 
     private static String AppCompatActivityName = "androidx.appcompat.app.AppCompatActivity";
+    public static final String VIEW_MODEL_SUFFIX ="_ViewModelInjector";
+    public static final String VIEW_MODEL_PACKNAME = "com.wheny.viewModel";
 
     private Messager messager;
     Filer filer;
+    String injectVm = "com.wheny.whenyannotationlib.InjectViewModel";
+    Class injectVmClass;
+    {
+        try {
+            injectVmClass = Class.forName(injectVm);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnvironment) {
@@ -58,7 +73,8 @@ public class WhenYProvessor extends AbstractProcessor {
     public Set<String> getSupportedAnnotationTypes() {
         //支持的注解也可以用@SupportedAnnotationTypes({"com.hubin.librouter.Route"})代替
         Set<String> annotations = new LinkedHashSet<>();
-        annotations.add(InjectViewModel.class.getCanonicalName());
+//        messager.printMessage(Diagnostic.Kind.NOTE, "WhenYProvessor----"+injectVm+"-------------------------------------------------------------!");
+//        annotations.add(injectVm);
         return annotations;
     }
 
@@ -73,7 +89,7 @@ public class WhenYProvessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> set, RoundEnvironment roundEnvironment) {
         messager.printMessage(Diagnostic.Kind.WARNING,"WhenYProvessor----process,start process");
         //获取所有使用SimpleBindView的集合
-        Set<? extends Element> elementSet = roundEnvironment.getElementsAnnotatedWith(InjectViewModel.class);
+        Set<? extends Element> elementSet = roundEnvironment.getElementsAnnotatedWith(injectVmClass);
         if(elementSet.size()>0){
             //key是activity的名字
             //value是这个activity里面所有使用SimpleBindView注解的集合
@@ -88,7 +104,7 @@ public class WhenYProvessor extends AbstractProcessor {
                 String packageName = getPackageName(variableElements.get(0));
                 //获取我们要写的内部类java文件名
                 TypeElement typeElement = (TypeElement) variableElements.get(0).getEnclosingElement();
-                String newActivityName = typeElement.getSimpleName().toString()+ AnnotationConstant.VIEW_MODEL_SUFFIX;
+                String newActivityName = typeElement.getSimpleName().toString()+ VIEW_MODEL_SUFFIX;
                 Name qualifiedName = typeElement.getQualifiedName();
                 List<? extends TypeParameterElement> typeParameters = typeElement.getTypeParameters();
                 messager.printMessage(Diagnostic.Kind.WARNING,"outName==========================="+outClassName);
@@ -197,9 +213,22 @@ public class WhenYProvessor extends AbstractProcessor {
         for(int i=0;i<variableElements.size();i++){
             VariableElement variableElement = variableElements.get(i);
             String outFileName = variableElement.getSimpleName().toString();
-            InjectViewModel annotation = variableElement.getAnnotation(InjectViewModel.class);
-            String fieldName = annotation.dataBindFieldName();
-            boolean needFactory = annotation.needFactory();
+            Annotation annotation = variableElement.getAnnotation(injectVmClass);
+            String fieldName = "" ; //= annotation.dataBindFieldName();
+            boolean needFactory = false; // = annotation.needFactory();
+            try {
+                Method nameMethods = annotation.getClass().getMethod("dataBindFieldName");
+                Method needFactoryMethods = annotation.getClass().getMethod("needFactory");
+                fieldName = nameMethods.invoke(annotation).toString();
+                needFactory = (boolean) needFactoryMethods.invoke(annotation);
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
             String className = variableElement.asType().toString();
             try {
 
@@ -307,7 +336,7 @@ public class WhenYProvessor extends AbstractProcessor {
 
 
         //将类添加到 包中
-        JavaFile javaFile = JavaFile.builder(AnnotationConstant.VIEW_MODEL_PACKNAME, viewModelInjector.build())
+        JavaFile javaFile = JavaFile.builder(VIEW_MODEL_PACKNAME, viewModelInjector.build())
                 .build();
 
         try {

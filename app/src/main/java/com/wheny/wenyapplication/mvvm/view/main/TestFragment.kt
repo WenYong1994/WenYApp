@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.chenenyu.router.annotation.InjectParam
+import com.chenenyu.router.annotation.Route
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.databinding.FragmentTestBinding
 import com.wheny.whenyannotationapilib.ViewModelInjector
@@ -18,6 +20,7 @@ import com.wheny.whenylibrary.mvvm.contract.VmContract
 /**
  * A simple [Fragment] subclass.
  */
+@Route("testFragment", "testFragment2")
 class TestFragment : Fragment() , VmContract {
 
     @InjectViewModel(dataBindFieldName = "testFraVm")
@@ -26,6 +29,14 @@ class TestFragment : Fragment() , VmContract {
     var mainVm: MainVm<MainActivity>? = null
 
 
+    @InjectParam(key = "testP1")
+    public var testP1 = ""
+
+    @InjectParam(key = "testP2")
+    public var testP2 = false
+
+    @InjectParam(key = "testP3")
+    public var testP3 = 0
 
 
     var rootView :View?= null

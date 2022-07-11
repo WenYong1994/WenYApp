@@ -1,11 +1,13 @@
 package com.wheny.wenyapplication.mvvm.view.main;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.chenenyu.router.annotation.InjectParam;
+import com.chenenyu.router.annotation.Route;
 import com.wheny.wenyapplication.R;
 import com.wheny.wenyapplication.mvvm.view.TestFragment.TestFragmentActivity;
 import com.wheny.wenyapplication.mvvm.view.testHanlder.TestHandlerActivity;
@@ -14,15 +16,21 @@ import com.wheny.wenyapplication.mvvm.view.tf.TFActivity;
 import com.wheny.wenyapplication.test_coroutines.TestCoroutinesActivity;
 import com.wheny.whenyannotationapilib.ViewModelInjector;
 import com.wheny.whenyannotationlib.InjectViewModel;
+import com.wheny.whenylibrary.TestAni;
 import com.wheny.whenylibrary.mvvm.contract.VmContract;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
-
+@TestAni(moduleName = "app")
+@Route({"testMain","testMain2"})
 public class MainActivity extends AppCompatActivity implements VmContract {
+
+
+    @InjectParam(key = "testP1")
+    String testP1 = "";
+    @InjectParam(key = "testP2")
+    boolean testP2 = false;
+    @InjectParam(key = "testP3")
+    int testP3 = 0;
+
 
 
 
