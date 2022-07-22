@@ -10,7 +10,7 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="500dp">
+        android:layout_height="350dp">
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:orientation="vertical"
@@ -23,11 +23,11 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:background="#00ff00"
-                android:layout_height="250dp">
+                android:layout_height="100dp">
                 <FrameLayout
                     android:id="@+id/web_group"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"/>
+                    android:layout_height="80dp"/>
             </FrameLayout>
 
             <View
