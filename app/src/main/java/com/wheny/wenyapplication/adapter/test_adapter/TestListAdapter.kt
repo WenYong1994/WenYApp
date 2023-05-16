@@ -2,6 +2,7 @@ package com.wheny.wenyapplication.adapter.test_adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,9 @@ class TestListAdapter : RecyclerView.Adapter<TestListAdapter.TestViewHolder> {
 
     override fun onBindViewHolder(holder: TestViewHolder, position: Int) {
         holder.testDataBinding.testListVm?.testListBean = data[position]
+        holder.testDataBinding.root.setOnLongClickListener {
+            return@setOnLongClickListener false
+        }
 //        holder.testDataBinding.testListVm?.txt2 = data[position].txt
     }
 

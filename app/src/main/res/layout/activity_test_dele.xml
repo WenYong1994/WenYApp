@@ -1,73 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
+    android:orientation="vertical"
     tools:context="com.wheny.wenyapplication.mvvm.view.test_delegation.TestDeleActivity">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll_view"
+    <FrameLayout
+        android:id="@+id/root_view"
         android:layout_width="match_parent"
-        android:layout_height="350dp">
-        <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:clipChildren="false">
+
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
-            <org.libpag.PAGView
-                android:id="@+id/pag_view"
-                android:layout_width="319dp"
-                android:layout_height="93dp"/>
+            android:layout_height="match_parent">
+
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/appbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffffff">
+
+                <FrameLayout
+                    android:id="@+id/header_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#00ff00"
+                    android:tag="binding_2"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed">
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:orientation="vertical"
+                        android:layout_height="wrap_content">
+
+                        <FrameLayout
+                            android:id="@+id/vp_layer"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp">
+
+                            <androidx.viewpager.widget.ViewPager
+                                android:id="@+id/view_pager"
+                                android:layout_width="match_parent"
+                                android:layout_height="600dp"
+                                android:layout_gravity="center" />
+
+                        </FrameLayout>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:layout_gravity="bottom"
+                            android:background="#0f0f0f" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </FrameLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_gravity="bottom"
+                    android:background="#ff00ff" />
+
+
+            </com.google.android.material.appbar.AppBarLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
-                android:background="#00ff00"
-                android:layout_height="100dp">
-                <FrameLayout
-                    android:id="@+id/web_group"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/test_de_rv"
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"/>
+                    android:layout_height="wrap_content" />
+
+
             </FrameLayout>
 
-            <View
-                android:background="#ff00ff"
-                android:layout_width="20dp"
-                android:layout_height="1000dp"/>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+    </FrameLayout>
 
-    </androidx.core.widget.NestedScrollView>
-
-
-    <androidx.appcompat.widget.LinearLayoutCompat
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btn"
-            android:text="截图"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <Button
-            android:id="@+id/btn1"
-            android:text="刷新"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
-
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/img"
-            android:scaleType="centerInside"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-
-    </androidx.core.widget.NestedScrollView>
-
-
-
-
-</LinearLayout>
+</FrameLayout>

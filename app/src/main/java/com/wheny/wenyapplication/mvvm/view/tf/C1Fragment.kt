@@ -10,7 +10,6 @@ import android.widget.TextView
 import androidx.viewpager.widget.ViewPager
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.adapter.test_adapter.CommonPagerAdapter
-import kotlinx.android.synthetic.main.fragment_c1.*
 
 class C1Fragment : Fragment() {
 
@@ -40,9 +39,10 @@ class C1Fragment : Fragment() {
                 onPageChoice(position)
             }
         })
+        val vp1 = view?.findViewById<ViewPager>(R.id.vp1)
         var adapter = CommonPagerAdapter(childFragmentManager, listOf(C2Fragment(), C2Fragment()))
 //        rootView?.findViewById<ViewPager>(R.id.vp1)?.adapter = adapter
-        vp1.adapter = adapter
+        vp1?.adapter = adapter
     }
 
 

@@ -5,12 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
+import androidx.viewpager.widget.ViewPager
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.mvvm.view.TestFragment.f1.TestF1Fragment
 import com.wheny.wenyapplication.mvvm.view.TestFragment.f1.TestF1Vm
 import com.wheny.wenyapplication.mvvm.view.TestFragment.f2.TestF2Fragment
 import com.wheny.wenyapplication.mvvm.view.TestFragment.f3.TestF3Fragment
-import kotlinx.android.synthetic.main.activity_test_fragment.*
 
 class TestFragmentActivity : AppCompatActivity() {
 
@@ -24,6 +24,7 @@ class TestFragmentActivity : AppCompatActivity() {
     private fun initView() {
         var list = arrayListOf<Fragment>(TestF1Fragment(),TestF2Fragment(),TestF3Fragment())
         val commAdapter = CommAdapter(supportFragmentManager, list)
+        val vp = findViewById<ViewPager>(R.id.vp)
         vp.offscreenPageLimit=0
         vp.adapter=commAdapter
     }

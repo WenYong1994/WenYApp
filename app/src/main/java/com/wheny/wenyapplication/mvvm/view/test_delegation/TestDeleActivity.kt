@@ -1,29 +1,33 @@
 package com.wheny.wenyapplication.mvvm.view.test_delegation
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
-import android.view.PixelCopy
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebView
-import android.webkit.WebViewClient
-import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.NestedScrollView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.PagerAdapter
+import androidx.viewpager.widget.ViewPager
 import com.chenenyu.router.annotation.InjectParam
 import com.chenenyu.router.annotation.Route
+import com.google.android.material.appbar.AppBarLayout
 import com.wheny.wenyapplication.R
-import org.libpag.PAGView
+import com.wheny.wenyapplication.adapter.test_adapter.TestListAdapter
+import com.wheny.wenyapplication.data.TestListBean
+import com.wheny.whenylibrary.utils.DensityUtils
+import io.reactivex.Flowable
+import java.lang.StringBuilder
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
+import kotlin.math.absoluteValue
 import kotlin.reflect.KProperty
 
 
@@ -38,108 +42,294 @@ class TestDeleActivity : AppCompatActivity() {
 
     @InjectParam(key = "testP3")
     public var testP3 = 0
-    val webView by lazy {
-        WebView(this)
-    }
-
-    val webViewPaint by lazy {
-        Paint()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_dele)
-        findViewById<ViewGroup>(R.id.web_group).addView(webView)
-        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, webViewPaint)
-//        webView.setLayerType(View.LAYER_TYPE_SOFTWARE, webViewPaint)
-        val startTime = System.currentTimeMillis()
-        webView.loadUrl("https://yari-demos.prod.mdn.mozit.cloud/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_usage/_sample_.a_simple_example.html")
-        webView.webViewClient = object : WebViewClient(){
-            override fun onPageFinished(view: WebView?, url: String?) {
-                webView.setLayerType(View.LAYER_TYPE_HARDWARE,webViewPaint)
-                super.onPageFinished(view, url)
-                val time = System.currentTimeMillis() - startTime
-                Log.e("onPageFinished","times:$time")
-                Toast.makeText(this@TestDeleActivity,"sfafafafa",Toast.LENGTH_SHORT).show()
+        val rootView= findViewById<View>(R.id.root_view)
+
+
+        val vp = findViewById<ViewPager>(R.id.view_pager)
+        val adapter = HippyViewPagerAdapter(this,vp)
+        val view1 = LayoutInflater.from(this).inflate(R.layout.scroll_layout,null,false)
+        adapter.addView(view1,0)
+        val view2 = LayoutInflater.from(this).inflate(R.layout.rv_layout,null,false)
+        adapter.addView(view2,0)
+        vp.adapter = adapter
+        val rv = view2.findViewById<RecyclerView>(R.id.rv)
+        val list = arrayListOf<TestListBean>()
+        for (i in 0 .. 100){
+            list.add(TestListBean("$i"))
+        }
+        val rvad1 = TestListAdapter(list,this)
+        rv.adapter = rvad1
+        rv.layoutManager = LinearLayoutManager(this)
+//        vp.setPageTransformer(false, object : ViewPager.PageTransformer{
+//            override fun transformPage(view: View, position: Float) {
+//                val pageWidth: Int = view.getWidth()
+//                val pageHeight: Int = view.getHeight()
+//                var alpha = 0f
+//                val maxOffSet =  pageWidth - pageWidth*(2f/3)
+//                var relOffset = 0;
+//                if (0 <= position && position <= 1) {
+//                    alpha = 1 - position
+//                } else if (-1 < position && position < 0) {
+//                    alpha = position + 1
+//                }
+//                relOffset = (maxOffSet*position).toInt()
+//                view.setAlpha(alpha)
+//                view.setTranslationX(view.getWidth() * -position + relOffset)
+//            }
+//        })
+        val  vpLayer = findViewById<View>(R.id.vp_layer)
+
+        vp.setOnPageChangeListener(object :ViewPager.OnPageChangeListener{
+
+            val pagerHeights = mapOf<Int,Int>(0 to DensityUtils.dip2px(this@TestDeleActivity,100f),1 to DensityUtils.dip2px(this@TestDeleActivity,600f))
+
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+
+                Log.d(
+                    "onPageScrolled",
+                    ",position:$position,positionOffset:$positionOffset,positionOffsetPixels:$positionOffsetPixels"
+                )
+                val currentHeight = if(positionOffset == 0f){
+                    pagerHeights[position] ?:0
+                }else{
+                    val leftHeight = pagerHeights[position] ?:0
+                    val rightHeight = pagerHeights[position+1] ?:0
+                    (leftHeight + (rightHeight - leftHeight) * positionOffset).toInt()
+                }
+                vpLayer.apply {
+                    layoutParams = layoutParams.apply {
+                        height = currentHeight ?: 0
+                    }
+                }
             }
-        }
-        webView.settings.javaScriptEnabled = true
-        WebView.setWebContentsDebuggingEnabled(true)
-        val iv = findViewById<ImageView>(R.id.img)
-        val pagView = findViewById<PAGView>(R.id.pag_view)
-        pagView.path = "assets://wish_list_guide_profile.pag"
-        pagView.play()
-        pagView.setRepeatCount(1)
-        findViewById<View>(R.id.btn1).setOnClickListener {
-            webView.loadUrl("https://yari-demos.prod.mdn.mozit.cloud/en-US/docs/Web/API/Canvas_API/Tutorial/Basic_usage/_sample_.a_simple_example.html")
-        }
-        findViewById<View>(R.id.btn).setOnClickListener {
-//            val rootView = findViewById<NestedScrollView>(R.id.scroll_view).getChildAt(0)
-            val rootView = window.decorView
-            val drawingCache =
-                Bitmap.createBitmap(webView.width, window.decorView.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(drawingCache)
-            rootView.draw(canvas)
 
-            val mergeBitmap =
-                Bitmap.createBitmap(rootView.width, rootView.height, Bitmap.Config.ARGB_8888)
-            val mergeCanvas = Canvas(mergeBitmap)
-            val paint = Paint()
-            mergeCanvas.drawBitmap(drawingCache, 0f, 0f, paint)
-            val pagBitMap = pagView.getBitmap(pagView.width, pagView.height)
+            override fun onPageSelected(position: Int) {
 
-            val pagLocation = IntArray(2)
-            val rootGroupLocation = IntArray(2)
-            pagView.getLocationOnScreen(pagLocation)
-            rootView.getLocationOnScreen(rootGroupLocation)
-            val x = pagLocation[0] - rootGroupLocation[0]
-            val y = pagLocation[1] - rootGroupLocation[1]
-            mergeCanvas.drawBitmap(pagBitMap, x.toFloat(), y.toFloat(), paint)
-            pagBitMap.recycle()
-            drawingCache.recycle()
-            iv.setImageBitmap(mergeBitmap)
+            }
 
+            override fun onPageScrollStateChanged(state: Int) {
+                Log.d(
+                    "onPageScrolled",
+                    "onPageScrollStateChanged:$state"
+                )
+            }
 
-        }
+        })
+        val testRv = findViewById<RecyclerView>(R.id.test_de_rv)
+        testRv.layoutManager = LinearLayoutManager(this)
+        testRv.adapter = MyAdapter(this)
+
+        findViewById<AppBarLayout>(R.id.appbar).addOnOffsetChangedListener(object : AppBarLayout.OnOffsetChangedListener {
+            override fun onOffsetChanged(appBarLayout: AppBarLayout?, verticalOffset: Int) {
+                Log.d(
+                    "onOffsetChanged",
+                    "verticalOffset:$verticalOffset"
+                )
+            }
+        })
+
     }
-
-
-    /**
-     * Pixel copy to copy SurfaceView/VideoView into BitMap
-     * Work with Surface View, Video View
-     * Won't work on Normal View
-     */
-//    fun getBitMapFromSurfaceView(videoView: SurfaceView, callback: (Bitmap?) -> Unit) {
-//        val bitmap: Bitmap = Bitmap.createBitmap(
-//            videoView.width,
-//            videoView.height,
-//            Bitmap.Config.ARGB_8888
-//        );
-//        try {
-//            // Create a handler thread to offload the processing of the image.
-//            val handlerThread = HandlerThread("PixelCopier");
-//            handlerThread.start();
-//            PixelCopy.request(
-//                videoView, bitmap,
-//                PixelCopy.OnPixelCopyFinishedListener { copyResult ->
-//                    if (copyResult == PixelCopy.SUCCESS) {
-//                        callback(bitmap)
-//                    }
-//                    handlerThread.quitSafely();
-//                },
-//                Handler(handlerThread.looper)
-//            )
-//        } catch (e: IllegalArgumentException) {
-//            callback(null)
-//            // PixelCopy may throw IllegalArgumentException, make sure to handle it
-//            e.printStackTrace()
-//        }
-//    }
 
 
 }
 
-private fun screenshotSystem(webview:View):Bitmap? {
+
+
+@SuppressLint("CheckResult")
+fun testRunApply(){
+    var bool = true
+    val s1 = StringBuilder()
+        .append("")
+        .apply {
+            if(bool){
+                append("true")
+            }else{
+                append("false")
+            }
+        }
+        .toString()
+
+    val s2 = StringBuilder()
+        .append("")
+        .run {
+            return@run if(bool){
+                append("true")
+            }else{
+                append("false")
+            }
+        }
+        .toString()
+    Log.e("testRunApply","test------------:${s1 == s2}")
+
+    Flowable.just("start")
+        .apply {
+            if(bool){
+                map {
+                    return@map it+"true"
+                }
+            }else{
+                map {
+                    return@map it+"false"
+                }
+            }
+        }
+        .subscribe {
+            Log.e("testRunApply","test---------apply ${it}")
+        }
+    Flowable.just("start")
+        .run {
+            return@run if(bool){
+                map {
+                    return@map it+"true"
+                }
+            }else{
+                map {
+                    return@map it+"false"
+                }
+            }
+        }
+        .subscribe {
+            Log.e("testRunApply","test---------apply ${it}")
+        }
+}
+
+
+
+class VH(view:View) : RecyclerView.ViewHolder(view){
+
+}
+
+class MyAdapter(val context:Context) : RecyclerView.Adapter<VH>(){
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+        return VH(LayoutInflater.from(context).inflate(R.layout.my_item_layout,parent,false))
+    }
+
+    override fun onBindViewHolder(holder: VH, position: Int) {
+        holder.itemView.findViewById<TextView>(R.id.tv).text = "------$position-------"
+        holder.itemView.setOnLongClickListener {
+            Toast.makeText(it.context, "长按了", Toast.LENGTH_SHORT).show()
+            return@setOnLongClickListener true
+        }
+    }
+
+    override fun getItemCount(): Int {
+        return 60
+    }
+
+}
+
+
+
+
+class HippyViewPagerAdapter(
+    context: Context,
+    val mViewPager: ViewPager
+) :
+    PagerAdapter() {
+    protected val mViews: MutableList<View?> = arrayListOf()
+    private var mChildSize = 0
+    private var mInitPageIndex = 0
+    fun setChildSize(size: Int) {
+        mChildSize = size
+    }
+
+    fun setInitPageIndex(index: Int) {
+        mInitPageIndex = index
+    }
+
+    fun addView(view: View?, position: Int) {
+        if (view != null && position >= 0) {
+            if (position >= mViews.size) {
+                mViews.add(view)
+            } else {
+                mViews.add(position, view)
+            }
+        }
+    }
+
+    fun removeViewAtIndex(postion: Int) {
+        if (postion >= 0 && postion < mViews.size) {
+            mViews.removeAt(postion)
+        }
+    }
+
+    fun removeView(view: View) {
+        val size = mViews.size
+        var index = -1
+        for (i in 0 until size) {
+            val curr = getViewAt(i)
+            if (curr === view) {
+                index = i
+                break
+            }
+        }
+        if (index >= 0) {
+            mViews.removeAt(index)
+        }
+    }
+
+    protected fun getViewAt(index: Int): View? {
+        return if (index >= 0 && index < mViews.size) mViews[index] else null
+    }
+
+    protected val itemViewSize: Int
+        protected get() = mViews.size
+
+    override fun getCount(): Int {
+        return mViews.size
+    }
+
+    override fun getItemPosition(any: Any): Int {
+        return if (mViews.isEmpty()) {
+            -2
+        } else {
+            val index = mViews.indexOf(any as? View)
+            if (index < 0) -2 else index
+        }
+    }
+
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        var viewWrapper: View? = null
+        if (position < mViews.size) {
+            viewWrapper = mViews[position]
+        }
+        if (viewWrapper != null && viewWrapper.parent == null) {
+            container.addView(viewWrapper, ViewPager.LayoutParams())
+        } else {
+            viewWrapper = null
+        }
+        return viewWrapper!!
+    }
+
+
+    override fun destroyItem(container: ViewGroup, position: Int, `object`: Any) {
+        if (`object` is View) {
+            val view = `object`
+            view.layout(0, 0, 0, 0)
+            container.removeView(view)
+        }
+    }
+
+    override fun isViewFromObject(view: View, `object`: Any): Boolean {
+        return view === `object`
+    }
+
+    companion object {
+        private const val TAG = "HippyViewPagerAdapter"
+    }
+}
+
+
+private fun screenshotSystem(webview: View): Bitmap? {
     val surfaceClass: Class<*>
     var method: Method? = null
     var bitmap: Bitmap? = null
@@ -164,7 +354,6 @@ private fun screenshotSystem(webview:View):Bitmap? {
     }
     return null
 }
-
 
 
 interface Subject {
@@ -239,7 +428,7 @@ fun main() {
     val derived = Derived(b)
     derived.x = 101
     println(derived.x)
-
+    testRunApply()
 
 }
 

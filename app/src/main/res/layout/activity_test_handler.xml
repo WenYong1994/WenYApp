@@ -1,9 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="com.wheny.wenyapplication.mvvm.view.testHanlder.TestHandlerActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="sfafa" />
+
+    <ImageView
+        android:id="@+id/img"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="400dp">
+
+        <com.wheny.wenyapplication.mvvm.view.testHanlder.NoLayoutView
+            android:layout_width="300dp"
+            android:layout_marginStart="100dp"
+            android:layout_height="400dp"
+            >
+
+            <com.wheny.wenyapplication.mvvm.view.testHanlder.RichTextView
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                >
+
+                <!--            <ImageView-->
+                <!--                android:id="@+id/image"-->
+                <!--                android:layout_width="40dp"-->
+                <!--                android:layout_height="40dp"-->
+                <!--                android:src="@mipmap/ic_launcher"-->
+                <!--                android:layout_marginStart="90dp"-->
+                <!--                />-->
+
+                <TextView
+                    android:id="@+id/text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff"
+                    android:textStyle="bold" />
+
+            </com.wheny.wenyapplication.mvvm.view.testHanlder.RichTextView>
+
+        </com.wheny.wenyapplication.mvvm.view.testHanlder.NoLayoutView>
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+
+    <LinearLayout
+        android:id="@+id/tag_layer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        >
+
+        <FrameLayout
+            android:id="@+id/test_view"
+            android:layout_width="wrap_content"
+            android:layout_height="18dp"
+            android:background="@drawable/tg_bg"
+            android:orientation="horizontal"
+            android:paddingHorizontal="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="这是带货标签"
+                android:textColor="#47A3E6"
+                android:lineSpacingExtra="0dp"
+                android:textSize="12sp" />
+
+
+        </FrameLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vp"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"/>
+
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

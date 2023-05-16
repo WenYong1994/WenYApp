@@ -146,4 +146,15 @@
         </attr>
     </declare-styleable>
 
+
+    <declare-styleable name="WheelView">
+        <attr name="drawCenter" format="boolean" />
+        <attr name="centerLineLeftMargin" format="dimension" />
+        <attr name="centerLineRightMargin" format="dimension" />
+        <attr name="drawCenterLine" format="boolean" />
+        <attr name="centerLineColor" format="color" />
+        <attr name="centerLineHeight" format="dimension" />
+
+    </declare-styleable>
+
 </resources>

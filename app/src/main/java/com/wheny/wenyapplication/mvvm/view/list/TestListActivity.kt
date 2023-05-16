@@ -3,6 +3,7 @@ package com.wheny.wenyapplication.mvvm.view.list
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.adapter.test_adapter.TestListAdapter
 import com.wheny.wenyapplication.adapter.test_adapter.TestListVm
@@ -12,7 +13,6 @@ import com.wheny.whenylibrary.adapter.MultiTypeItemAdapter
 import com.wheny.whenylibrary.adapter.SafeLinearLayoutManager
 import com.wheny.whenylibrary.adapter.SimpleItemViewDelegate
 import com.wheny.whenylibrary.adapter.ViewHolder
-import kotlinx.android.synthetic.main.activity_test_list.*
 import okhttp3.*
 import java.io.IOException
 import java.util.concurrent.ThreadPoolExecutor
@@ -26,7 +26,7 @@ class TestListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_test_list)
-
+        val rv = findViewById<RecyclerView>(R.id.rv)
         var list = arrayListOf(TestListBean("2"),TestListBean("1"),TestListBean("1"),
                 TestListBean("1"),TestListBean("1"),TestListBean("2"),TestListBean("1"),TestListBean("1"),
                 TestListBean("1"),TestListBean("1"),TestListBean("4"),TestListBean("1"),TestListBean("1"),

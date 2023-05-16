@@ -7,7 +7,7 @@ apply plugin: 'com.github.dcendents.android-maven'
 group='com.github.WenYong1994.WenYApp'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "29.0.2"
 
 

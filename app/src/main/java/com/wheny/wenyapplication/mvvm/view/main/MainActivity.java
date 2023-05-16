@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements VmContract {
         findViewById(R.id.test_009).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, TestHandlerActivity.class);
             startActivity(intent);
+            overridePendingTransition(R.anim.bottom_in,R.anim.no_anim);
         });
         findViewById(R.id.test_010).setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, TFActivity.class);
