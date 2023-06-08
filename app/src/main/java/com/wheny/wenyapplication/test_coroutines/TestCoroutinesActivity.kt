@@ -2,12 +2,16 @@ package com.wheny.wenyapplication.test_coroutines
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.widget.ImageView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -16,10 +20,12 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.wheny.wenyapplication.R
+import com.wheny.wenyapplication.view.MixColorRoundProgress
 import com.wheny.whenylibrary.utils.ToastUtils
 import io.reactivex.Flowable
 import io.reactivex.functions.Consumer
 import kotlinx.coroutines.*
+import java.util.*
 import kotlin.coroutines.EmptyCoroutineContext
 
 class TestCoroutinesActivity : AppCompatActivity() {
@@ -38,8 +44,25 @@ class TestCoroutinesActivity : AppCompatActivity() {
         rv.clipChildren = false
         rv.adapter = Ada(this, 20)
         rv.layoutManager = LinearLayoutManager(this)
+        val mixColorRoundProgress = findViewById<MixColorRoundProgress>(R.id.round_progress)
+        val webvie= findViewById<WebView>(R.id.web_view)
+        webvie.settings.javaScriptEnabled = true
+        webvie.loadUrl("https://echarts.apache.org/examples/zh/editor.html?c=line-simple")
+    }
 
+    fun oncl(view: View) {
+//        test1()
+        val mixColorRoundProgress = findViewById<MixColorRoundProgress>(R.id.round_progress)
+        mixColorRoundProgress.startProgressAnimation(100f,0f,5000)
 
+//        val webView = findViewById<WebView>(R.id.web_view)
+//        val bitmap = Bitmap.createBitmap(webView.width,webView.height,Bitmap.Config.ARGB_8888)
+//        val canvas = Canvas(bitmap)
+//        webView.draw(canvas)
+//        View::class.java.getDeclaredField("")
+//        canvas.save()
+//        findViewById<ImageView>(R.id.iv).setImageBitmap(bitmap)
+//        Log.e("bit",bitmap.toString())
     }
 
     fun test() {
@@ -51,7 +74,36 @@ class TestCoroutinesActivity : AppCompatActivity() {
 //            Log.e(TAG, "2222222222222协程执行结束 -- 线程id：${Thread.currentThread().id}")
 //        }
 //        testAsync()
-        testAsync2()
+//        testAsync2()
+    }
+
+    val set = hashSetOf<Int>().apply {
+        for (i in 0..1000) {
+            add(i)
+        }
+    }
+    val list = Collections.synchronizedSet(set)
+
+    override fun onResume() {
+        super.onResume()
+//        testAsync3()
+    }
+
+    fun testAsync3() {
+        lifecycleScope.launch {
+            launch(Dispatchers.IO) {
+                for (i in 0..1000) {
+                    list.add(-i)
+                    Log.e("testAsync3", Thread.currentThread().name + ":${-i}----------")
+                    delay(1)
+                }
+            }
+        }
+        val iterator = list.iterator()
+        while (iterator.hasNext()) {
+            Log.e("testAsync3", Thread.currentThread().name + ":${iterator.next()}++++++++++++++")
+        }
+
     }
 
     fun testAsync2() {
@@ -71,42 +123,35 @@ class TestCoroutinesActivity : AppCompatActivity() {
         Log.e("testA", "44" + t.message ?: "")
     }
 
-    fun oncl(view: View) {
-        test1()
-    }
+
 
     val myScope = CoroutineScope(Dispatchers.Default)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         Log.e("testCoroutine", "exceptionHandler-handler " + throwable.message)
     }
+
     private fun test1() {
-        val list = listOf(1,2,3,4,5,6)
+        val list = listOf(1, 2, 3, 4, 5, 6)
         kotlin.run {
             list.forEach {
-                Log.e("TestFor","index:${it}")
-                if (it == 3){
+                Log.e("TestFor", "index:${it}")
+                if (it == 3) {
                     return@run
                 }
             }
         }
-        Log.e("TestFor","end")
+        Log.e("TestFor", "end")
 
-        GlobalScope.launch(exceptionHandler) {
-            launch {
-                delay(2000)
-                Log.e("TestCoroutineException", "start-job3 delay")
+        GlobalScope.launch {
+            try {
+                myScope.async {
+                    throw java.lang.Exception("TestCoroutineException")
+                }.await()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Log.e("testCoroutine", "捕获异常" + e.message)
             }
-            supervisorScope{
-                launch {
-                    Log.e("TestCoroutineException", "start job1 delay")
-                    delay(1000)
-                    Log.e("TestCoroutineException", "end job1 delay")
-                }
-                launch {
-                    Log.e("TestCoroutineException", "job2 throw execption")
-                    throw NullPointerException("Test Exception")
-                }
-            }
+            Log.e("testCoroutine", "捕获异常之后的的代码")
         }
     }
 

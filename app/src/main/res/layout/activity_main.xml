@@ -105,6 +105,12 @@
             android:layout_height="wrap_content"
             android:text="测试代理"
             />
+        <Button
+            android:id="@+id/test_012"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="测试背景动画"
+            />
 
         <FrameLayout
             android:id="@+id/main_fra"

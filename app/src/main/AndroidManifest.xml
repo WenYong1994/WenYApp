@@ -12,7 +12,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".mvvm.view.test_delegation.TestDeleActivity"></activity>
+        <activity
+            android:name=".mvvm.view.test_drawable.TestDrawableActivity"
+            >
+        </activity>
+        <activity android:name=".mvvm.view.test_delegation.TestDeleActivity" />
         <activity android:name=".mvvm.view.tf.TFActivity" />
         <activity android:name=".mvvm.view.testHanlder.TestHandlerActivity" />
         <activity android:name=".test_coroutines.TestCoroutinesActivity" />

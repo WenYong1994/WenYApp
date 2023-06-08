@@ -12,6 +12,7 @@ import com.wheny.wenyapplication.R;
 import com.wheny.wenyapplication.mvvm.view.TestFragment.TestFragmentActivity;
 import com.wheny.wenyapplication.mvvm.view.testHanlder.TestHandlerActivity;
 import com.wheny.wenyapplication.mvvm.view.test_delegation.TestDeleActivity;
+import com.wheny.wenyapplication.mvvm.view.test_drawable.TestDrawableActivity;
 import com.wheny.wenyapplication.mvvm.view.tf.TFActivity;
 import com.wheny.wenyapplication.test_coroutines.TestCoroutinesActivity;
 import com.wheny.whenyannotationapilib.ViewModelInjector;
@@ -94,8 +95,10 @@ public class MainActivity extends AppCompatActivity implements VmContract {
             Intent intent = new Intent(MainActivity.this, TestDeleActivity.class);
             startActivity(intent);
         });
-
-
+        findViewById(R.id.test_012).setOnClickListener(v->{
+            Intent intent = new Intent(MainActivity.this, TestDrawableActivity.class);
+            startActivity(intent);
+        });
     }
 
     public void setMainVm(MainVm mainVm) {
