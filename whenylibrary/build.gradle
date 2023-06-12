@@ -47,6 +47,7 @@ dependencies {
     implementation "com.google.code.gson:gson:${gson_version}"
     implementation "com.squareup.okhttp3:okhttp:${okhttp_version}"
     implementation "com.github.hotchemi:permissionsdispatcher:${permissionsdispatcher_version}"
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     annotationProcessor "com.github.hotchemi:permissionsdispatcher-processor:${permissionsdispatcher_version}"
     implementation "com.android.support:recyclerview-v7:${recyclerview_libary_version}"
     implementation 'com.github.imkarl:CharacterPickerView:v0.2.7'

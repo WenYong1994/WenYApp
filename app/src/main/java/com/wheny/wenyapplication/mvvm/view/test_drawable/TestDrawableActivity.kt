@@ -2,23 +2,20 @@ package com.wheny.wenyapplication.mvvm.view.test_drawable
 
 import android.animation.*
 import android.graphics.Color
-import android.graphics.Paint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.view.MotionEvent
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.*
-import androidx.core.content.ContextCompat
-import com.google.android.material.shape.MaterialShapeDrawable
-import com.google.android.material.shape.RoundedCornerTreatment
-import com.google.android.material.shape.ShapeAppearanceModel
 import com.wheny.wenyapplication.R
-import com.wheny.wenyapplication.view.dp
+import com.wheny.wenyapplication.application.App
+import com.wheny.whenylibrary.edslider.Align
+import com.wheny.whenylibrary.edslider.EdSliderBuilder
+import com.wheny.whenylibrary.edslider.EdSliderManager
+import com.wheny.whenylibrary.edslider.OnSliderSelectedListener
 
 
 /**
@@ -29,24 +26,64 @@ import com.wheny.wenyapplication.view.dp
  * 描述：
  **/
 class TestDrawableActivity : AppCompatActivity() {
+    private val edslider by lazy {
+        EdSliderBuilder(this)
+            .set(manager)
+            .on(findViewById(R.id.button))
+            .setAlignment(Align.CENTER, Align.TOP)
+            .setIconSize(30.dp)
+            .setPadding(30.dp, 60.dp, 30.dp, 20.dp)
+            .setDeterminePadding(40.dp, 20.dp)
+            .setIconMargin(5.dp, 5.dp)
+            .setChoseMargin(false)
+            .addIcon(R.drawable.ic_android)
+            .addIcon(R.drawable.ic_heart)
+            .addIcon(R.drawable.ic_android)
+            .addIcon(R.drawable.ic_camera)
+            .addIcon(R.drawable.ic_android)
+            .build()
+    }
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_drawable)
         val tvBg = findViewById<View>(R.id.tv_bg)
-        PressedAnimatorHelper.bindPressedAnimator(
-            tvBg,
-            0.9f,
-            1f,
-            Color.parseColor("#FFFFFF"),
-            Color.parseColor("#4DFFFFFF")
-        )
+//        PressedAnimatorHelper.bindPressedAnimator(
+//            tvBg,
+//            0.9f,
+//            1f,
+//            Color.parseColor("#FFFFFF"),
+//            Color.parseColor("#4DFFFFFF")
+//        )
         tvBg.setOnClickListener {
             finish()
         }
+        val button = findViewById<View>(R.id.button)
+        button.setOnLongClickListener {
+            edslider.show()
+            true
+        }
+    }
+
+    val manager = EdSliderManager(object : OnSliderSelectedListener {
+        override fun OnSelected(index: Int) {
+            Toast.makeText(this@TestDrawableActivity, "selected: $index", Toast.LENGTH_SHORT)
+                .show()
+        }
+    })
+
+    override fun dispatchTouchEvent(event: MotionEvent): Boolean {
+        return if (manager.dispatched(event)) false else super.dispatchTouchEvent(event)
     }
 
 }
+
+val Int.dp: Float
+    get() {
+        val scale = App.getApplication().resources.displayMetrics.density
+        return (this * scale + 0.5f)
+    }
 
 
 

@@ -11,26 +11,34 @@
         android:id="@+id/tv_bg"
         android:layout_width="160dp"
         android:layout_height="36dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="100dp"
         android:background="@drawable/tv_bg"
-        />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintStart_toStartOf="@id/tv_bg"
-        app:layout_constraintEnd_toEndOf="@id/tv_bg"
-        app:layout_constraintTop_toTopOf="@id/tv_bg"
-        app:layout_constraintBottom_toBottomOf="@id/tv_bg"
         android:text="取消"
         android:textColor="#FF0F2128"
         android:textSize="16sp"
-        />
+        app:layout_constraintBottom_toBottomOf="@id/tv_bg"
+        app:layout_constraintEnd_toEndOf="@id/tv_bg"
+        app:layout_constraintStart_toStartOf="@id/tv_bg"
+        app:layout_constraintTop_toTopOf="@id/tv_bg" />
 
+
+    <View
+        android:id="@+id/button"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="150dp"
+        android:background="#00ff00"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
