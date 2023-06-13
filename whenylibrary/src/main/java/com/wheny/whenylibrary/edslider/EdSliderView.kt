@@ -33,7 +33,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  **/
 class EdSliderView : ConstraintLayout {
     private var manager: EdSliderManager? = null
-    private var boundary: RectF? = null
     private var index = 0
     private var flags: BooleanArray = booleanArrayOf()
 
@@ -115,8 +114,14 @@ class EdSliderView : ConstraintLayout {
      * @param builder the configs
      */
     fun build(builder: EdSliderBuilder) {
-        layoutParams = ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        layoutParams = ViewGroup.LayoutParams(builder.getViewWidth(), builder.getViewHeight())
         itemGroupLayout.orientation = LinearLayout.HORIZONTAL
+        itemGroupLayout.setPadding(
+            builder.bgPaddingStart.toInt(),
+            0,
+            builder.bgPaddingEnd.toInt(),
+            0
+        )
         clipChildren = false
         clipToPadding = false
         itemGroupLayout.clipChildren = false
@@ -186,13 +191,14 @@ class EdSliderView : ConstraintLayout {
                 }
             }
         }
-
-        addView(itemLocationView)
+//        bgView.setBackgroundColor(Color.parseColor("#88000000"))
+        setBackgroundColor(Color.parseColor("#8800ff00"))
         addView(bgView)
+        addView(itemLocationView)
         addView(itemGroupLayout)
+
         manager = builder.manager
         flags = BooleanArray(builder.list!!.size)
-        boundary = builder.determineBoundary
         choseMargin = builder.choseMargin
         selectedTime = builder.selectedTime
     }
@@ -316,16 +322,19 @@ class EdSliderView : ConstraintLayout {
         (context as? FragmentActivity)?.lifecycleScope?.launch {
             while (showing.get()) {
                 delay(100)
-                Log.e("initTimer","lastIndex${lastIndex},index:${index},lastConstantIndexTime:${lastConstantIndexTime},lastLongSelectedIndex:${lastLongSelectedIndex}")
+                Log.e(
+                    "initTimer",
+                    "lastIndex${lastIndex},index:${index},lastConstantIndexTime:${lastConstantIndexTime},lastLongSelectedIndex:${lastLongSelectedIndex}"
+                )
                 val current = System.currentTimeMillis()
                 //检查选中 index
-                if (index == -1 || index != lastIndex){
+                if (index == -1 || index != lastIndex) {
                     lastIndex = index
                     lastConstantIndexTime = current
                     lastLongSelectedIndex = -1
                     continue
                 }
-                if(index == lastLongSelectedIndex ){
+                if (index == lastLongSelectedIndex) {
                     lastConstantIndexTime = current
                     continue
                 }

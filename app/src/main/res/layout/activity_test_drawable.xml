@@ -31,16 +31,25 @@
         app:layout_constraintTop_toTopOf="@id/tv_bg" />
 
 
-    <View
+    <ImageView
         android:id="@+id/button"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="250dp"
-        android:background="#00ff00"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:src="@drawable/ganup_emo_1"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="350dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/target_view"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="@color/colorAccent"
+        android:layout_marginBottom="30dp"
+        android:layout_marginStart="150dp"
+        app:layout_constraintStart_toStartOf="@id/button"
+        app:layout_constraintBottom_toTopOf="@id/button" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

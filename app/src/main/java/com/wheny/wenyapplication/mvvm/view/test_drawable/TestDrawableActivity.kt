@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -29,23 +30,25 @@ class TestDrawableActivity : AppCompatActivity() {
     private val edslider by lazy {
         EdSliderBuilder(this)
             .set(manager)
-            .on(findViewById(R.id.button))
-            .setAlignment(Align.LEFT, Align.CENTER)
-            .setIconSize(30.dp)
-            .setPadding(30.dp, 60.dp, 30.dp, 20.dp)
+            .on(findViewById(R.id.target_view))
+            .setAlignment(Align.RIGHT, Align.BOTTOM)
+            .setIconSize(46.dp)
+            .setPadding(46.dp, 92.dp, 46.dp, 46.dp)
             .setDeterminePadding(40.dp, 40.dp)
-            .setIconMargin(5.dp, 5.dp)
-            .setMargin(60.dp, 0f, 0f, 20.dp)
+            .setIconMargin(14.dp, 5.dp)
+//            .setBgPadding((32 - 14).dp, (32 - 14).dp)
+            .setMargin(0f, 0f, 0f, 0f)
             .setChoseMargin(false)
-            .addIcon(R.drawable.ic_android)
-            .addIcon(R.drawable.ic_heart)
-            .addIcon(R.drawable.ic_android)
-            .addIcon(R.drawable.ic_camera)
-            .addIcon(R.drawable.ic_android)
+            .setSelectedTime(1000 * 2)
+            .setSliderBackground(R.drawable.ed_slider_background)
+            .addIcon(R.drawable.ganup_emo_1)
+            .addIcon(R.drawable.ganup_emo_2)
+            .addIcon(R.drawable.ganup_emo_3)
+            .addIcon(R.drawable.ganup_emo_4)
             .build()
     }
 
-    var manager :EdSliderManager? = null
+    var manager: EdSliderManager? = null
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,11 +81,25 @@ class TestDrawableActivity : AppCompatActivity() {
             override fun onLongSelected(index: Int) {
                 Toast.makeText(this@TestDrawableActivity, "长按选中: $index", Toast.LENGTH_SHORT)
                     .show()
+                val iv = findViewById<ImageView>(R.id.button)
+                when (index) {
+                    0 -> {
+                        iv.setImageResource(R.drawable.ganup_emo_1)
+                    }
+                    1 -> {
+                        iv.setImageResource(R.drawable.ganup_emo_2)
+                    }
+                    2 -> {
+                        iv.setImageResource(R.drawable.ganup_emo_3)
+                    }
+                    3 -> {
+                        iv.setImageResource(R.drawable.ganup_emo_4)
+                    }
+                }
 //                manager?.dismiss()
             }
         })
     }
-
 
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {

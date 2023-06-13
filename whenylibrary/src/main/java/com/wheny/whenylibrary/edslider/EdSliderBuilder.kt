@@ -22,7 +22,6 @@ class EdSliderBuilder {
     var view: EdSliderView? = null
     var layout: ViewGroup? = null
     var target: View? = null
-    var determineBoundary: RectF? = null
     var visionBoundary: RectF? = null
 
     var list: ArrayList<EdIcon>? = null
@@ -69,6 +68,10 @@ class EdSliderBuilder {
      * 当手指放到margin时 是否判断选中
      * */
     var choseMargin = false
+
+    var bgPaddingStart = 0f
+
+    var bgPaddingEnd = 0f
 
     /**
      * 选中时间 单位毫秒
@@ -128,8 +131,6 @@ class EdSliderBuilder {
      */
     fun setIconSize(dimen: Float): EdSliderBuilder {
         size = dimen
-        determinePaddingBottom = size / 2
-        determinePaddingTop = size / 2
         return this
     }
 
@@ -190,6 +191,12 @@ class EdSliderBuilder {
         return this
     }
 
+    fun setBgPadding(start: Float, end: Float): EdSliderBuilder {
+        bgPaddingStart = start
+        bgPaddingEnd = end
+        return this
+    }
+
     fun setChoseMargin(choseMargin: Boolean): EdSliderBuilder {
         this.choseMargin = choseMargin
         return this
@@ -203,7 +210,7 @@ class EdSliderBuilder {
         return this
     }
 
-    fun setSelectedTime(selectedTime: Long) :EdSliderBuilder{
+    fun setSelectedTime(selectedTime: Long): EdSliderBuilder {
         this.selectedTime = selectedTime
         return this
     }
@@ -227,19 +234,13 @@ class EdSliderBuilder {
         // so we need to calculate the size manually
         val rectSize = size + iconMarginHorizontal + iconMarginHorizontal
         val rectSizeVertical = size + iconMarginVertical + iconMarginVertical
-        determineBoundary = RectF(
-            paddingStart,
-            paddingTop - determinePaddingTop,
-            rectSize * list!!.size + paddingStart,
-            paddingTop + size + iconMarginVertical + iconMarginVertical + determinePaddingBottom
-        )
 
         // 整个 buildView的 大小
         visionBoundary = RectF(
             0f,
             0f,
-            rectSize * list!!.size + paddingStart + paddingEnd,
-            paddingTop + size + paddingBottom + iconMarginVertical + iconMarginVertical
+            getItemLayoutWidth() + paddingStart + paddingEnd,
+            getItemLayoutHeight() + paddingTop + paddingBottom
         )
 
         // get the location of target
@@ -273,7 +274,7 @@ class EdSliderBuilder {
                         paddingBottom - marginBottom
             }
             Align.BOTTOM -> {
-                y = relativeCoordY - (target?.height ?: 0) - paddingBottom + marginTop
+                y = relativeCoordY + (target?.height ?: 0) - paddingTop + marginTop
             }
             Align.CENTER -> {
                 y = relativeCoordY - paddingTop +
@@ -291,8 +292,17 @@ class EdSliderBuilder {
     }
 
     fun getItemLayoutWidth(): Int {
-        val rectSize = size + iconMarginHorizontal + iconMarginHorizontal
+        val rectSize =
+            size + iconMarginHorizontal + iconMarginHorizontal + bgPaddingStart + bgPaddingEnd
         return (rectSize * (list?.size ?: 0)).toInt()
+    }
+
+    fun getViewWidth(): Int {
+        return (getItemLayoutWidth() + paddingStart + paddingEnd).toInt()
+    }
+
+    fun getViewHeight(): Int {
+        return (getItemLayoutHeight() + paddingTop + paddingBottom).toInt()
     }
 
 }
