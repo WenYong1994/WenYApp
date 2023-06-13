@@ -2,5 +2,7 @@
 <resources>
     <item name="item_group_layout" type="id"/>
     <item name="item_location_layout" type="id"/>
+    <item name="item_scroll_layout" type="id"/>
+    <item name="slider_view_hint_txt" type="id"/>
 
 </resources>

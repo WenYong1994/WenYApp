@@ -27,6 +27,8 @@ class EdSliderBuilder {
     var list: ArrayList<EdIcon>? = null
     var maxIcons = Int.MAX_VALUE
 
+    var limitMax = false
+
     var backgroundResId = 0
     var size = 0f
 
@@ -215,6 +217,17 @@ class EdSliderBuilder {
         return this
     }
 
+    fun setMaxIcons(max: Int): EdSliderBuilder {
+        maxIcons = max
+        return this
+    }
+
+    fun setLimitMax(limit: Boolean): EdSliderBuilder {
+        limitMax = limit
+        return this
+    }
+
+
     /**
      * Finalize the builder
      * @return
@@ -294,7 +307,11 @@ class EdSliderBuilder {
     fun getItemLayoutWidth(): Int {
         val rectSize =
             size + iconMarginHorizontal + iconMarginHorizontal + bgPaddingStart + bgPaddingEnd
-        return (rectSize * (list?.size ?: 0)).toInt()
+        return if ((list?.size ?: 0) <= maxIcons || !limitMax) {
+            (rectSize * (list?.size ?: 0)).toInt()
+        } else {
+            (rectSize * maxIcons).toInt()
+        }
     }
 
     fun getViewWidth(): Int {

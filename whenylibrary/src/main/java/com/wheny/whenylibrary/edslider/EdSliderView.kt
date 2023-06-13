@@ -1,26 +1,23 @@
 package com.wheny.whenylibrary.edslider
 
 import android.content.Context
-import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
-import android.text.Layout
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.marginTop
-import androidx.core.view.size
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.wheny.whenylibrary.R
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.util.Timer
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -33,18 +30,30 @@ import java.util.concurrent.atomic.AtomicBoolean
  **/
 class EdSliderView : ConstraintLayout {
     private var manager: EdSliderManager? = null
-    private var index = 0
+    private var selectedIndex = 0
     private var flags: BooleanArray = booleanArrayOf()
 
     private var itemGroupLayout = LinearLayout(context).apply {
         gravity = Gravity.CENTER_VERTICAL
         id = R.id.item_group_layout
     }
-    var itemLocationView = ConstraintLayout(context)
+    private var itemLocationView = View(context)
         .apply {
             id = R.id.item_location_layout
             clipChildren = false
         }
+
+    private var itemScrollView = HorizontalScrollView(context)
+        .apply {
+            id = R.id.item_scroll_layout
+            clipChildren = false
+        }
+
+
+    var hintTxt = TextView(context).apply {
+        id = R.id.slider_view_hint_txt
+    }
+
     var bgView = View(context)
     var groupLocation = IntArray(2)
     private var isReversed = false
@@ -93,7 +102,7 @@ class EdSliderView : ConstraintLayout {
         )
         clipChildren = false
         clipToPadding = false
-        index = -1
+        selectedIndex = -1
     }
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
@@ -157,6 +166,30 @@ class EdSliderView : ConstraintLayout {
                 bottomMargin = builder.paddingBottom.toInt()
             }
 
+        hintTxt.layoutParams =
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
+                startToStart = itemLocationView.id
+                endToEnd = itemLocationView.id
+                bottomToTop = itemLocationView.id
+                // todo 换算成 dp来计算
+                bottomMargin = 60
+            }
+        hintTxt.setText("滑动选择")
+
+
+        if (builder.limitMax) {
+
+        }
+
+        itemScrollView.layoutParams =
+            LayoutParams(builder.getItemLayoutWidth(), builder.getItemLayoutHeight()).apply {
+                startToStart = itemLocationView.id
+                topToTop = itemLocationView.id
+                endToEnd = itemLocationView.id
+                bottomToBottom = itemLocationView.id
+            }
+
+
         bgView.setBackgroundResource(builder.backgroundResId)
         bgView.layoutParams = LayoutParams(
             0,
@@ -192,11 +225,17 @@ class EdSliderView : ConstraintLayout {
             }
         }
 //        bgView.setBackgroundColor(Color.parseColor("#88000000"))
-        setBackgroundColor(Color.parseColor("#8800ff00"))
-        addView(bgView)
-        addView(itemLocationView)
-        addView(itemGroupLayout)
+//        setBackgroundColor(Color.parseColor("#8800ff00"))
 
+        addView(itemLocationView)
+        addView(bgView)
+        addView(hintTxt)
+        if (builder.limitMax) {
+            addView(itemScrollView)
+            itemScrollView.addView(itemLocationView)
+        } else {
+            addView(itemGroupLayout)
+        }
         manager = builder.manager
         flags = BooleanArray(builder.list!!.size)
         choseMargin = builder.choseMargin
@@ -249,7 +288,7 @@ class EdSliderView : ConstraintLayout {
         // 转换为edsliderView父布局 内部滑动的事件 xy  相对布 的xy
         x -= groupLocation[0]
         y -= groupLocation[1]
-        index = -1
+        selectedIndex = -1
         // 转换为edsliderView内部的 x y  相对布 的xy
         x -= getX()
         y -= getY()
@@ -257,18 +296,18 @@ class EdSliderView : ConstraintLayout {
         x -= itemGroupLayout.x
         y -= itemGroupLayout.y
 
-        index = -1
-        index = checkPointPosition(x, y)
+        selectedIndex = -1
+        selectedIndex = checkPointPosition(x, y)
 //        if (boundary?.contains(x, y) == true) {
 //            index = Math.floor((x / (boundary!!.width() / flags.size)).toDouble()).toInt()
 //        }
-        if (index >= 0 && index < flags.size) {
+        if (selectedIndex >= 0 && selectedIndex < flags.size) {
             // enlarge
-            if (!flags[index]) {
+            if (!flags[selectedIndex]) {
                 // avoid duplicate
-                flags[index] = true
-                (itemGroupLayout.getChildAt(index) as? EdSliderItemSliderListener)?.apply {
-                    onSelectedChange(index, true)
+                flags[selectedIndex] = true
+                (itemGroupLayout.getChildAt(selectedIndex) as? EdSliderItemSliderListener)?.apply {
+                    onSelectedChange(selectedIndex, true)
                 }
             }
         }
@@ -276,7 +315,7 @@ class EdSliderView : ConstraintLayout {
         // reduce any enlarged icon
         for (i in flags.indices) {
             // don't reduce the current icon
-            if (i == index) continue
+            if (i == selectedIndex) continue
             if (flags[i]) {
                 flags[i] = false
                 (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
@@ -284,8 +323,7 @@ class EdSliderView : ConstraintLayout {
                 }
             }
         }
-
-
+        checkHintTxt()
     }
 
     private fun checkPointPosition(x: Float, y: Float): Int {
@@ -311,9 +349,21 @@ class EdSliderView : ConstraintLayout {
 
 
     fun getSelectedIndex(): Int {
-        return index
+        return selectedIndex
     }
 
+    private fun checkHintTxt(){
+        if(selectedIndex == -1){
+            hintTxt.setText("松手取消")
+        }else{
+            //判断不同状态
+            if(lastLongSelectedIndex != -1){
+                hintTxt.setText("松手发送，左右滑动选择其他")
+            }else{
+                hintTxt.setText("滑动选择")
+            }
+        }
+    }
 
     private fun initTimer() {
         lastIndex = -1
@@ -324,24 +374,25 @@ class EdSliderView : ConstraintLayout {
                 delay(100)
                 Log.e(
                     "initTimer",
-                    "lastIndex${lastIndex},index:${index},lastConstantIndexTime:${lastConstantIndexTime},lastLongSelectedIndex:${lastLongSelectedIndex}"
+                    "lastIndex${lastIndex},index:${selectedIndex},lastConstantIndexTime:${lastConstantIndexTime},lastLongSelectedIndex:${lastLongSelectedIndex}"
                 )
                 val current = System.currentTimeMillis()
                 //检查选中 index
-                if (index == -1 || index != lastIndex) {
-                    lastIndex = index
+                if (selectedIndex == -1 || selectedIndex != lastIndex) {
+                    lastIndex = selectedIndex
                     lastConstantIndexTime = current
                     lastLongSelectedIndex = -1
                     continue
                 }
-                if (index == lastLongSelectedIndex) {
+                if (selectedIndex == lastLongSelectedIndex) {
                     lastConstantIndexTime = current
                     continue
                 }
                 //选中变化了
                 if (current - lastConstantIndexTime > selectedTime) {
-                    manager?.onIndexLongSelected(index)
-                    lastLongSelectedIndex = index
+                    manager?.onIndexLongSelected(selectedIndex)
+                    lastLongSelectedIndex = selectedIndex
+                    checkHintTxt()
                 }
             }
         }?.start()

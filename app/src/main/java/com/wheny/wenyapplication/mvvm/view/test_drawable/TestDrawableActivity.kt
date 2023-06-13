@@ -31,20 +31,23 @@ class TestDrawableActivity : AppCompatActivity() {
         EdSliderBuilder(this)
             .set(manager)
             .on(findViewById(R.id.target_view))
-            .setAlignment(Align.RIGHT, Align.BOTTOM)
+            .setAlignment(Align.CENTER, Align.CENTER)
             .setIconSize(46.dp)
             .setPadding(46.dp, 92.dp, 46.dp, 46.dp)
             .setDeterminePadding(40.dp, 40.dp)
             .setIconMargin(14.dp, 5.dp)
-//            .setBgPadding((32 - 14).dp, (32 - 14).dp)
+            .setBgPadding((32 - 14).dp, (-14).dp)
             .setMargin(0f, 0f, 0f, 0f)
-            .setChoseMargin(false)
+            .setChoseMargin(true)
             .setSelectedTime(1000 * 2)
+            .setMaxIcons(4)
+            .setLimitMax(false)
             .setSliderBackground(R.drawable.ed_slider_background)
             .addIcon(R.drawable.ganup_emo_1)
             .addIcon(R.drawable.ganup_emo_2)
             .addIcon(R.drawable.ganup_emo_3)
             .addIcon(R.drawable.ganup_emo_4)
+//            .addIcon(R.drawable.ganup_emo_5)
             .build()
     }
 
@@ -68,12 +71,14 @@ class TestDrawableActivity : AppCompatActivity() {
         val button = findViewById<View>(R.id.button)
         button.setOnLongClickListener {
             edslider.show()
+            button.visibility = View.GONE
             true
         }
 
 
         manager = EdSliderManager(object : OnSliderSelectedListener {
             override fun onSelected(index: Int) {
+                button.visibility = View.VISIBLE
                 Toast.makeText(this@TestDrawableActivity, "selected: $index", Toast.LENGTH_SHORT)
                     .show()
             }

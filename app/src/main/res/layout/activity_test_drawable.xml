@@ -33,23 +33,25 @@
 
     <ImageView
         android:id="@+id/button"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/ganup_emo_1"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="350dp"
+        android:layout_marginStart="72dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="72dp"
+        />
 
     <View
         android:id="@+id/target_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@color/colorAccent"
-        android:layout_marginBottom="30dp"
-        android:layout_marginStart="150dp"
-        app:layout_constraintStart_toStartOf="@id/button"
-        app:layout_constraintBottom_toTopOf="@id/button" />
+        android:layout_width="1dp"
+        android:layout_height="1dp"
+        android:layout_marginBottom="72dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/button"
+        android:layout_marginTop="20dp"
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
