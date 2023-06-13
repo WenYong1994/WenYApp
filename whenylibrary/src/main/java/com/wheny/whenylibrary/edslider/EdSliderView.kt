@@ -1,14 +1,17 @@
 package com.wheny.whenylibrary.edslider
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
+import android.text.Layout
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginTop
 import androidx.core.view.size
 import com.wheny.whenylibrary.R
 import java.util.concurrent.atomic.AtomicBoolean
@@ -26,10 +29,16 @@ class EdSliderView : ConstraintLayout {
     private var boundary: RectF? = null
     private var index = 0
     private var flags: BooleanArray = booleanArrayOf()
+
     private var itemGroupLayout = LinearLayout(context).apply {
         gravity = Gravity.CENTER_VERTICAL
         id = R.id.item_group_layout
     }
+    var itemLocationView = ConstraintLayout(context)
+        .apply {
+            id = R.id.item_location_layout
+            clipChildren = false
+        }
     var bgView = View(context)
     var groupLocation = IntArray(2)
     private var isReversed = false
@@ -76,15 +85,12 @@ class EdSliderView : ConstraintLayout {
      * @param builder the configs
      */
     fun build(builder: EdSliderBuilder) {
-        var params = LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        ).apply {
-            startToStart = LayoutParams.PARENT_ID
-            topToTop = LayoutParams.PARENT_ID
-        }
-        itemGroupLayout.layoutParams = params
-        itemGroupLayout.orientation = LinearLayout.HORIZONTAL
+        // todo
 
+        layoutParams = ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        itemGroupLayout.orientation = LinearLayout.HORIZONTAL
+        clipChildren = false
+        clipToPadding = false
         itemGroupLayout.clipChildren = false
         itemGroupLayout.clipToPadding = false
         isReversed = builder.isReversed
@@ -103,6 +109,21 @@ class EdSliderView : ConstraintLayout {
             )
             itemGroupLayout.addView(itemView)
         }
+
+
+        itemLocationView.layoutParams =
+            LayoutParams(builder.getItemLayoutWidth(), builder.getItemLayoutHeight()).apply {
+                startToStart = LayoutParams.PARENT_ID
+                topToTop = LayoutParams.PARENT_ID
+                endToEnd = LayoutParams.PARENT_ID
+                bottomToBottom = LayoutParams.PARENT_ID
+
+                marginStart = builder.paddingStart.toInt()
+                marginEnd = builder.paddingEnd.toInt()
+                topMargin = builder.paddingTop.toInt()
+                bottomMargin = builder.paddingBottom.toInt()
+            }
+
         bgView.setBackgroundResource(builder.backgroundResId)
         bgView.layoutParams = LayoutParams(
             0,
@@ -113,9 +134,34 @@ class EdSliderView : ConstraintLayout {
             topToTop = itemGroupLayout.id
             bottomToBottom = itemGroupLayout.id
         }
-        addView(bgView)
 
-        this.addView(itemGroupLayout)
+        itemGroupLayout.layoutParams = LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+        ).apply {
+
+            when (builder.aligns[0]) {
+                Align.LEFT -> {
+                    startToStart = itemLocationView.id
+                    topToTop = itemLocationView.id
+                    bottomToBottom = itemLocationView.id
+                }
+                Align.CENTER -> {
+                    startToStart = itemLocationView.id
+                    endToEnd = itemLocationView.id
+                    topToTop = itemLocationView.id
+                    bottomToBottom = itemLocationView.id
+                }
+                Align.RIGHT -> {
+                    endToEnd = itemLocationView.id
+                    topToTop = itemLocationView.id
+                    bottomToBottom = itemLocationView.id
+                }
+            }
+        }
+
+        addView(itemLocationView)
+        addView(bgView)
+        addView(itemGroupLayout)
         manager = builder.manager
         flags = BooleanArray(builder.list!!.size)
         boundary = builder.determineBoundary
@@ -127,8 +173,8 @@ class EdSliderView : ConstraintLayout {
      */
     fun show() {
         showing.set(true)
-        itemGroupLayout.scaleY = 0f
-        itemGroupLayout.animate().scaleY(1f).setDuration(150).start()
+        bgView.scaleY = 0f
+        bgView.animate().scaleY(1f).setDuration(150).start()
         for (i in 0 until itemGroupLayout.childCount) {
             (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
                 onAppear(i)
@@ -149,7 +195,7 @@ class EdSliderView : ConstraintLayout {
 
         // hide view when finish animating
         postDelayed({
-            itemGroupLayout.animate().scaleY(0f).setDuration(150).start()
+            bgView.animate().scaleY(0f).setDuration(150).start()
             postDelayed({
                 manager?.dismiss()
             }, 150)
@@ -175,7 +221,11 @@ class EdSliderView : ConstraintLayout {
         x -= itemGroupLayout.x
         y -= itemGroupLayout.y
 
+        index = -1
         index = checkPointPosition(x, y)
+//        if (boundary?.contains(x, y) == true) {
+//            index = Math.floor((x / (boundary!!.width() / flags.size)).toDouble()).toInt()
+//        }
         if (index >= 0 && index < flags.size) {
             // enlarge
             if (!flags[index]) {

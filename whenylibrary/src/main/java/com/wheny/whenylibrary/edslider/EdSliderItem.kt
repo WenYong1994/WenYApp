@@ -77,17 +77,43 @@ class EdSliderItem(
         Log.e("onSelectedChange", "index:${index},selected:${selected}")
         if (selected) {
             val absTranslationY = height.toFloat()
-            animate()
-                .translationY(if (isReversed) absTranslationY else -absTranslationY)
-                .scaleX(2f).scaleY(2f).setDuration(150)
-                .setStartDelay(0).setInterpolator(null).start()
+//            animate()
+//                .translationY(if (isReversed) absTranslationY else -absTranslationY)
+//                .scaleX(2f).scaleY(2f).setDuration(150)
+//                .setStartDelay(0).setInterpolator(null).start()
+            clearAnimation()
+            val animation = ItemAnimation(2f)
+                .apply {
+                    duration = 150
+                }
+            startAnimation(animation)
         } else {
-            animate()
-                .translationY(0f)
-                .scaleX(1f).scaleY(1f).setDuration(150)
-                .setStartDelay(0).setInterpolator(null).start()
+//            animate()
+//                .translationY(0f)
+//                .scaleX(1f).scaleY(1f).setDuration(150)
+//                .setStartDelay(0).setInterpolator(null).start()
+            clearAnimation()
+            val animation = ItemAnimation(1f)
+                .apply {
+                    duration = 150
+                }
+            startAnimation(animation)
         }
 
+    }
+
+
+    inner class ItemAnimation(val toScale: Float) : Animation() {
+        val startScale = currentScale
+
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            super.applyTransformation(interpolatedTime, t)
+            val lp = image.layoutParams
+            currentScale = (toScale - startScale) * interpolatedTime + startScale
+            lp.width = (size * currentScale).toInt()
+            lp.height = (size * currentScale).toInt()
+            image.layoutParams = lp
+        }
     }
 
 

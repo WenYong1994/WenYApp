@@ -42,6 +42,14 @@ class EdSliderBuilder {
     var paddingEnd = 0f
     var aligns: Array<Align> = arrayOf()
 
+    var marginTop = 0f
+
+    var marginBottom = 0f
+
+    var marginStart = 0f
+
+    var marginEnd = 0f
+
     /**
      * 是否反方向，上下反转
      * */
@@ -182,6 +190,14 @@ class EdSliderBuilder {
         return this
     }
 
+    fun setMargin(start: Float, top: Float, end: Float, bottom: Float): EdSliderBuilder {
+        marginStart = start
+        marginTop = top
+        marginEnd = end
+        marginBottom = bottom
+        return this
+    }
+
     /**
      * Finalize the builder
      * @return
@@ -198,13 +214,6 @@ class EdSliderBuilder {
      */
     private fun adjustPosition() {
         // set padding to view
-        view?.setPadding(
-            paddingStart.toInt(),
-            paddingTop.toInt(),
-            paddingEnd.toInt(),
-            paddingBottom.toInt()
-        )
-        // cant get width or height before showing
         // so we need to calculate the size manually
         val rectSize = size + iconMarginHorizontal + iconMarginHorizontal
         determineBoundary = RectF(
@@ -214,6 +223,7 @@ class EdSliderBuilder {
             paddingTop + size + iconMarginVertical + iconMarginVertical + determinePaddingBottom
         )
 
+        // 整个 buildView的 大小
         visionBoundary = RectF(
             0f,
             0f,
@@ -234,11 +244,11 @@ class EdSliderBuilder {
         when (aligns[0]) {
             //左边对其
             Align.LEFT -> {
-                x = relativeCoordX
+                x = relativeCoordX - paddingStart + marginStart
             }
             Align.RIGHT -> {
                 x = relativeCoordX + (target?.width ?: 0f).toFloat() -
-                        (visionBoundary?.width() ?: 0).toFloat()
+                        (visionBoundary?.width() ?: 0).toFloat() + paddingEnd - marginEnd
             }
             Align.CENTER -> {
                 x = relativeCoordX + ((target?.width ?: 0) / 2) -
@@ -248,14 +258,25 @@ class EdSliderBuilder {
         when (aligns[1]) {
             //再目标view的上面
             Align.TOP -> {
-                y = (relativeCoordY - (visionBoundary?.height() ?: 0).toFloat())
+                y = (relativeCoordY - (visionBoundary?.height() ?: 0).toFloat()) + paddingBottom - marginBottom
             }
             Align.BOTTOM -> {
-                y = (relativeCoordY - (target?.height ?: 0)).toFloat()
+                y = (relativeCoordY - (target?.height ?: 0)).toFloat() - paddingBottom + marginTop
             }
         }
         view?.groupLocation = layoutCoord
         view?.setX(x)
         view?.setY(y)
     }
+
+    fun getItemLayoutHeight(): Int {
+        val rectSize = size + iconMarginVertical + iconMarginVertical
+        return rectSize.toInt()
+    }
+
+    fun getItemLayoutWidth(): Int {
+        val rectSize = size + iconMarginHorizontal + iconMarginHorizontal
+        return (rectSize * (list?.size ?: 0)).toInt()
+    }
+
 }

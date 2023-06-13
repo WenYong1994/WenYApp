@@ -35,7 +35,7 @@
         android:id="@+id/button"
         android:layout_width="150dp"
         android:layout_height="50dp"
-        android:layout_marginTop="150dp"
+        android:layout_marginTop="250dp"
         android:background="#00ff00"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
