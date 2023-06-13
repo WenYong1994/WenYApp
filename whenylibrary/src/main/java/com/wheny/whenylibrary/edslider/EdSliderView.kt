@@ -3,6 +3,8 @@ package com.wheny.whenylibrary.edslider
 import android.content.Context
 import android.graphics.PointF
 import android.graphics.RectF
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
@@ -94,6 +96,8 @@ class EdSliderView : ConstraintLayout {
     var selectedTime = 1000 * 3L
 
     var timerJob: Job? = null
+
+    private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
 
     constructor(context: Context) : super(context) {
@@ -298,14 +302,13 @@ class EdSliderView : ConstraintLayout {
 
         selectedIndex = -1
         selectedIndex = checkPointPosition(x, y)
-//        if (boundary?.contains(x, y) == true) {
-//            index = Math.floor((x / (boundary!!.width() / flags.size)).toDouble()).toInt()
-//        }
         if (selectedIndex >= 0 && selectedIndex < flags.size) {
             // enlarge
             if (!flags[selectedIndex]) {
                 // avoid duplicate
                 flags[selectedIndex] = true
+                val pattern = longArrayOf(0L,30L)
+                vibrator.vibrate(pattern,-1)
                 (itemGroupLayout.getChildAt(selectedIndex) as? EdSliderItemSliderListener)?.apply {
                     onSelectedChange(selectedIndex, true)
                 }
