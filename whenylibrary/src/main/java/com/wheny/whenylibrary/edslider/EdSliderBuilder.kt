@@ -70,6 +70,11 @@ class EdSliderBuilder {
      * */
     var choseMargin = false
 
+    /**
+     * 选中时间 单位毫秒
+     */
+    var selectedTime = 1000 * 3L
+
     constructor(context: Context) {
         this.context = context
         view = EdSliderView(context)
@@ -195,6 +200,11 @@ class EdSliderBuilder {
         marginTop = top
         marginEnd = end
         marginBottom = bottom
+        return this
+    }
+
+    fun setSelectedTime(selectedTime: Long) :EdSliderBuilder{
+        this.selectedTime = selectedTime
         return this
     }
 

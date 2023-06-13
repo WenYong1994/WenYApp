@@ -9,6 +9,7 @@ import android.view.animation.OvershootInterpolator
 import android.view.animation.Transformation
 import android.widget.FrameLayout
 import android.widget.ImageView
+import java.util.concurrent.Flow
 
 
 /**
@@ -76,35 +77,33 @@ class EdSliderItem(
     override fun onSelectedChange(index: Int, selected: Boolean) {
         Log.e("onSelectedChange", "index:${index},selected:${selected}")
         if (selected) {
-            val absTranslationY = height.toFloat()
-//            animate()
-//                .translationY(if (isReversed) absTranslationY else -absTranslationY)
-//                .scaleX(2f).scaleY(2f).setDuration(150)
-//                .setStartDelay(0).setInterpolator(null).start()
+            val absTranslationY = height.toFloat() / 2
             clearAnimation()
-            val animation = ItemAnimation(2f)
+            val animation = ItemAnimation(
+                2f,
+                if (isReversed) absTranslationY else -absTranslationY
+            )
                 .apply {
                     duration = 150
                 }
             startAnimation(animation)
         } else {
-//            animate()
-//                .translationY(0f)
-//                .scaleX(1f).scaleY(1f).setDuration(150)
-//                .setStartDelay(0).setInterpolator(null).start()
             clearAnimation()
-            val animation = ItemAnimation(1f)
+            val animation = ItemAnimation(1f, 0f)
                 .apply {
                     duration = 150
                 }
             startAnimation(animation)
         }
 
+
+
     }
 
 
-    inner class ItemAnimation(val toScale: Float) : Animation() {
+    inner class ItemAnimation(val toScale: Float, val toTranslationY: Float) : Animation() {
         val startScale = currentScale
+        val startTranslationY = translationY
 
         override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
             super.applyTransformation(interpolatedTime, t)
@@ -113,6 +112,8 @@ class EdSliderItem(
             lp.width = (size * currentScale).toInt()
             lp.height = (size * currentScale).toInt()
             image.layoutParams = lp
+            translationY =
+                (toTranslationY - startTranslationY) * interpolatedTime + startTranslationY
         }
     }
 

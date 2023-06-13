@@ -33,9 +33,9 @@ class TestDrawableActivity : AppCompatActivity() {
             .setAlignment(Align.LEFT, Align.CENTER)
             .setIconSize(30.dp)
             .setPadding(30.dp, 60.dp, 30.dp, 20.dp)
-            .setDeterminePadding(40.dp, 25.dp)
+            .setDeterminePadding(40.dp, 40.dp)
             .setIconMargin(5.dp, 5.dp)
-            .setMargin(100.dp, 0f, 0f, 20.dp)
+            .setMargin(60.dp, 0f, 0f, 20.dp)
             .setChoseMargin(false)
             .addIcon(R.drawable.ic_android)
             .addIcon(R.drawable.ic_heart)
@@ -44,6 +44,8 @@ class TestDrawableActivity : AppCompatActivity() {
             .addIcon(R.drawable.ic_android)
             .build()
     }
+
+    var manager :EdSliderManager? = null
 
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,17 +67,26 @@ class TestDrawableActivity : AppCompatActivity() {
             edslider.show()
             true
         }
+
+
+        manager = EdSliderManager(object : OnSliderSelectedListener {
+            override fun onSelected(index: Int) {
+                Toast.makeText(this@TestDrawableActivity, "selected: $index", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            override fun onLongSelected(index: Int) {
+                Toast.makeText(this@TestDrawableActivity, "长按选中: $index", Toast.LENGTH_SHORT)
+                    .show()
+//                manager?.dismiss()
+            }
+        })
     }
 
-    val manager = EdSliderManager(object : OnSliderSelectedListener {
-        override fun OnSelected(index: Int) {
-            Toast.makeText(this@TestDrawableActivity, "selected: $index", Toast.LENGTH_SHORT)
-                .show()
-        }
-    })
+
 
     override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-        return if (manager.dispatched(event)) false else super.dispatchTouchEvent(event)
+        return if (manager?.dispatched(event) == true) false else super.dispatchTouchEvent(event)
     }
 
 }

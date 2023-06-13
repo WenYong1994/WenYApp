@@ -9,5 +9,8 @@ package com.wheny.whenylibrary.edslider
  * 描述：
  **/
 interface OnSliderSelectedListener {
-    fun OnSelected(index: Int)
+    fun onSelected(index: Int)
+
+    fun onLongSelected(index: Int)
+
 }

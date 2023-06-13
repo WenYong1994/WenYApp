@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
 import android.text.Layout
+import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -13,7 +14,13 @@ import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginTop
 import androidx.core.view.size
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.wheny.whenylibrary.R
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.util.Timer
 import java.util.concurrent.atomic.AtomicBoolean
 
 
@@ -47,6 +54,7 @@ class EdSliderView : ConstraintLayout {
     var iconMarginVertical = 0f
     var showing = AtomicBoolean(false)
 
+
     /**
      * 增加上下判定范围
      * */
@@ -56,6 +64,28 @@ class EdSliderView : ConstraintLayout {
      * 增加上下判定范围
      * */
     var determinePaddingBottom = 0f
+
+    /**
+     * 记录上一次选择的Index 来判断三秒以上
+     * */
+    var lastIndex = -1
+
+    /**
+     * 记录一致Index开始没变化的时间
+     * */
+    var lastConstantIndexTime = 0L
+
+    /**
+     * 记录上一次长按选中的Index
+     * */
+    var lastLongSelectedIndex = -1
+
+    /**
+     * 选中时间 单位毫秒
+     */
+    var selectedTime = 1000 * 3L
+
+    var timerJob: Job? = null
 
 
     constructor(context: Context) : super(context) {
@@ -85,8 +115,6 @@ class EdSliderView : ConstraintLayout {
      * @param builder the configs
      */
     fun build(builder: EdSliderBuilder) {
-        // todo
-
         layoutParams = ViewGroup.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
         itemGroupLayout.orientation = LinearLayout.HORIZONTAL
         clipChildren = false
@@ -166,6 +194,7 @@ class EdSliderView : ConstraintLayout {
         flags = BooleanArray(builder.list!!.size)
         boundary = builder.determineBoundary
         choseMargin = builder.choseMargin
+        selectedTime = builder.selectedTime
     }
 
     /**
@@ -173,6 +202,7 @@ class EdSliderView : ConstraintLayout {
      */
     fun show() {
         showing.set(true)
+        initTimer()
         bgView.scaleY = 0f
         bgView.animate().scaleY(1f).setDuration(150).start()
         for (i in 0 until itemGroupLayout.childCount) {
@@ -192,14 +222,14 @@ class EdSliderView : ConstraintLayout {
                 onDisAppear(i)
             }
         }
-
         // hide view when finish animating
         postDelayed({
             bgView.animate().scaleY(0f).setDuration(150).start()
             postDelayed({
-                manager?.dismiss()
+                manager?.instantDismiss()
             }, 150)
         }, (150 * itemGroupLayout.childCount).toLong())
+        timerJob?.cancel()
     }
 
     /**
@@ -248,6 +278,8 @@ class EdSliderView : ConstraintLayout {
                 }
             }
         }
+
+
     }
 
     private fun checkPointPosition(x: Float, y: Float): Int {
@@ -274,6 +306,36 @@ class EdSliderView : ConstraintLayout {
 
     fun getSelectedIndex(): Int {
         return index
+    }
+
+
+    private fun initTimer() {
+        lastIndex = -1
+        lastConstantIndexTime = -1
+        lastLongSelectedIndex = -1
+        (context as? FragmentActivity)?.lifecycleScope?.launch {
+            while (showing.get()) {
+                delay(100)
+                Log.e("initTimer","lastIndex${lastIndex},index:${index},lastConstantIndexTime:${lastConstantIndexTime},lastLongSelectedIndex:${lastLongSelectedIndex}")
+                val current = System.currentTimeMillis()
+                //检查选中 index
+                if (index == -1 || index != lastIndex){
+                    lastIndex = index
+                    lastConstantIndexTime = current
+                    lastLongSelectedIndex = -1
+                    continue
+                }
+                if(index == lastLongSelectedIndex ){
+                    lastConstantIndexTime = current
+                    continue
+                }
+                //选中变化了
+                if (current - lastConstantIndexTime > selectedTime) {
+                    manager?.onIndexLongSelected(index)
+                    lastLongSelectedIndex = index
+                }
+            }
+        }?.start()
     }
 
 }

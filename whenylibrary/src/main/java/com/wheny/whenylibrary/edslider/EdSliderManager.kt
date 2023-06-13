@@ -43,14 +43,22 @@ class EdSliderManager(listener: OnSliderSelectedListener?) {
         }
     }
 
-    fun dismiss() {
+    fun instantDismiss() {
         var index = -1
         if (layout != null) if (view != null) {
             index = view!!.getSelectedIndex()
             layout!!.removeView(view)
         }
         showing = false
-        if (listener != null) listener!!.OnSelected(index)
+        if (listener != null) listener!!.onSelected(index)
+    }
+
+    fun dismiss() {
+        view?.dismiss()
+    }
+
+    fun onIndexLongSelected(index: Int) {
+        listener?.onLongSelected(index)
     }
 
     /**
@@ -60,4 +68,5 @@ class EdSliderManager(listener: OnSliderSelectedListener?) {
     fun setOnSliderSelectedListener(listener: OnSliderSelectedListener?) {
         this.listener = listener
     }
+
 }
