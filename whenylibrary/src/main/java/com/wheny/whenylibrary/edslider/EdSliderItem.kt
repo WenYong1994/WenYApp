@@ -48,25 +48,36 @@ class EdSliderItem(
         addView(image)
     }
 
-    override fun onAppear(index: Int) {
-        translationY = 0f
-        scaleX = 0f
-        scaleY = 0f
-        animate().scaleX(1f).scaleY(1f).setDuration(100)
-            .setStartDelay((80 * index + 150).toLong())
-            .setInterpolator(OvershootInterpolator())
-            .start()
+    override fun onAppear(index: Int, showIndex: Int, needAni: Boolean) {
+        val offsetY = if (isReversed) -height.toFloat() else height.toFloat()
+        if (needAni){
+            translationY = offsetY
+            scaleX = 0f
+            scaleY = 0f
+            animate().scaleX(1f).scaleY(1f).setDuration(100)
+                .translationY(0f)
+                .setStartDelay((80 * showIndex + 150).toLong())
+                .setInterpolator(OvershootInterpolator())
+                .start()
+        }else{
+            scaleX = 1f
+            scaleY = 1f
+            translationY = 0f
+        }
+
     }
 
-    override fun onDisAppear(index: Int) {
-        scaleX = 1f
-        scaleY = 1f
-        animate().cancel()
-        animate().translationY(if (isReversed) -height.toFloat() else height.toFloat())
-            .scaleX(0f).scaleY(0f).setDuration(100)
-            .setStartDelay((80 * index).toLong())
-            .setInterpolator(null)
-            .start()
+    override fun onDisAppear(index: Int, showIndex: Int, needAni: Boolean) {
+        if(needAni){
+            scaleX = 1f
+            scaleY = 1f
+            animate().cancel()
+            animate().translationY(if (isReversed) -height.toFloat() else height.toFloat())
+                .scaleX(0f).scaleY(0f).setDuration(100)
+                .setStartDelay((80 * showIndex).toLong())
+                .setInterpolator(null)
+                .start()
+        }
     }
 
     override fun onSlider(index: Int, rectF: RectF, pointF: PointF) {
@@ -95,7 +106,6 @@ class EdSliderItem(
                 }
             startAnimation(animation)
         }
-
 
 
     }

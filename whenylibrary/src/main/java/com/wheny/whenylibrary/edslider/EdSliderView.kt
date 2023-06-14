@@ -42,21 +42,19 @@ class EdSliderView : ConstraintLayout {
         gravity = Gravity.CENTER_VERTICAL
         id = R.id.item_group_layout
     }
-    private var itemLocationView = View(context)
-        .apply {
-            id = R.id.item_location_layout
-            clipChildren = false
-        }
+    private var itemLocationView = View(context).apply {
+        id = R.id.item_location_layout
+        clipChildren = false
+    }
 
-    private var itemScrollView = EnableHorizontalScrollView(context)
-        .apply {
-            id = R.id.item_scroll_layout
-            clipChildren = false
-            isEnabled = false
-            enableScroll = false
-            isHorizontalScrollBarEnabled = false
-            overScrollMode = OVER_SCROLL_NEVER
-        }
+    private var itemScrollView = EnableHorizontalScrollView(context).apply {
+        id = R.id.item_scroll_layout
+        clipChildren = false
+        isEnabled = false
+        enableScroll = false
+        isHorizontalScrollBarEnabled = false
+        overScrollMode = OVER_SCROLL_NEVER
+    }
 
 
     var hintTxt = TextView(context).apply {
@@ -154,10 +152,7 @@ class EdSliderView : ConstraintLayout {
         layoutParams = ViewGroup.LayoutParams(builder.getViewWidth(), builder.getViewHeight())
         itemGroupLayout.orientation = LinearLayout.HORIZONTAL
         itemGroupLayout.setPadding(
-            builder.bgPaddingStart.toInt(),
-            0,
-            builder.bgPaddingEnd.toInt(),
-            0
+            builder.bgPaddingStart.toInt(), 0, builder.bgPaddingEnd.toInt(), 0
         )
 
         clipChildren = false
@@ -223,8 +218,7 @@ class EdSliderView : ConstraintLayout {
 
         bgView.setBackgroundResource(builder.backgroundResId)
         bgView.layoutParams = LayoutParams(
-            0,
-            (builder.size + iconMarginVertical + iconMarginVertical).toInt()
+            0, (builder.size + iconMarginVertical + iconMarginVertical).toInt()
         ).apply {
             val id = if (builder.bgChange && !limitMax) {
                 itemGroupLayout.id
@@ -286,9 +280,24 @@ class EdSliderView : ConstraintLayout {
         initTimer()
         bgView.scaleY = 0f
         bgView.animate().scaleY(1f).setDuration(150).start()
+
+        val maxIcons = (builder?.maxIcons ?: 0)
+        val aniStartIndex = max(getCurrentPageFirstIndex() - 1, 0)
+        val aniEndIndex =
+            min(getCurrentPageLastIndex() + 1, itemGroupLayout.childCount - 1)
         for (i in 0 until itemGroupLayout.childCount) {
-            (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
-                onAppear(i)
+            if (limitMax && itemGroupLayout.childCount > maxIcons) {
+                (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
+                    if (i in aniStartIndex..aniEndIndex) {
+                        onAppear(i, i - aniStartIndex, true)
+                    } else {
+                        onAppear(i, -1, false)
+                    }
+                }
+            } else {
+                (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
+                    onAppear(i, i, true)
+                }
             }
         }
     }
@@ -298,19 +307,43 @@ class EdSliderView : ConstraintLayout {
      */
     fun dismiss() {
         showing.set(false)
-        for (i in 0 until itemGroupLayout.childCount) {
-            (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
-                onDisAppear(i)
+        var aniSize = itemGroupLayout.childCount
+        val maxIcons = (builder?.maxIcons ?: 0)
+        if (limitMax && itemGroupLayout.childCount > maxIcons) {
+            val aniStartIndex = max(getCurrentPageFirstIndex() - 1, 0)
+            val aniEndIndex =
+                min(getCurrentPageLastIndex() + 1, itemGroupLayout.childCount - 1)
+            aniSize = aniEndIndex - aniStartIndex + 1
+            for (i in 0 until itemGroupLayout.childCount) {
+                (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
+                    // 显示中的需要执行 动画
+                    if (i in aniStartIndex..aniEndIndex) {
+                        onDisAppear(i, i - aniStartIndex, true)
+                    } else {
+                        // 没显示中的 不需要执行动画
+                        (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
+                            onDisAppear(i, -1, false)
+                        }
+                    }
+                }
+            }
+        } else {
+            for (i in 0 until itemGroupLayout.childCount) {
+                (itemGroupLayout.getChildAt(i) as? EdSliderItemSliderListener)?.apply {
+                    onDisAppear(i, i, true)
+                }
             }
         }
-        // hide view when finish animating
-        postDelayed({
-            bgView.animate().scaleY(0f).setDuration(150).start()
-            postDelayed({
-                manager?.instantDismiss()
-            }, 150)
-        }, (150 * itemGroupLayout.childCount).toLong())
+        postDelayed(
+            {
+                bgView.animate().scaleY(0f).setDuration(150).start()
+                postDelayed({
+                    manager?.instantDismiss()
+                }, 150)
+            }, (150 * aniSize).toLong()
+        )
         timerJob?.cancel()
+
     }
 
     /**
@@ -319,7 +352,7 @@ class EdSliderView : ConstraintLayout {
      * @param eventY touch y
      */
     private fun process(eventX: Float, eventY: Float) {
-        if(itemScrollView.isScrolling()){
+        if (itemScrollView.isScrolling()) {
             return
         }
         val groupLocation = IntArray(2)
@@ -366,9 +399,6 @@ class EdSliderView : ConstraintLayout {
         var index = -1
         val rectF = RectF()
         // 先判断是否在可选中范围外了
-        val builder = this.builder ?: return index
-
-
         for (i in 0 until itemGroupLayout.childCount) {
             val child = itemGroupLayout.getChildAt(i)
             // 这里需要加margin不
@@ -384,14 +414,14 @@ class EdSliderView : ConstraintLayout {
             // 执行监听
             (child as EdSliderItemSliderListener).onSlider(i, rectF, PointF(x, y))
         }
-        // 如果限制最大个数，超过这一个最大个数的都不触发选中，只触发当前页的
+        // 如果限制最大个数， 超过这一个最大个数的都不触发选中，只触发当前页的
         if (limitMax) {
             // 超出当前页了
-            if (index + 1 > (currentPage + 1) * builder.maxIcons) {
+            if (index > getCurrentPageLastIndex()) {
                 index = -1
             }
             // 小于当前页了
-            if (index + 1 <= (currentPage) * builder.maxIcons) {
+            if (index < getCurrentPageFirstIndex()) {
                 index = -1
             }
         }
@@ -493,6 +523,25 @@ class EdSliderView : ConstraintLayout {
         vibrator()
         itemScrollView.smoothScrollTo(targetX.toInt(), 0)
         currentPage = targetPage
+    }
+
+
+    /**
+     * 获取当前page 的第一个index
+     * */
+    private fun getCurrentPageFirstIndex(): Int {
+        return getCurrentPageLastIndex() - ((builder?.maxIcons ?: 0) - 1)
+    }
+
+    /**
+     * 获取当前page 最后一个的index
+     * */
+    private fun getCurrentPageLastIndex(): Int {
+        val lastIndex = (currentPage + 1) * (builder?.maxIcons ?: 0)
+        if (lastIndex > (builder?.list?.size ?: 0)) {
+            return (builder?.list?.size ?: 0) - 1
+        }
+        return lastIndex - 1
     }
 
 }

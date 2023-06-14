@@ -13,9 +13,9 @@ import android.graphics.RectF
  **/
 interface EdSliderItemSliderListener {
 
-    fun onAppear(index: Int)
+    fun onAppear(index: Int, showIndex: Int, needAni: Boolean = false)
 
-    fun onDisAppear(index: Int)
+    fun onDisAppear(index: Int, showIndex: Int, needAni: Boolean = false)
 
     fun onSlider(index: Int, rectF: RectF, pointF: PointF)
 

@@ -56,5 +56,4 @@ class EnableHorizontalScrollView(context: Context) : HorizontalScrollView(contex
         return superScroller?.isFinished == false
     }
 
-
 }

@@ -57,6 +57,7 @@ class TestDrawableActivity : AppCompatActivity() {
             .addIcon(R.drawable.ganup_emo_1)
             .addIcon(R.drawable.ganup_emo_2)
             .addIcon(R.drawable.ganup_emo_3)
+            .addIcon(R.drawable.ganup_emo_5)
             .build()
     }
 
