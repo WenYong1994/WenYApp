@@ -1,18 +1,19 @@
 package com.wheny.whenylibrary.edslider
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
-import android.os.VibrationEffect
+import android.os.Build
 import android.os.Vibrator
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +22,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.max
+import kotlin.math.min
 
 
 /**
@@ -45,10 +48,14 @@ class EdSliderView : ConstraintLayout {
             clipChildren = false
         }
 
-    private var itemScrollView = HorizontalScrollView(context)
+    private var itemScrollView = EnableHorizontalScrollView(context)
         .apply {
             id = R.id.item_scroll_layout
             clipChildren = false
+            isEnabled = false
+            enableScroll = false
+            isHorizontalScrollBarEnabled = false
+            overScrollMode = OVER_SCROLL_NEVER
         }
 
 
@@ -57,7 +64,6 @@ class EdSliderView : ConstraintLayout {
     }
 
     var bgView = View(context)
-    var groupLocation = IntArray(2)
     private var isReversed = false
     private var choseMargin = false
     var iconMarginHorizontal = 0f
@@ -91,14 +97,30 @@ class EdSliderView : ConstraintLayout {
     var lastLongSelectedIndex = -1
 
     /**
+     * 记录上一次停留在某个action 没变化的开始时间
+     * */
+    var lastScrollActionTime = 0L
+
+    /**
      * 选中时间 单位毫秒
      */
     var selectedTime = 1000 * 3L
+
+
+    var scrollAction = ScrollAction.NONE
+
+    /**
+     * 是否限制 最大个数
+     * */
+    var limitMax = false
+
+    var builder: EdSliderBuilder? = null
 
     var timerJob: Job? = null
 
     private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
+    var currentPage = 0
 
     constructor(context: Context) : super(context) {
         layoutParams = LayoutParams(
@@ -127,6 +149,8 @@ class EdSliderView : ConstraintLayout {
      * @param builder the configs
      */
     fun build(builder: EdSliderBuilder) {
+        this.builder = builder
+        limitMax = builder.limitMax
         layoutParams = ViewGroup.LayoutParams(builder.getViewWidth(), builder.getViewHeight())
         itemGroupLayout.orientation = LinearLayout.HORIZONTAL
         itemGroupLayout.setPadding(
@@ -135,6 +159,7 @@ class EdSliderView : ConstraintLayout {
             builder.bgPaddingEnd.toInt(),
             0
         )
+
         clipChildren = false
         clipToPadding = false
         itemGroupLayout.clipChildren = false
@@ -183,10 +208,12 @@ class EdSliderView : ConstraintLayout {
 
         if (builder.limitMax) {
 
+        } else {
+
         }
 
         itemScrollView.layoutParams =
-            LayoutParams(builder.getItemLayoutWidth(), builder.getItemLayoutHeight()).apply {
+            LayoutParams(builder.getItemLayoutWidth(), LayoutParams.WRAP_CONTENT).apply {
                 startToStart = itemLocationView.id
                 topToTop = itemLocationView.id
                 endToEnd = itemLocationView.id
@@ -199,16 +226,20 @@ class EdSliderView : ConstraintLayout {
             0,
             (builder.size + iconMarginVertical + iconMarginVertical).toInt()
         ).apply {
-            startToStart = itemGroupLayout.id
-            endToEnd = itemGroupLayout.id
-            topToTop = itemGroupLayout.id
-            bottomToBottom = itemGroupLayout.id
+            val id = if (builder.bgChange && !limitMax) {
+                itemGroupLayout.id
+            } else {
+                itemLocationView.id
+            }
+            startToStart = id
+            endToEnd = id
+            topToTop = id
+            bottomToBottom = id
         }
 
         itemGroupLayout.layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         ).apply {
-
             when (builder.aligns[0]) {
                 Align.LEFT -> {
                     startToStart = itemLocationView.id
@@ -229,14 +260,15 @@ class EdSliderView : ConstraintLayout {
             }
         }
 //        bgView.setBackgroundColor(Color.parseColor("#88000000"))
-//        setBackgroundColor(Color.parseColor("#8800ff00"))
-
+        setBackgroundColor(Color.parseColor("#8800ff00"))
+//        itemScrollView.setBackgroundColor(Color.parseColor("#88000000"))
+//        itemGroupLayout.setBackgroundColor(Color.parseColor("#88000000"))
         addView(itemLocationView)
         addView(bgView)
         addView(hintTxt)
-        if (builder.limitMax) {
+        if (limitMax) {
             addView(itemScrollView)
-            itemScrollView.addView(itemLocationView)
+            itemScrollView.addView(itemGroupLayout)
         } else {
             addView(itemGroupLayout)
         }
@@ -287,18 +319,14 @@ class EdSliderView : ConstraintLayout {
      * @param eventY touch y
      */
     private fun process(eventX: Float, eventY: Float) {
-        var x = eventX
-        var y = eventY
-        // 转换为edsliderView父布局 内部滑动的事件 xy  相对布 的xy
-        x -= groupLocation[0]
-        y -= groupLocation[1]
-        selectedIndex = -1
-        // 转换为edsliderView内部的 x y  相对布 的xy
-        x -= getX()
-        y -= getY()
-        // 转换为itemGroupLayout内部的 x y  相对布 的xy
-        x -= itemGroupLayout.x
-        y -= itemGroupLayout.y
+        if(itemScrollView.isScrolling()){
+            return
+        }
+        val groupLocation = IntArray(2)
+        // 转化为相对布局
+        itemGroupLayout.getLocationOnScreen(groupLocation)
+        val x = eventX - groupLocation[0]
+        val y = eventY - groupLocation[1]
 
         selectedIndex = -1
         selectedIndex = checkPointPosition(x, y)
@@ -307,8 +335,7 @@ class EdSliderView : ConstraintLayout {
             if (!flags[selectedIndex]) {
                 // avoid duplicate
                 flags[selectedIndex] = true
-                val pattern = longArrayOf(0L,30L)
-                vibrator.vibrate(pattern,-1)
+                vibrator()
                 (itemGroupLayout.getChildAt(selectedIndex) as? EdSliderItemSliderListener)?.apply {
                     onSelectedChange(selectedIndex, true)
                 }
@@ -327,12 +354,22 @@ class EdSliderView : ConstraintLayout {
             }
         }
         checkHintTxt()
+        checkScrollAction(x, y)
+    }
+
+    private fun vibrator() {
+        val pattern = longArrayOf(0L, 30L)
+        vibrator.vibrate(pattern, -1)
     }
 
     private fun checkPointPosition(x: Float, y: Float): Int {
         var index = -1
+        val rectF = RectF()
+        // 先判断是否在可选中范围外了
+        val builder = this.builder ?: return index
+
+
         for (i in 0 until itemGroupLayout.childCount) {
-            val rectF = RectF()
             val child = itemGroupLayout.getChildAt(i)
             // 这里需要加margin不
             rectF.set(
@@ -347,24 +384,53 @@ class EdSliderView : ConstraintLayout {
             // 执行监听
             (child as EdSliderItemSliderListener).onSlider(i, rectF, PointF(x, y))
         }
+        // 如果限制最大个数，超过这一个最大个数的都不触发选中，只触发当前页的
+        if (limitMax) {
+            // 超出当前页了
+            if (index + 1 > (currentPage + 1) * builder.maxIcons) {
+                index = -1
+            }
+            // 小于当前页了
+            if (index + 1 <= (currentPage) * builder.maxIcons) {
+                index = -1
+            }
+        }
         return index
     }
-
 
     fun getSelectedIndex(): Int {
         return selectedIndex
     }
 
-    private fun checkHintTxt(){
-        if(selectedIndex == -1){
+    private fun checkHintTxt() {
+        if (selectedIndex == -1) {
             hintTxt.setText("松手取消")
-        }else{
+        } else {
             //判断不同状态
-            if(lastLongSelectedIndex != -1){
+            if (lastLongSelectedIndex != -1) {
                 hintTxt.setText("松手发送，左右滑动选择其他")
-            }else{
+            } else {
                 hintTxt.setText("滑动选择")
             }
+        }
+    }
+
+    private fun checkScrollAction(x: Float, y: Float) {
+        var newAction = ScrollAction.NONE
+        if (selectedIndex != -1) {
+            return
+        }
+        val realX = x - itemScrollView.scrollX
+        if (realX < 0) {
+            newAction = ScrollAction.LEFT
+        }
+        if (realX > itemLocationView.width) {
+            newAction = ScrollAction.RIGHT
+        }
+        if (newAction != scrollAction) {
+            scrollAction = newAction
+            val current = System.currentTimeMillis()
+            lastScrollActionTime = current
         }
     }
 
@@ -374,12 +440,18 @@ class EdSliderView : ConstraintLayout {
         lastLongSelectedIndex = -1
         (context as? FragmentActivity)?.lifecycleScope?.launch {
             while (showing.get()) {
-                delay(100)
-                Log.e(
-                    "initTimer",
-                    "lastIndex${lastIndex},index:${selectedIndex},lastConstantIndexTime:${lastConstantIndexTime},lastLongSelectedIndex:${lastLongSelectedIndex}"
-                )
+                delay(10)
                 val current = System.currentTimeMillis()
+
+                //检测需要下一页不
+                if (current - lastScrollActionTime > (builder?.scrollActionThresholdTime
+                        ?: 100000L)
+                ) {
+                    if (scrollAction == ScrollAction.RIGHT || scrollAction == ScrollAction.LEFT) {
+                        lastScrollActionTime = current
+                        scrollPage()
+                    }
+                }
                 //检查选中 index
                 if (selectedIndex == -1 || selectedIndex != lastIndex) {
                     lastIndex = selectedIndex
@@ -397,8 +469,30 @@ class EdSliderView : ConstraintLayout {
                     lastLongSelectedIndex = selectedIndex
                     checkHintTxt()
                 }
+
             }
         }?.start()
+    }
+
+    private fun scrollPage() {
+        var targetPage = currentPage
+        val maxPage = (builder!!.list!!.size + (builder!!.maxIcons - 1)) / builder!!.maxIcons - 1
+        val minPage = 0
+        when (scrollAction) {
+            ScrollAction.RIGHT -> {
+                targetPage = min(currentPage + 1, maxPage)
+            }
+            ScrollAction.LEFT -> {
+                targetPage = max(currentPage - 1, minPage)
+            }
+        }
+        if (targetPage == currentPage) {
+            return
+        }
+        val targetX = targetPage * (builder!!.getItemSize() * builder!!.maxIcons)
+        vibrator()
+        itemScrollView.smoothScrollTo(targetX.toInt(), 0)
+        currentPage = targetPage
     }
 
 }

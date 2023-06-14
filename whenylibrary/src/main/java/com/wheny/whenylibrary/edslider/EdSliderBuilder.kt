@@ -29,6 +29,8 @@ class EdSliderBuilder {
 
     var limitMax = false
 
+    var bgChange = true
+
     var backgroundResId = 0
     var size = 0f
 
@@ -79,6 +81,11 @@ class EdSliderBuilder {
      * 选中时间 单位毫秒
      */
     var selectedTime = 1000 * 3L
+
+    /**
+     * 滑动切换page 单位毫秒
+     */
+    var scrollActionThresholdTime = 1000 * 1L
 
     constructor(context: Context) {
         this.context = context
@@ -227,6 +234,16 @@ class EdSliderBuilder {
         return this
     }
 
+    fun setBgChange(change: Boolean): EdSliderBuilder {
+        bgChange = change
+        return this
+    }
+
+    fun setScrollActionThresholdTime(time:Long): EdSliderBuilder{
+        scrollActionThresholdTime = time
+        return this
+    }
+
 
     /**
      * Finalize the builder
@@ -294,7 +311,6 @@ class EdSliderBuilder {
                         ((target?.height?.toFloat() ?: 0f) - rectSizeVertical) / 2
             }
         }
-        view?.groupLocation = layoutCoord
         view?.setX(x)
         view?.setY(y)
     }
@@ -305,14 +321,25 @@ class EdSliderBuilder {
     }
 
     fun getItemLayoutWidth(): Int {
-        val rectSize =
-            size + iconMarginHorizontal + iconMarginHorizontal + bgPaddingStart + bgPaddingEnd
         return if ((list?.size ?: 0) <= maxIcons || !limitMax) {
-            (rectSize * (list?.size ?: 0)).toInt()
+            (getItemSize() * (list?.size ?: 0) + bgPaddingStart + bgPaddingEnd).toInt()
         } else {
-            (rectSize * maxIcons).toInt()
+            (getItemSize() * maxIcons + bgPaddingStart + bgPaddingEnd).toInt()
         }
     }
+
+    fun getItemSize(): Float {
+        return size + iconMarginHorizontal + iconMarginHorizontal
+    }
+
+    fun getItemShowingWidth(): Float {
+        return if (limitMax) {
+            getItemSize() * maxIcons
+        } else {
+            getItemSize() * (list?.size ?: 0)
+        }
+    }
+
 
     fun getViewWidth(): Int {
         return (getItemLayoutWidth() + paddingStart + paddingEnd).toInt()

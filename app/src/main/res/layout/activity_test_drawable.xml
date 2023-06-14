@@ -36,7 +36,7 @@
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@drawable/ganup_emo_1"
-        android:layout_marginStart="72dp"
+        android:layout_marginStart="22dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginBottom="72dp"
@@ -48,9 +48,9 @@
         android:layout_height="1dp"
         android:layout_marginBottom="72dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/button"
         android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
         />
 
 
