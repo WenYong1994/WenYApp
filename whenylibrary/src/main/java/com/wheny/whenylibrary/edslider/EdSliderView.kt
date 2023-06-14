@@ -254,7 +254,7 @@ class EdSliderView : ConstraintLayout {
             }
         }
 //        bgView.setBackgroundColor(Color.parseColor("#88000000"))
-        setBackgroundColor(Color.parseColor("#8800ff00"))
+//        setBackgroundColor(Color.parseColor("#8800ff00"))
 //        itemScrollView.setBackgroundColor(Color.parseColor("#88000000"))
 //        itemGroupLayout.setBackgroundColor(Color.parseColor("#88000000"))
         addView(itemLocationView)
