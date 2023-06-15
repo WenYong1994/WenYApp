@@ -54,7 +54,7 @@ class EdSliderManager(listener: OnSliderSelectedListener?) {
     }
 
     fun dismiss() {
-        if (view?.showing?.get().safeUnboxed) {
+        if (view?.showing?.get() == true) {
             view?.dismiss()
         }
     }
