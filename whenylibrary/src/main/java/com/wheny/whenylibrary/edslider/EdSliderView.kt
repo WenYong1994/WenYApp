@@ -448,7 +448,10 @@ class EdSliderView : ConstraintLayout {
 
     private fun checkScrollAction(x: Float, y: Float) {
         var newAction = ScrollAction.NONE
+        val current = System.currentTimeMillis()
         if (selectedIndex != -1) {
+            scrollAction = newAction
+            lastScrollActionTime = current
             return
         }
         val realX = x - itemScrollView.scrollX
@@ -460,7 +463,6 @@ class EdSliderView : ConstraintLayout {
         }
         if (newAction != scrollAction) {
             scrollAction = newAction
-            val current = System.currentTimeMillis()
             lastScrollActionTime = current
         }
     }
