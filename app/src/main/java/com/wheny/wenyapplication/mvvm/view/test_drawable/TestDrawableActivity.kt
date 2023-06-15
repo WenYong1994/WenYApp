@@ -15,10 +15,7 @@ import androidx.core.animation.*
 import androidx.room.Index
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.application.App
-import com.wheny.whenylibrary.edslider.Align
-import com.wheny.whenylibrary.edslider.EdSliderBuilder
-import com.wheny.whenylibrary.edslider.EdSliderManager
-import com.wheny.whenylibrary.edslider.OnSliderSelectedListener
+import com.wheny.whenylibrary.edslider.*
 
 
 /**
@@ -47,19 +44,17 @@ class TestDrawableActivity : AppCompatActivity() {
             .setLimitMax(true)
             .setBgChange(false)
             .setSliderBackground(R.drawable.ed_slider_background)
-            .addIcon(R.drawable.ganup_emo_1)
-            .addIcon(R.drawable.ganup_emo_2)
-            .addIcon(R.drawable.ganup_emo_3)
-            .addIcon(R.drawable.ganup_emo_1)
-            .addIcon(R.drawable.ganup_emo_2)
-            .addIcon(R.drawable.ganup_emo_3)
-            .addIcon(R.drawable.ganup_emo_1)
-            .addIcon(R.drawable.ganup_emo_2)
-            .addIcon(R.drawable.ganup_emo_3)
-            .addIcon(R.drawable.ganup_emo_1)
-            .addIcon(R.drawable.ganup_emo_2)
-            .addIcon(R.drawable.ganup_emo_3)
-            .addIcon(R.drawable.ganup_emo_5)
+            .addIcon(EdIcon(R.drawable.ganup_emo_1,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_2,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_3,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_4,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
             .build()
     }
 

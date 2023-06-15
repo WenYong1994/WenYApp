@@ -123,8 +123,8 @@ class EdSliderBuilder {
      * @param id drawable id
      * @return continue building
      */
-    fun addIcon(id: Int): EdSliderBuilder {
-        list!!.add(EdIcon(id, ""))
+    fun addIcon(item: EdIcon): EdSliderBuilder {
+        list!!.add(item)
         return this
     }
 
