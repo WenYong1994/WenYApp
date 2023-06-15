@@ -54,7 +54,9 @@ class EdSliderManager(listener: OnSliderSelectedListener?) {
     }
 
     fun dismiss() {
-        view?.dismiss()
+        if (view?.showing?.get().safeUnboxed) {
+            view?.dismiss()
+        }
     }
 
     fun onIndexLongSelected(index: Int) {

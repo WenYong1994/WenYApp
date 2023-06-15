@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.os.Vibrator
 import android.util.Log
 import android.view.Gravity
@@ -116,6 +118,9 @@ class EdSliderView : ConstraintLayout {
 
     var timerJob: Job? = null
 
+    private val mHandler = Handler(Looper.getMainLooper())
+
+
     private val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     var currentPage = 0
@@ -200,13 +205,6 @@ class EdSliderView : ConstraintLayout {
             }
         hintTxt.setText("滑动选择")
 
-
-        if (builder.limitMax) {
-
-        } else {
-
-        }
-
         itemScrollView.layoutParams =
             LayoutParams(builder.getItemLayoutWidth(), LayoutParams.WRAP_CONTENT).apply {
                 startToStart = itemLocationView.id
@@ -276,6 +274,9 @@ class EdSliderView : ConstraintLayout {
      * Animate the views too look more lively
      */
     fun show() {
+        if (showing.get()) {
+            return
+        }
         builder?.adjustPosition()
         showing.set(true)
         initTimer()
@@ -307,6 +308,9 @@ class EdSliderView : ConstraintLayout {
      * Animate the views too look more lively
      */
     fun dismiss() {
+        if (!showing.get()) {
+            return
+        }
         showing.set(false)
         var aniSize = itemGroupLayout.childCount
         val maxIcons = (builder?.maxIcons ?: 0)
@@ -335,10 +339,10 @@ class EdSliderView : ConstraintLayout {
                 }
             }
         }
-        postDelayed(
+        mHandler.postDelayed(
             {
                 bgView.animate().scaleY(0f).setDuration(150).start()
-                postDelayed({
+                mHandler.postDelayed({
                     manager?.instantDismiss()
                 }, 150)
             }, (150 * aniSize).toLong()
@@ -372,7 +376,7 @@ class EdSliderView : ConstraintLayout {
                 (itemGroupLayout.getChildAt(selectedIndex) as? EdSliderItemSliderListener)?.apply {
                     onSelectedChange(selectedIndex, true)
                 }
-                manager?.onSelectedChange(oldSelected,selectedIndex)
+                manager?.onSelectedChange(oldSelected, selectedIndex)
             }
         }
 

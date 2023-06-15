@@ -83,6 +83,7 @@ class TestDrawableActivity : AppCompatActivity() {
         }
 
 
+
         manager = EdSliderManager(object : OnSliderSelectedListener {
             override fun onDismiss(index: Int, longSelected: Int) {
                 button.visibility = View.VISIBLE
@@ -115,6 +116,9 @@ class TestDrawableActivity : AppCompatActivity() {
 //                manager?.dismiss()
             }
         })
+
+        edslider.dismiss()
+
     }
 
 

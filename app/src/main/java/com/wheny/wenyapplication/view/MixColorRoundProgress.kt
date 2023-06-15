@@ -70,7 +70,7 @@ class MixColorRoundProgress : View {
 
     private val rectF = RectF()
 
-    val colorStyle = ColorStyle.ProgressColor
+    var colorStyle = ColorStyle.ProgressColor
 
     private var progressAnimation: ProgressAnimation? = null
 
@@ -78,11 +78,19 @@ class MixColorRoundProgress : View {
         attributeSet = attrs
         mStartAngle = 90f
         strokeWidth = 4.dp
-        progress = 50f
+        progress = 100f
         inverseClock = false
-        colors = intArrayOf(Color.parseColor("#eb8d4d"), Color.YELLOW, Color.parseColor("#9bedb5"))
+        colors = intArrayOf(
+            // 红色
+            Color.parseColor("#FFEB814E"),
+            // 黄色
+            Color.parseColor("#FFFCE14B"),
+            //绿色
+            Color.parseColor("#FF57E387"),
+        )
         cursorColor = Color.WHITE
         padding = 5.dp
+        colorStyle = ColorStyle.MixColor
     }
 
     @SuppressLint("DrawAllocation")
@@ -117,7 +125,11 @@ class MixColorRoundProgress : View {
         }
         when (colorStyle) {
             ColorStyle.MixColor -> {
-                val sweepGradient = SweepGradient(drawWidth / 2f, drawHeight / 2f, colors, null)
+                val sweepGradient =
+                    SweepGradient(drawWidth / 2f + padding, drawHeight / 2f + padding, colors, null)
+                val matrix = Matrix()
+                matrix.setRotate(mStartAngle, drawWidth / 2f + padding, drawHeight / 2f + padding)
+                sweepGradient.setLocalMatrix(matrix)
                 paint.shader = sweepGradient
             }
             ColorStyle.ProgressColor -> {
