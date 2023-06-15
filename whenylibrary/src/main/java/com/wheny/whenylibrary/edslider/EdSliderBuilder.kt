@@ -259,12 +259,9 @@ class EdSliderBuilder {
     /**
      * Adjust the view position around the target.
      */
-    private fun adjustPosition() {
+    fun adjustPosition() {
         // set padding to view
         // so we need to calculate the size manually
-        val rectSize = size + iconMarginHorizontal + iconMarginHorizontal
-        val rectSizeVertical = size + iconMarginVertical + iconMarginVertical
-
         // 整个 buildView的 大小
         visionBoundary = RectF(
             0f,
@@ -308,7 +305,7 @@ class EdSliderBuilder {
             }
             Align.CENTER -> {
                 y = relativeCoordY - paddingTop +
-                        ((target?.height?.toFloat() ?: 0f) - rectSizeVertical) / 2
+                        ((target?.height?.toFloat() ?: 0f) - getItemLayoutHeight()) / 2
             }
         }
         view?.setX(x)

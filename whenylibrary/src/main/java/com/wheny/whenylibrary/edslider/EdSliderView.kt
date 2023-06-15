@@ -276,6 +276,7 @@ class EdSliderView : ConstraintLayout {
      * Animate the views too look more lively
      */
     fun show() {
+        builder?.adjustPosition()
         showing.set(true)
         initTimer()
         bgView.scaleY = 0f

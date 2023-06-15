@@ -30,7 +30,7 @@ class TestDrawableActivity : AppCompatActivity() {
         EdSliderBuilder(this)
             .set(manager)
             .on(findViewById(R.id.target_view))
-            .setAlignment(Align.LEFT, Align.CENTER)
+            .setAlignment(Align.CENTER, Align.CENTER)
             .setIconSize(46.dp)
             .setPadding(23.dp, 92.dp, 23.dp, 46.dp)
             .setDeterminePadding(40.dp, 40.dp)
