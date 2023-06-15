@@ -86,7 +86,6 @@ class EdSliderItem(
     }
 
     override fun onSelectedChange(index: Int, selected: Boolean) {
-        Log.e("onSelectedChange", "index:${index},selected:${selected}")
         if (selected) {
             val absTranslationY = height.toFloat() / 2
             clearAnimation()

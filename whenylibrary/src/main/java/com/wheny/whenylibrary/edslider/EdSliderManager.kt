@@ -50,7 +50,7 @@ class EdSliderManager(listener: OnSliderSelectedListener?) {
             layout!!.removeView(view)
         }
         showing = false
-        if (listener != null) listener!!.onSelected(index)
+        if (listener != null) listener!!.onDismiss(index,view?.lastLongSelectedIndex ?: -1)
     }
 
     fun dismiss() {
@@ -59,6 +59,10 @@ class EdSliderManager(listener: OnSliderSelectedListener?) {
 
     fun onIndexLongSelected(index: Int) {
         listener?.onLongSelected(index)
+    }
+
+    fun onSelectedChange(oldIndex: Int, newIndex: Int) {
+        listener?.onSelectedChange(oldIndex, newIndex)
     }
 
     /**

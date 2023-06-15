@@ -360,8 +360,7 @@ class EdSliderView : ConstraintLayout {
         itemGroupLayout.getLocationOnScreen(groupLocation)
         val x = eventX - groupLocation[0]
         val y = eventY - groupLocation[1]
-
-        selectedIndex = -1
+        val oldSelected = selectedIndex
         selectedIndex = checkPointPosition(x, y)
         if (selectedIndex >= 0 && selectedIndex < flags.size) {
             // enlarge
@@ -372,6 +371,7 @@ class EdSliderView : ConstraintLayout {
                 (itemGroupLayout.getChildAt(selectedIndex) as? EdSliderItemSliderListener)?.apply {
                     onSelectedChange(selectedIndex, true)
                 }
+                manager?.onSelectedChange(oldSelected,selectedIndex)
             }
         }
 

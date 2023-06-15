@@ -4,6 +4,7 @@ import android.animation.*
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageView
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.*
+import androidx.room.Index
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.application.App
 import com.wheny.whenylibrary.edslider.Align
@@ -87,10 +89,14 @@ class TestDrawableActivity : AppCompatActivity() {
 
 
         manager = EdSliderManager(object : OnSliderSelectedListener {
-            override fun onSelected(index: Int) {
+            override fun onDismiss(index: Int, longSelected: Int) {
                 button.visibility = View.VISIBLE
                 Toast.makeText(this@TestDrawableActivity, "selected: $index", Toast.LENGTH_SHORT)
                     .show()
+            }
+
+            override fun onSelectedChange(oldIndex: Int, newIndex: Int) {
+                Log.e("onSelectedChange","old:${oldIndex},newIndex:${newIndex}")
             }
 
             override fun onLongSelected(index: Int) {
