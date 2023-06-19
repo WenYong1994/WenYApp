@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:clipChildren="false">
+
+        <!--    左上角 start-->
+
+        <View
+            android:id="@+id/item_location_1"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_marginStart="-6dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/item_layout_1"
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            app:layout_constraintBottom_toBottomOf="@id/item_location_1"
+            app:layout_constraintEnd_toEndOf="@id/item_location_1"
+            app:layout_constraintStart_toStartOf="@id/item_location_1"
+            app:layout_constraintTop_toTopOf="@id/item_location_1">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar_bg_1"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:src="@drawable/gan_up_square_avatar_bg" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar_1"
+                android:layout_width="47dp"
+                android:layout_height="47dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_android"
+                app:shapeAppearance="@style/CircleStyle" />
+
+            <TextView
+                android:id="@+id/tag_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="-7dp"
+                android:background="@drawable/camp_square_user_tag_bg"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="1dp"
+                android:text="国服打野"
+                android:textColor="#FF47A3E6"
+                android:textSize="10sp" />
+
+        </FrameLayout>
+
+
+        <FrameLayout
+            android:id="@+id/hello_layout"
+            android:layout_width="118dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toTopOf="@id/item_location_1"
+            app:layout_constraintStart_toStartOf="@id/item_location_1">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/hello_bg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/gan_up_square_hello_title_bg" />
+
+            <TextView
+                android:id="@+id/hello_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="一起开黑！上车"
+                android:textColor="#FF47A3E6"
+                android:textSize="14sp"
+                android:layout_gravity="center_horizontal"
+                />
+
+        </FrameLayout>
+
+
+        <!--    左上角 end-->
+
+        <!--    右上角 start-->
+
+        <View
+            android:id="@+id/item_location_2"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginTop="33dp"
+            android:layout_marginEnd="-3dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/item_layout_2"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            app:layout_constraintBottom_toBottomOf="@id/item_location_2"
+            app:layout_constraintEnd_toEndOf="@id/item_location_2"
+            app:layout_constraintStart_toStartOf="@id/item_location_2"
+            app:layout_constraintTop_toTopOf="@id/item_location_2">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar_bg_2"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="center"
+                android:src="@drawable/gan_up_square_avatar_bg" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar_2"
+                android:layout_width="31dp"
+                android:layout_height="31dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_android"
+                app:shapeAppearance="@style/CircleStyle" />
+
+            <TextView
+                android:id="@+id/tag_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="-9dp"
+                android:background="@drawable/camp_square_user_tag_bg"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="1dp"
+                android:text="国服打野"
+                android:textColor="#FF47A3E6"
+                android:textSize="10sp" />
+
+        </FrameLayout>
+        <!--    右上角 end-->
+
+
+        <!--    右下角 start-->
+
+        <View
+            android:id="@+id/item_location_3"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_marginStart="-6dp"
+            android:layout_marginEnd="36dp"
+            android:layout_marginBottom="7dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <FrameLayout
+            android:id="@+id/item_layout_3"
+            android:layout_width="wrap_content"
+            android:layout_height="66dp"
+            app:layout_constraintBottom_toBottomOf="@id/item_location_3"
+            app:layout_constraintEnd_toEndOf="@id/item_location_3"
+            app:layout_constraintStart_toStartOf="@id/item_location_3"
+            app:layout_constraintTop_toTopOf="@id/item_location_3">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar_bg_3"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:layout_gravity="center"
+                android:src="@drawable/gan_up_square_avatar_bg" />
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/avatar_3"
+                android:layout_width="55dp"
+                android:layout_height="55dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_android"
+                app:shapeAppearance="@style/CircleStyle" />
+
+            <TextView
+                android:id="@+id/tag_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center|bottom"
+                android:layout_marginBottom="-7dp"
+                android:background="@drawable/camp_square_user_tag_bg"
+                android:paddingHorizontal="5dp"
+                android:paddingVertical="1dp"
+                android:text="国服打野"
+                android:textColor="#FF47A3E6"
+                android:textSize="10sp" />
+
+        </FrameLayout>
+
+        <!--    右下角 end-->
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

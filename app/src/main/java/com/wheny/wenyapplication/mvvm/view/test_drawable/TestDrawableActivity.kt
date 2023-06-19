@@ -34,8 +34,8 @@ class TestDrawableActivity : AppCompatActivity() {
             .setIconSize(46.dp)
             .setPadding(46.dp, 92.dp, 46.dp, 46.dp)
             .setDeterminePadding(40.dp, 40.dp)
-            .setIconMargin(10.dp, 5.dp)
-            .setBgPadding((0).dp, (0).dp)
+            .setIconMargin(14.dp, 5.dp)
+            .setBgPadding((32-14).dp, (32-14).dp)
             .setMargin(0f, 0f, 0f, 0f)
             .setChoseMargin(true)
             .setSelectedTime(1000 * 2)
@@ -44,17 +44,17 @@ class TestDrawableActivity : AppCompatActivity() {
             .setLimitMax(true)
             .setBgChange(false)
             .setSliderBackground(R.drawable.ed_slider_background)
-            .addIcon(EdIcon(R.drawable.ganup_emo_1,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_2,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_3,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_4,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
-            .addIcon(EdIcon(R.drawable.ganup_emo_5,""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_1, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_2, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_3, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_4, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
+            .addIcon(EdIcon(R.drawable.ganup_emo_5, ""))
             .build()
     }
 
@@ -72,9 +72,7 @@ class TestDrawableActivity : AppCompatActivity() {
 //            Color.parseColor("#FFFFFF"),
 //            Color.parseColor("#4DFFFFFF")
 //        )
-        tvBg.setOnClickListener {
-            finish()
-        }
+
         val button = findViewById<View>(R.id.button)
         button.setOnLongClickListener {
             edslider.show()
@@ -92,7 +90,7 @@ class TestDrawableActivity : AppCompatActivity() {
             }
 
             override fun onSelectedChange(oldIndex: Int, newIndex: Int) {
-                Log.e("onSelectedChange","old:${oldIndex},newIndex:${newIndex}")
+                Log.e("onSelectedChange", "old:${oldIndex},newIndex:${newIndex}")
             }
 
             override fun onLongSelected(index: Int) {
@@ -119,6 +117,18 @@ class TestDrawableActivity : AppCompatActivity() {
 
         edslider.dismiss()
 
+        val circle = findViewById<CampSquareUserCircle>(R.id.camp_square_user_circle)
+        circle.setItem(
+            item1 = CircleItem(R.drawable.gan_up_square_avatar_test1, "国服打野"),
+            item2 = CircleItem(R.drawable.gan_up_square_avatar_test2, "V10"),
+            item3 = CircleItem(R.drawable.gan_up_square_avatar_test3, "省级诸葛亮")
+        )
+
+
+        tvBg.setOnClickListener {
+//            finish()
+            circle.startAni()
+        }
     }
 
 
