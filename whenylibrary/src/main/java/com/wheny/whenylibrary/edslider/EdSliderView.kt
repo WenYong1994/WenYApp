@@ -46,13 +46,10 @@ class EdSliderView : ConstraintLayout {
     }
     private var itemLocationView = View(context).apply {
         id = R.id.item_location_layout
-        clipChildren = false
     }
 
     private var itemScrollView = EnableHorizontalScrollView(context).apply {
         id = R.id.item_scroll_layout
-        clipChildren = false
-        isEnabled = false
         enableScroll = false
         isHorizontalScrollBarEnabled = false
         overScrollMode = OVER_SCROLL_NEVER
@@ -114,6 +111,8 @@ class EdSliderView : ConstraintLayout {
      * */
     var limitMax = false
 
+    var itemDynamic = false
+
     var builder: EdSliderBuilder? = null
 
     var timerJob: Job? = null
@@ -129,8 +128,8 @@ class EdSliderView : ConstraintLayout {
         layoutParams = LayoutParams(
             ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
         )
-        clipChildren = false
-        clipToPadding = false
+//        clipChildren = false
+//        clipToPadding = false
         selectedIndex = -1
     }
 
@@ -153,17 +152,23 @@ class EdSliderView : ConstraintLayout {
      */
     fun build(builder: EdSliderBuilder) {
         this.builder = builder
+        manager = builder.manager
+        flags = BooleanArray(builder.list!!.size)
+        choseMargin = builder.choseMargin
+        selectedTime = builder.selectedTime
+        itemDynamic = builder.itemDynamic
         limitMax = builder.limitMax
+
         layoutParams = ViewGroup.LayoutParams(builder.getViewWidth(), builder.getViewHeight())
         itemGroupLayout.orientation = LinearLayout.HORIZONTAL
         itemGroupLayout.setPadding(
             builder.bgPaddingStart.toInt(), 0, builder.bgPaddingEnd.toInt(), 0
         )
-
-        clipChildren = false
-        clipToPadding = false
+        clipChildren = builder.clipChildren
+        clipToPadding = builder.clipChildren
         itemGroupLayout.clipChildren = false
         itemGroupLayout.clipToPadding = false
+
         isReversed = builder.isReversed
         iconMarginHorizontal = builder.iconMarginHorizontal
         iconMarginVertical = builder.iconMarginVertical
@@ -176,12 +181,13 @@ class EdSliderView : ConstraintLayout {
                 builder.iconMarginHorizontal,
                 builder.iconMarginVertical,
                 item,
-                isReversed
+                isReversed,
+                itemDynamic,
+                builder.selectedItemScale,
+                builder.selectedOffset
             )
             itemGroupLayout.addView(itemView)
         }
-
-
         itemLocationView.layoutParams =
             LayoutParams(builder.getItemLayoutWidth(), builder.getItemLayoutHeight()).apply {
                 startToStart = LayoutParams.PARENT_ID
@@ -206,13 +212,12 @@ class EdSliderView : ConstraintLayout {
         hintTxt.setText("滑动选择")
 
         itemScrollView.layoutParams =
-            LayoutParams(builder.getItemLayoutWidth(), LayoutParams.WRAP_CONTENT).apply {
+            LayoutParams(builder.getItemLayoutWidth(),builder.getViewHeight()).apply {
                 startToStart = itemLocationView.id
                 topToTop = itemLocationView.id
                 endToEnd = itemLocationView.id
                 bottomToBottom = itemLocationView.id
             }
-
 
         bgView.setBackgroundResource(builder.backgroundResId)
         bgView.layoutParams = LayoutParams(
@@ -230,7 +235,7 @@ class EdSliderView : ConstraintLayout {
         }
 
         itemGroupLayout.layoutParams = LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            ViewGroup.LayoutParams.WRAP_CONTENT, builder.getViewHeight()
         ).apply {
             when (builder.aligns[0]) {
                 Align.LEFT -> {
@@ -264,10 +269,7 @@ class EdSliderView : ConstraintLayout {
         } else {
             addView(itemGroupLayout)
         }
-        manager = builder.manager
-        flags = BooleanArray(builder.list!!.size)
-        choseMargin = builder.choseMargin
-        selectedTime = builder.selectedTime
+
     }
 
     /**

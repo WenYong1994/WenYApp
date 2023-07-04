@@ -1,9 +1,11 @@
 package com.wheny.whenylibrary.edslider
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import android.graphics.RectF
 import android.util.Log
+import android.view.Gravity
 import android.view.animation.Animation
 import android.view.animation.OvershootInterpolator
 import android.view.animation.Transformation
@@ -25,7 +27,10 @@ class EdSliderItem(
     private val iconMarginHorizontal: Float,
     private val iconMarginVertical: Float,
     private val edIcon: EdIcon,
-    var isReversed: Boolean = false
+    var isReversed: Boolean = false,
+    var itemDynamic: Boolean = true,
+    var selectedScale: Float = 1.5f,
+    var selectedOffset: Float = 0f,
 ) :
     FrameLayout(context), EdSliderItemSliderListener {
 
@@ -33,7 +38,12 @@ class EdSliderItem(
     private var currentScale = 1f
 
     init {
-        layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+//        setBackgroundColor(Color.parseColor("#8800ff00"))
+        layoutParams = if(itemDynamic){
+            LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+        }else{
+            LayoutParams((size + iconMarginHorizontal + iconMarginHorizontal).toInt(), (size + iconMarginVertical + iconMarginVertical).toInt())
+        }
         val params = LayoutParams(size.toInt(), size.toInt())
         params.setMargins(
             iconMarginHorizontal.toInt(),
@@ -41,6 +51,7 @@ class EdSliderItem(
             iconMarginHorizontal.toInt(),
             iconMarginVertical.toInt()
         )
+        params.gravity = Gravity.CENTER_HORIZONTAL.or(Gravity.BOTTOM)
         image = ImageView(getContext())
         image.layoutParams = params
         image.setImageResource(edIcon.drawableid)
@@ -51,28 +62,28 @@ class EdSliderItem(
     override fun onAppear(index: Int, showIndex: Int, needAni: Boolean) {
         val offsetY = if (isReversed) -height.toFloat() else height.toFloat()
         if (needAni){
-            translationY = offsetY
-            scaleX = 0f
-            scaleY = 0f
-            animate().scaleX(1f).scaleY(1f).setDuration(100)
+            image.translationY = offsetY
+            image.scaleX = 0f
+            image.scaleY = 0f
+            image.animate().scaleX(1f).scaleY(1f).setDuration(100)
                 .translationY(0f)
                 .setStartDelay((80 * showIndex + 150).toLong())
                 .setInterpolator(OvershootInterpolator())
                 .start()
         }else{
-            scaleX = 1f
-            scaleY = 1f
-            translationY = 0f
+            image.scaleX = 1f
+            image.scaleY = 1f
+            image.translationY = 0f
         }
 
     }
 
     override fun onDisAppear(index: Int, showIndex: Int, needAni: Boolean) {
         if(needAni){
-            scaleX = 1f
-            scaleY = 1f
-            animate().cancel()
-            animate().translationY(if (isReversed) -height.toFloat() else height.toFloat())
+            image.scaleX = 1f
+            image.scaleY = 1f
+            image.animate().cancel()
+            image.animate().translationY(if (isReversed) -height.toFloat() else height.toFloat())
                 .scaleX(0f).scaleY(0f).setDuration(100)
                 .setStartDelay((80 * showIndex).toLong())
                 .setInterpolator(null)
@@ -87,23 +98,23 @@ class EdSliderItem(
 
     override fun onSelectedChange(index: Int, selected: Boolean) {
         if (selected) {
-            val absTranslationY = height.toFloat() / 2
-            clearAnimation()
+            val absTranslationY = selectedOffset
+            image.clearAnimation()
             val animation = ItemAnimation(
-                2f,
+                selectedScale,
                 if (isReversed) absTranslationY else -absTranslationY
             )
                 .apply {
                     duration = 150
                 }
-            startAnimation(animation)
+            image.startAnimation(animation)
         } else {
-            clearAnimation()
+            image.clearAnimation()
             val animation = ItemAnimation(1f, 0f)
                 .apply {
                     duration = 150
                 }
-            startAnimation(animation)
+            image.startAnimation(animation)
         }
 
 
@@ -121,7 +132,7 @@ class EdSliderItem(
             lp.width = (size * currentScale).toInt()
             lp.height = (size * currentScale).toInt()
             image.layoutParams = lp
-            translationY =
+            image.translationY =
                 (toTranslationY - startTranslationY) * interpolatedTime + startTranslationY
         }
     }

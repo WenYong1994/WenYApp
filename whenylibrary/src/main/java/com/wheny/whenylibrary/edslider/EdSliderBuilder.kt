@@ -24,7 +24,7 @@ class EdSliderBuilder {
     var target: View? = null
     var visionBoundary: RectF? = null
 
-    var list: ArrayList<EdIcon>? = null
+    var list: ArrayList<EdIcon> = arrayListOf()
     var maxIcons = Int.MAX_VALUE
 
     var limitMax = false
@@ -87,10 +87,23 @@ class EdSliderBuilder {
      */
     var scrollActionThresholdTime = 1000 * 1L
 
+    var clipChildren = true
+
+    var selectedItemScale = 1.5f
+
+    var selectedOffset = 1.5f
+
+    /**
+     * item选中变化的时候，整个容器宽度 是否跟随一起变化
+     *
+     * true 会跟这一起变话
+     * false 不会跟这变化，
+     * */
+    var itemDynamic = false
+
     constructor(context: Context) {
         this.context = context
         view = EdSliderView(context)
-        list = ArrayList()
         backgroundResId = R.drawable.background
         size = Util.dimenToPx(context, 32f)
         iconMarginVertical = Util.dimenToPx(context, 4f)
@@ -124,12 +137,37 @@ class EdSliderBuilder {
      * @return continue building
      */
     fun addIcon(item: EdIcon): EdSliderBuilder {
-        list!!.add(item)
+        list.add(item)
+        return this
+    }
+
+    fun addIcons(items: Collection<EdIcon>): EdSliderBuilder {
+        list.addAll(items)
         return this
     }
 
     fun maxIcon(maxIcons: Int): EdSliderBuilder {
         this.maxIcons = maxIcons
+        return this
+    }
+
+    fun setClipChildren(clipChildren: Boolean): EdSliderBuilder {
+        this.clipChildren = clipChildren
+        return this
+    }
+
+    fun setItemDynamic(itemDynamic: Boolean): EdSliderBuilder {
+        this.itemDynamic = itemDynamic
+        return this
+    }
+
+    fun setSelectedItemScale(selectedItemScale:Float): EdSliderBuilder{
+        this.selectedItemScale = selectedItemScale
+        return this
+    }
+
+    fun setSelectedOffset(selectedOffset:Float): EdSliderBuilder{
+        this.selectedOffset = selectedOffset
         return this
     }
 
@@ -239,7 +277,7 @@ class EdSliderBuilder {
         return this
     }
 
-    fun setScrollActionThresholdTime(time:Long): EdSliderBuilder{
+    fun setScrollActionThresholdTime(time: Long): EdSliderBuilder {
         scrollActionThresholdTime = time
         return this
     }
@@ -318,8 +356,8 @@ class EdSliderBuilder {
     }
 
     fun getItemLayoutWidth(): Int {
-        return if ((list?.size ?: 0) <= maxIcons || !limitMax) {
-            (getItemSize() * (list?.size ?: 0) + bgPaddingStart + bgPaddingEnd).toInt()
+        return if ((list.size ) <= maxIcons || !limitMax) {
+            (getItemSize() * (list.size) + bgPaddingStart + bgPaddingEnd).toInt()
         } else {
             (getItemSize() * maxIcons + bgPaddingStart + bgPaddingEnd).toInt()
         }
@@ -333,7 +371,7 @@ class EdSliderBuilder {
         return if (limitMax) {
             getItemSize() * maxIcons
         } else {
-            getItemSize() * (list?.size ?: 0)
+            getItemSize() * (list.size)
         }
     }
 
