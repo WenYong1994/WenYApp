@@ -12,7 +12,7 @@ dependencies {
     implementation 'com.squareup:javapoet:1.13.0'               //引入Javapoet框架
     annotationProcessor 'com.google.auto.service:auto-service:1.0-rc6'
     implementation 'com.google.auto.service:auto-service-annotations:1.0-rc6'
-    implementation files(Jvm.current().toolsJar)
+//    implementation files(Jvm.current().toolsJar)
     implementation 'com.google.code.gson:gson:2.8.5'
 
 }

@@ -20,6 +20,6 @@
         <module name="WenYApplication.wheny_compiler_lib.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="1.7" />
+    <bytecodeTargetLevel target="1.8" />
   </component>
 </project>
