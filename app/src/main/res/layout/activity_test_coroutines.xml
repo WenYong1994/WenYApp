@@ -14,6 +14,36 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+    <com.wheny.wenyapplication.test_coroutines.TestTouchParentFramLayout
+        android:layout_width="500dp"
+        android:layout_height="500dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="100dp"
+        android:background="#00ff00"
+        >
+        <com.wheny.wenyapplication.test_coroutines.TestTouchFramLayout
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="100dp"
+            android:background="#ff00ff"
+            >
+
+            <com.wheny.wenyapplication.test_coroutines.TestTouchView
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:background="#000000"
+
+                />
+
+
+        </com.wheny.wenyapplication.test_coroutines.TestTouchFramLayout>
+
+
+    </com.wheny.wenyapplication.test_coroutines.TestTouchParentFramLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
         android:visibility="gone"
@@ -33,7 +63,7 @@
 
     <WebView
         android:id="@+id/web_view"
-        android:layout_marginTop="250dp"
+        android:layout_marginTop="550dp"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
@@ -44,4 +74,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         />
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

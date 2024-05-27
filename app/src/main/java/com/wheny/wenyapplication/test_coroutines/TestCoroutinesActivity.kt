@@ -2,17 +2,18 @@ package com.wheny.wenyapplication.test_coroutines
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
-import android.widget.ImageView
+import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
+import androidx.annotation.RestrictTo.Scope
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,12 +22,14 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.view.MixColorRoundProgress
-import com.wheny.whenylibrary.utils.ToastUtils
 import io.reactivex.Flowable
 import io.reactivex.functions.Consumer
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.resume
+import kotlin.math.absoluteValue
 
 class TestCoroutinesActivity : AppCompatActivity() {
 
@@ -45,25 +48,79 @@ class TestCoroutinesActivity : AppCompatActivity() {
         rv.adapter = Ada(this, 20)
         rv.layoutManager = LinearLayoutManager(this)
         val mixColorRoundProgress = findViewById<MixColorRoundProgress>(R.id.round_progress)
-        val webvie= findViewById<WebView>(R.id.web_view)
+        val webvie = findViewById<WebView>(R.id.web_view)
         webvie.settings.javaScriptEnabled = true
         webvie.loadUrl("https://echarts.apache.org/examples/zh/editor.html?c=line-simple")
+
+
+    }
+
+
+
+
+    var count = 0
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.e("TouchEvent", "Activity-onTouchEvent+++++++++++${event?.action}")
+        return super.onTouchEvent(event)
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        Log.e("TouchEvent", "Activity-dispatchTouchEvent=======${ev?.action}")
+        return super.dispatchTouchEvent(ev)
     }
 
     fun oncl(view: View) {
-//        test1()
-        val mixColorRoundProgress = findViewById<MixColorRoundProgress>(R.id.round_progress)
-        mixColorRoundProgress.startProgressAnimation(100f,0f,5000)
-
-//        val webView = findViewById<WebView>(R.id.web_view)
-//        val bitmap = Bitmap.createBitmap(webView.width,webView.height,Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        webView.draw(canvas)
-//        View::class.java.getDeclaredField("")
-//        canvas.save()
-//        findViewById<ImageView>(R.id.iv).setImageBitmap(bitmap)
-//        Log.e("bit",bitmap.toString())
+        val a :A?= null
+        try {
+            a!!.getBB()!!.getCC()!!.i
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+        lifecycleScope.launch {
+            count++
+            Log.e("TestCor", "1111")
+            val result = if (count % 2 == 0) {
+                SafeResult<Boolean>().apply {
+                    success = true
+                }
+            } else {
+                executeBlockSafe {
+                    testRequest()
+                }
+            }
+            Log.e("TestCor", result.toString())
+        }
     }
+
+    suspend inline fun getTestSuspend(block: () -> Boolean): Boolean {
+        Log.e("TestCor", "4444")
+        delay(300)
+        Log.e("TestCor", "5555")
+        return block()
+    }
+
+
+    suspend fun test4() {
+        withContext(currentCoroutineContext()) {
+            Log.d("test4", "out Async start")
+            val outAsync = async {
+                GlobalScope.launch {
+                    async {
+                        delay(400)
+                        Log.d("test4", "inner Async 11111 end")
+                    }
+                }
+                async {
+                    delay(200)
+                    Log.d("test4", "inner Async 22222 end")
+                }.await()
+            }
+            outAsync.await()
+            Log.d("test4", "out Async end")
+        }
+    }
+
 
     fun test() {
 //        testRunBlocking()
@@ -122,7 +179,6 @@ class TestCoroutinesActivity : AppCompatActivity() {
     val hander = CoroutineExceptionHandler { c, t ->
         Log.e("testA", "44" + t.message ?: "")
     }
-
 
 
     val myScope = CoroutineScope(Dispatchers.Default)
@@ -251,4 +307,136 @@ class Ada(val context: Context, val count: Int) : Adapter<VH>() {
 class sss {
     fun f() {
     }
+}
+
+
+class SafeResult<T> {
+    var data: T? = null
+    var success: Boolean = false
+    var error: Throwable? = null
+}
+
+suspend inline fun <T> executeBlockSafe(block: suspend () -> T): SafeResult<T> {
+    var safeResult = SafeResult<T>()
+    return try {
+        val data = block.invoke()
+        safeResult.data = data
+        safeResult.success = true
+        safeResult
+    } catch (t: Throwable) {
+        safeResult.error = t
+        safeResult.success = false
+        safeResult
+    }
+}
+
+suspend fun testRequest(): Boolean {
+    return suspendCancellableCoroutine<Boolean> {
+        GlobalScope.launch {
+            delay(300)
+            it.resume(true)
+        }
+    }
+}
+// 这里是down 事件的整个穿透流程，目的主要是穿透到每一层判断那一层是事件最终 消费者
+// 如果这一层没有消费。那么后续事件（move、down）不会传递到这一层来了
+// 如果确定到某一层是消费者。那么后续事件（move、down）事件会传递到这一层来，并按照 这个顺序 dispatchTouchEvent -> onTouchEvent 走到最终消费者
+// 如消费者是 onTouchEvent 那么事件就会走 dispatchTouchEvent ->onInterceptTouchEvent -> onTouchEvent
+// 如果消费者是 dispatchTouchEvent 那么事件走到 当层的 dispatchTouchEvent 就截止了
+// 在一次事件中不会更换消费的View。但是可以更换消费的方法
+class TestTouchParentFramLayout(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.d("TouchEvent", "Parent-onTouchEvent+++++++++++${event?.action}")
+        return true
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        Log.d("TouchEvent", "Parent-dispatchTouchEvent=======${ev?.action}")
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        Log.d("TouchEvent", "Parent-onInterceptTouchEvent-------${ev?.action}")
+        return false
+    }
+}
+
+class TestTouchFramLayout(context: Context, attr: AttributeSet) : FrameLayout(context, attr) {
+
+    override fun onTouchEvent(event: MotionEvent?): Boolean {
+        Log.i("TouchEvent", "inner-onTouchEvent+++++++++++${event?.action}")
+        return true
+    }
+
+    var downX = 0f
+
+    var ismax20 = false
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        Log.i("TouchEvent", "inner-dispatchTouchEvent=======${ev?.action},${ismax20}")
+        return false
+//        return super.dispatchTouchEvent(ev)
+        if(ev?.action == MotionEvent.ACTION_DOWN){
+            downX = ev.x
+            return super.dispatchTouchEvent(ev)
+        }
+        return false
+        if(ev?.action == MotionEvent.ACTION_MOVE){
+            if((ev.x - downX).absoluteValue > 20){
+                ismax20 = true
+                return super.dispatchTouchEvent(ev)
+            }else{
+                ismax20 = false
+            }
+        }
+        return true
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent?): Boolean {
+        Log.i("TouchEvent", "inner-onInterceptTouchEvent-------${ev?.action}")
+        return false
+    }
+}
+
+
+// 基本条件。如果本层没有任何 消费。那么这一层 不会收到后续 move和up 事件
+class TestTouchView(context: Context, attr: AttributeSet) : View(context, attr) {
+
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        Log.i("TouchEvent", "child-onTouchEvent>>>>>>>>>>>>>${event?.action}")
+        return true
+    }
+
+    var downX = 0f
+
+    var ismax20 = false
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        Log.i("TouchEvent", "child-dispatchTouchEvent```````````${event?.action},max20${ismax20}")
+        return super.dispatchTouchEvent(event)
+    }
+
+}
+
+
+
+class A{
+    var b:B? = null
+
+    fun getBB():B?{
+        return b
+    }
+
+}
+
+class B{
+    var c:C? = null
+    fun getCC():C?{
+        return c
+    }
+}
+
+class C{
+    var i:Int? = null
 }
