@@ -16,7 +16,7 @@ buildscript {
         // in the individual module build.gradle files
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath "com.chenenyu.router:gradle-plugin:1.8.0"
-
+        classpath 'com.google.protobuf:protobuf-gradle-plugin:0.8.8'
     }
 
 
@@ -28,6 +28,9 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
+        flatDir {
+            dirs 'libs'
+        }
     }
 
     tasks.withType(JavaCompile) {

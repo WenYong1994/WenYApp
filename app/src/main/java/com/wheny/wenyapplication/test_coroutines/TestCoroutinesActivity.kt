@@ -25,7 +25,9 @@ import com.wheny.wenyapplication.view.MixColorRoundProgress
 import io.reactivex.Flowable
 import io.reactivex.functions.Consumer
 import kotlinx.coroutines.*
+import okhttp3.internal.toImmutableList
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
@@ -34,6 +36,8 @@ import kotlin.math.absoluteValue
 class TestCoroutinesActivity : AppCompatActivity() {
 
     val TAG = "test_coroutines"
+
+    val accounts = CopyOnWriteArrayList<A>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,13 +55,66 @@ class TestCoroutinesActivity : AppCompatActivity() {
         val webvie = findViewById<WebView>(R.id.web_view)
         webvie.settings.javaScriptEnabled = true
         webvie.loadUrl("https://echarts.apache.org/examples/zh/editor.html?c=line-simple")
-
-
+        val x: Int? = null
+        accounts.add(A(1))
+//        accounts.add(x)
+        Log.e("testList", accounts.toString())
+        val l1 = accounts.toImmutableList()
+        Log.e("testList", l1.toString())
+        val times = 1000
+        GlobalScope.launch {
+            repeat(times) { t ->
+                delay(1)
+                GlobalScope.launch {
+                    delay(2)
+                    val l = accounts
+                    l.firstOrNull {
+                        if(it == null){
+                            Log.e("testList-null",l.toString())
+                            Log.e("testList-null","null e is:${it.toString()}")
+                        }
+                        Log.e("testList", "indexA:${t}: ${it?.i}")
+                        false
+                    }
+                }
+            }
+        }
+        GlobalScope.launch {
+            repeat(times) { t ->
+                delay(1)
+                GlobalScope.launch {
+                    delay(1)
+                    accounts.clear()
+                }
+            }
+        }
+        GlobalScope.launch {
+            repeat(times) { t ->
+                delay(1)
+                GlobalScope.launch {
+                    delay(2)
+                    accounts.add(A(t))
+                }
+            }
+        }
+        GlobalScope.launch {
+            repeat(times) { t ->
+                delay(1)
+                GlobalScope.launch {
+                    delay(1)
+                    val l = accounts
+                    l.firstOrNull {
+                        if(it == null){
+                            Log.e("testList-null",l.toString())
+                            Log.e("testList-null","null e is:${it.toString()}")
+                        }
+                        Log.e("testList", "indexD:${t}: ${it?.i}")
+                        false
+                    }
+                }
+            }
+        }
     }
-
-
-
-
     var count = 0
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
@@ -71,12 +128,6 @@ class TestCoroutinesActivity : AppCompatActivity() {
     }
 
     fun oncl(view: View) {
-        val a :A?= null
-        try {
-            a!!.getBB()!!.getCC()!!.i
-        }catch (e:Exception){
-            e.printStackTrace()
-        }
         lifecycleScope.launch {
             count++
             Log.e("TestCor", "1111")
@@ -338,6 +389,7 @@ suspend fun testRequest(): Boolean {
         }
     }
 }
+
 // 这里是down 事件的整个穿透流程，目的主要是穿透到每一层判断那一层是事件最终 消费者
 // 如果这一层没有消费。那么后续事件（move、down）不会传递到这一层来了
 // 如果确定到某一层是消费者。那么后续事件（move、down）事件会传递到这一层来，并按照 这个顺序 dispatchTouchEvent -> onTouchEvent 走到最终消费者
@@ -376,16 +428,16 @@ class TestTouchFramLayout(context: Context, attr: AttributeSet) : FrameLayout(co
         Log.i("TouchEvent", "inner-dispatchTouchEvent=======${ev?.action},${ismax20}")
         return false
 //        return super.dispatchTouchEvent(ev)
-        if(ev?.action == MotionEvent.ACTION_DOWN){
+        if (ev?.action == MotionEvent.ACTION_DOWN) {
             downX = ev.x
             return super.dispatchTouchEvent(ev)
         }
         return false
-        if(ev?.action == MotionEvent.ACTION_MOVE){
-            if((ev.x - downX).absoluteValue > 20){
+        if (ev?.action == MotionEvent.ACTION_MOVE) {
+            if ((ev.x - downX).absoluteValue > 20) {
                 ismax20 = true
                 return super.dispatchTouchEvent(ev)
-            }else{
+            } else {
                 ismax20 = false
             }
         }
@@ -420,23 +472,17 @@ class TestTouchView(context: Context, attr: AttributeSet) : View(context, attr) 
 }
 
 
-
-class A{
-    var b:B? = null
-
-    fun getBB():B?{
-        return b
-    }
+class A(val i: Int) {
 
 }
 
-class B{
-    var c:C? = null
-    fun getCC():C?{
+class B {
+    var c: C? = null
+    fun getCC(): C? {
         return c
     }
 }
 
-class C{
-    var i:Int? = null
+class C {
+    var i: Int? = null
 }

@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.protobuf:protobuf-java:3.17.3'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.whenyoung.protoenumopt.MyCustomProtocPlugin'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
