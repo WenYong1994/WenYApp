@@ -9,6 +9,7 @@ import java.io.IOException;
 public class MyCustomProtocPlugin {
 
     public static void main(String[] args) throws IOException {
+        System.out.println("MyCustomProtocPlugin start------------");
         // 从System.in读取CodeGeneratorRequest
         PluginProtos.CodeGeneratorRequest request = PluginProtos.CodeGeneratorRequest.parseFrom(System.in);
 
