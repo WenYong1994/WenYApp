@@ -18,34 +18,66 @@ android {
             }
         }
 
-        plugins {
-            javalite {
-                artifact = 'com.google.protobuf:protobuf-java:3.5.1'
-            }
-//            myCustomPlugin {
-//                path = file('libs/protoEnumOpt-1.0-SNAPSHOT.jar')
-//            }
-
-        }
 
         generateProtoTasks {
             all().each { task ->
                 task.group "proto"
-//                task.plugins {
-//                    myCustomPlugin {}
-//                }
                 task.builtins {
                     remove java
                 }
                 task.builtins {
-                    java {}
+                    java {
+                    }
                 }
-
+                task.doLast{
+                    println("generateProtoTasks---${task.name}----end")
+                }
+                task.doFirst{
+                    println("generateProtoTasks---${task.name}----start")
+                }
+//                task.dependsOn onPbBefore
+//                onPbBefore.finalizedBy task
+                if(task.name == "generateReleaseProto"){
+                    task.finalizedBy onPbAfter
+                    onPbAfter.dependsOn task
+                }
             }
+
+
         }
     }
+
+
+
 }
+
+
+
+
+
+
+
+
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation files('libs/protoEnumOpt-1.0-SNAPSHOT.jar')
+    println("TestTask执行dependencies")
 }
+
+task onPbBefore{
+    doFirst {
+        println("generateProtoTasks--------onPbBefore")
+    }
+}
+
+task onPbAfter{
+    doFirst {
+        println("generateProtoTasks-----------onPbAfter")
+
+        // 这里可以执行对生成的java类处理
+
+
+
+    }
+}
+
