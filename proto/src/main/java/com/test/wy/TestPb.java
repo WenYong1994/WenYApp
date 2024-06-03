@@ -9,8 +9,8 @@ package com.test.wy;
  **/
 public class TestPb {
     public static void main(String[] args) {
-         com.pb.test.TestPb.TestBean pb
-                 = com.pb.test.TestPb.TestBean.newBuilder().build();
-         pb.getSex();
+//         com.pb.test.TestPb.TestBean pb
+//                 = com.pb.test.TestPb.TestBean.newBuilder().build();
+//         pb.getSex();
     }
 }

@@ -9,6 +9,6 @@ package com.test.wy
  * 描述：
  **/
 fun main(){
-    val pb = com.pb.test.TestPb.TestBean.newBuilder().build()
-    pb.sexValue
+//    val pb = com.pb.test.TestPb.TestBean.newBuilder().build()
+//    pb.sexValue
 }
