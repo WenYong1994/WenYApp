@@ -41,6 +41,10 @@ android {
                     task.finalizedBy onPbAfter
                     onPbAfter.dependsOn task
                 }
+                if(task.name == "generateDebugProto"){
+                    task.finalizedBy onPbAfter
+                    onPbAfter.dependsOn task
+                }
             }
 
 

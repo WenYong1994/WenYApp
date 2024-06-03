@@ -13,13 +13,14 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
-import androidx.annotation.RestrictTo.Scope
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.pb.test.TestPb
+import com.test.wy.TestPbJava
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.view.MixColorRoundProgress
 import io.reactivex.Flowable
@@ -29,7 +30,6 @@ import okhttp3.internal.toImmutableList
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.coroutines.EmptyCoroutineContext
-import kotlin.coroutines.coroutineContext
 import kotlin.coroutines.resume
 import kotlin.math.absoluteValue
 
@@ -45,8 +45,8 @@ class TestCoroutinesActivity : AppCompatActivity() {
         Log.e(TAG, "主线程id：${mainLooper.thread.id}")
         test()
         Log.e(TAG, "协程执行结束")
-
-
+        val pb = TestPb.TestBean.newBuilder()
+        val sex = pb.sexValue
         val rv = findViewById<RecyclerView>(R.id.rv)
         rv.clipChildren = false
         rv.adapter = Ada(this, 20)

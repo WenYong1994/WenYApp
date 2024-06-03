@@ -43,13 +43,17 @@ public class ProtoEnumOptMain {
         // 获取当前path
 //        String projectRootPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
 //        System.out.println("ProtoEnumOptMain projectRootPath:" + projectRootPath);
-        String codePath = currentPath + "/build/generated/source/proto/release";
-        FileUtils.println("ProtoEnumOptMain codePath:" + codePath);
+        String codePathRelease = currentPath + "/build/generated/source/proto/release";
+        String codePathDebug = currentPath + "/build/generated/source/proto/debug";
+        FileUtils.println("ProtoEnumOptMain codePath:" + codePathDebug);
+        FileUtils.println("ProtoEnumOptMain codePath:" + codePathRelease);
 
         // 递归找到这个文件下面所有的.java文件
-        File codeFileRoot = new File(codePath);
+        File codeFileRootRelease = new File(codePathRelease);
+        File codeFileRootDebug = new File(codePathDebug);
         ArrayList<File> pbFiles = new ArrayList<File>();
-        findAllPb(pbFiles, codeFileRoot);
+        findAllPb(pbFiles, codeFileRootDebug);
+        findAllPb(pbFiles, codeFileRootRelease);
         for (File pbFile : pbFiles) {
             String absName = pbFile.getAbsoluteFile().getPath();
             FileUtils.println("ProtoEnumOptMain pbFile:" + absName);

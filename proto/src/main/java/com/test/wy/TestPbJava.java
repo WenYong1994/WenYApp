@@ -7,7 +7,7 @@ package com.test.wy;
  * 创建人： WhenYoung
  * 描述：
  **/
-public class TestPb {
+public class TestPbJava {
     public static void main(String[] args) {
 //         com.pb.test.TestPb.TestBean pb
 //                 = com.pb.test.TestPb.TestBean.newBuilder().build();
