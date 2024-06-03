@@ -1,39 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="app/src/main/res/drawable/wheel_bg.xml" value="0.188" />
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1800602712204922" />
-        <entry key="app/src/main/res/layout/activity_test_dele.xml" value="0.213768115942029" />
-        <entry key="app/src/main/res/layout/activity_test_list.xml" value="0.18125" />
-        <entry key="app/src/main/res/layout/base_ui_item_action_sheet_wheel.xml" value="0.20380434782608695" />
-        <entry key="app/src/main/res/layout/my_item_layout.xml" value="0.375" />
-        <entry key="app/src/main/res/layout/rv_layout.xml" value="0.20380434782608695" />
-        <entry key="app/src/main/res/layout/scroll_layout.xml" value="0.20380434782608695" />
-        <entry key="app/src/main/res/layout/scroll_view_layout.xml" value="0.20380434782608695" />
-        <entry key="app/src/main/res/layout/test_include.xml" value="0.20380434782608695" />
-        <entry key="app/src/main/res/layout/test_list_item_layout.xml" value="0.3734375" />
-        <entry key="app/src/main/res/layout/vp_1_layout.xml" value="0.1800602712204922" />
-        <entry key="app/src/main/res/layout/vp_2_layout.xml" value="0.1800602712204922" />
-        <entry key="whenylibrary/src/main/res/layout/picker_scrollview_layout.xml" value="0.20380434782608695" />
-        <entry key="whenylibrary/src/main/res/layout/scrollview_layout.xml" value="0.20380434782608695" />
-      </map>
-    </option>
-  </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
-  </component>
-  <component name="SuppressABINotification">
-    <option name="modulesWithSuppressedNotConfigured">
-      <set>
-        <option value="WenYApplication.ProtoEnumOpt" />
-        <option value="WenYApplication.protoEnumOpt" />
-      </set>
-    </option>
   </component>
 </project>

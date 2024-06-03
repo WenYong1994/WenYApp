@@ -24,4 +24,8 @@ public class Test {
 
 class UserDao extends AbstractDao<String> {
 
+
+
+
+
 }

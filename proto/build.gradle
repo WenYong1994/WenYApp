@@ -48,19 +48,13 @@ android {
     }
 
 
-
 }
-
-
-
-
-
-
-
 
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+//    implementation 'com.google.protobuf:protobuf-lite:3.0.1'
+    api 'com.google.protobuf:protobuf-java:3.5.1'
     println("TestTask执行dependencies")
 }
 
@@ -72,12 +66,15 @@ task onPbBefore{
 
 task onPbAfter{
     doFirst {
-        println("generateProtoTasks-----------onPbAfter")
-
+        println("generateProtoTasks-----------onPbAfter-----doFirst--start")
         // 这里可以执行对生成的java类处理
-
-
-
+        exec{
+            commandLine 'sh', './script/custom_plugin.sh'
+        }
+        println("generateProtoTasks-----------onPbAfter-----doFirst--end")
+    }
+    doLast {
+        println("generateProtoTasks-----------onPbAfter-----doLast---")
     }
 }
 
