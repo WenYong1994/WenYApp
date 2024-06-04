@@ -2,7 +2,9 @@ package com.whenyoung.protoenumopt;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
@@ -24,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -34,6 +37,36 @@ import java.util.Map;
  * 描述：
  **/
 public class ProtoEnumCusCompiler {
+
+    static NodeList<Statement> needAddStatement;
+
+    static {
+        String fixCodeStr =
+                "public class DummyClass{\n" +
+                        "    public void dummyMethod(){\n" +
+                        "        for (Descriptors.Descriptor messageType : getDescriptor().getMessageTypes()) {\n" +
+                        "            for (Descriptors.FieldDescriptor field : messageType.getFields()) {\n" +
+                        "                if (field.getType() == Descriptors.FieldDescriptor.Type.ENUM) {\n" +
+                        "                    Class fieldClass = field.getClass();\n" +
+                        "                    try {\n" +
+                        "                        Field typeField = fieldClass.getDeclaredField(\"type\");\n" +
+                        "                        typeField.setAccessible(true);\n" +
+                        "                        typeField.set(field, Descriptors.FieldDescriptor.Type.INT32);\n" +
+                        "                    } catch (NoSuchFieldException e) {\n" +
+                        "                        e.printStackTrace();\n" +
+                        "                    } catch (IllegalAccessException e) {\n" +
+                        "                        e.printStackTrace();\n" +
+                        "                    }\n" +
+                        "                }\n" +
+                        "            }\n" +
+                        "        }\n" +
+                        "    }\n" +
+                        "}";
+        CompilationUnit compilationUnit = StaticJavaParser.parse(fixCodeStr);
+        ClassOrInterfaceDeclaration classOrInterfaceDeclaration = compilationUnit.findFirst(ClassOrInterfaceDeclaration.class).orElse(null);
+        needAddStatement = classOrInterfaceDeclaration.getMethods().get(0).getBody().get().getStatements();
+    }
+
     public static void main(String[] args) {
         String action = "remove";
         boolean enableLog = false;
@@ -49,17 +82,17 @@ public class ProtoEnumCusCompiler {
             }
         }
         FileUtils.enableLog = enableLog;
-        FileUtils.println(Arrays.toString(args));
+        System.out.println(Arrays.toString(args));
 
         String currentPath = System.getProperty("user.dir");
-        FileUtils.println("ProtoEnumCusCompiler currentPath:" + currentPath);
+        System.out.println("ProtoEnumCusCompiler currentPath:" + currentPath);
         // 获取当前path
 //        String projectRootPath = currentPath.substring(0, currentPath.lastIndexOf("/"));
 //        System.out.println("ProtoEnumCusCompiler projectRootPath:" + projectRootPath);
         String codePathRelease = currentPath + "/build/generated/source/proto/release";
         String codePathDebug = currentPath + "/build/generated/source/proto/debug";
-        FileUtils.println("ProtoEnumCusCompiler codePath:" + codePathDebug);
-        FileUtils.println("ProtoEnumCusCompiler codePath:" + codePathRelease);
+        System.out.println("ProtoEnumCusCompiler codePath:" + codePathDebug);
+        System.out.println("ProtoEnumCusCompiler codePath:" + codePathRelease);
 
         // 递归找到这个文件下面所有的.java文件
         File codeFileRootRelease = new File(codePathRelease);
@@ -69,10 +102,11 @@ public class ProtoEnumCusCompiler {
         findAllPb(pbFiles, codeFileRootRelease);
         for (File pbFile : pbFiles) {
             String absName = pbFile.getAbsoluteFile().getPath();
-            FileUtils.println("ProtoEnumCusCompiler pbFile:" + absName);
             if (action.equals("replace")) {
+                System.out.println("ProtoEnumCusCompiler replace pbFile:" + absName);
                 setPbEnumToInt(absName);
             } else {
+                System.out.println("ProtoEnumCusCompile remove pbFile:" + absName);
                 removePbEnumGetter(absName);
             }
         }
@@ -121,7 +155,7 @@ public class ProtoEnumCusCompiler {
                     String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
                     if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
                         //这个类有被需要被移除的方法才处理
-                        System.out.println("TProtoEnumOptMain  well remove class=====" + fullClassName);
+                        System.out.println("ProtoEnumOptMain  well remove class=====" + fullClassName);
                         Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
                         for (MethodDeclaration method : classOrInterface.getMethods()) {
                             if (wellRemoveMethods.containsKey(method.getNameAsString())) {
@@ -161,7 +195,6 @@ public class ProtoEnumCusCompiler {
     public static void setPbEnumToInt(String pbFileName) {
         String compilerPath = FileUtils.getCompilerPath(pbFileName);
         try {
-            FileUtils.println("ProtoEnumCusCompiler -------------end");
 
             DynamicCompiler.compile(pbFileName, compilerPath);
             Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
@@ -193,6 +226,7 @@ public class ProtoEnumCusCompiler {
             if (wellRemoveMethodClazzs.size() > 0) {
                 Path path = Paths.get(pbFileName);
                 CompilationUnit outCu = StaticJavaParser.parse(path);
+                // 遍历找出 返回枚举的方法改成返回 int
                 for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
                     String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
                     if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
@@ -200,9 +234,9 @@ public class ProtoEnumCusCompiler {
                         Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
                         for (MethodDeclaration method : classOrInterface.getMethods()) {
                             if (wellRemoveMethods.containsKey(method.getNameAsString())) {
+                                String oldReturnType = method.getType().asString();
                                 // 将返回枚举的方法。变成返回int
                                 method.setType(int.class);
-                                System.out.println("TProtoEnumOptMain  well remove class===== " + fullClassName );
                                 BlockStmt oldBlockStmt = method.getBody().orElse(null);
                                 if (oldBlockStmt != null && oldBlockStmt.getStatements() != null && oldBlockStmt.getStatements().size() > 0) {
                                     method.removeBody();
@@ -210,12 +244,43 @@ public class ProtoEnumCusCompiler {
                                     BlockStmt blockStmt = new BlockStmt();
                                     blockStmt.addStatement(statement);
                                     method.setBody(blockStmt);
+                                    String oldCommentStr = "";
+                                    Comment oldComment = method.getComment().orElse(null);
+                                    if (oldComment != null) {
+                                        oldCommentStr = oldComment.toString()
+                                                .replaceAll("/\\*\\*", "")
+                                                .replaceAll("/\\*", "")
+                                                .replaceAll("\\*", "")
+                                                .replaceAll("/", "")
+                                                .replaceAll("\\n", "")
+                                                .replaceAll("\\*/", "");
+                                    }
+                                    method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + oldReturnType + " now change return type to int \n\t\t");
                                 }
                             }
                         }
                     }
                 }
-
+                // 这里是需要修改描述文件里面 对字段描述类型为 enum 的 改成 int32
+                ClassOrInterfaceDeclaration outerClass = outCu.findFirst(ClassOrInterfaceDeclaration.class).orElse(null);
+                if (outerClass != null) {
+                    String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(outerClass);
+                    System.out.println("ProtoEnumOptMain  add fix filed type class: " + fullClassName);
+                    // 查找最外层类的static代码块
+                    outerClass.getChildNodes().stream()
+                            .filter(node -> node instanceof InitializerDeclaration)
+                            .map(node -> (InitializerDeclaration) node)
+                            .filter(InitializerDeclaration::isStatic)
+                            .findFirst()
+                            .ifPresent(staticBlock -> {
+                                if (needAddStatement != null && staticBlock.getBody() != null && staticBlock.getBody().getStatements() != null) {
+                                    staticBlock.getBody().getStatements().addAll(needAddStatement);
+                                }
+                            });
+                    outCu.addImport("com.google.protobuf.Descriptors");
+                    outCu.addImport("java.lang.reflect.Field");
+                }
+                // 覆盖写入文件
                 Files.write(path, outCu.toString().getBytes());
             }
         } catch (Exception e) {

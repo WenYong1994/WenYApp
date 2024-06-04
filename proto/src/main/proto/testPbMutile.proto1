@@ -1,0 +1,27 @@
+syntax = "proto3";
+package com.pb.test;
+
+message ABean{
+  int64 id = 1;
+  BEnum b = 2;
+  repeated string job = 3;
+}
+
+message CCCBean{
+  int64 id = 1;
+  string name = 2;
+  repeated string job = 3;
+  BEnum b = 4;
+  DEnum d = 5;
+}
+
+
+enum BEnum {
+  a = 0;
+  b = 1;
+}
+
+enum DEnum{
+  c = 0;
+  d = 1;
+}
