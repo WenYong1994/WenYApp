@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleJvm" value="11" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/proto" />
+            <option value="$PROJECT_DIR$/protoCusEnumCompiler" />
+            <option value="$PROJECT_DIR$/wheny_annotation_apilib" />
+            <option value="$PROJECT_DIR$/wheny_annotation_lib" />
+            <option value="$PROJECT_DIR$/wheny_compiler_lib" />
+            <option value="$PROJECT_DIR$/whenydblibary" />
+            <option value="$PROJECT_DIR$/whenylibrary" />
+            <option value="$PROJECT_DIR$/whenynetlibrary" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

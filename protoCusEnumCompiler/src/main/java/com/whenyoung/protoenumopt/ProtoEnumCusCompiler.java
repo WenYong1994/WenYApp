@@ -129,7 +129,7 @@ public class ProtoEnumCusCompiler {
             try {
                 //删除生成的编译class文件
                 File file = new File(compilerPath);
-                file.deleteOnExit();
+                deleteDirectory(file);
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -152,4 +152,23 @@ public class ProtoEnumCusCompiler {
             }
         }
     }
+
+    private static void deleteDirectory(File directory) {
+        // 确保文件或文件夹存在
+        if (!directory.exists()) {
+            return;
+        }
+
+        // 如果是文件夹，首先删除其中的文件和子文件夹
+        if (directory.isDirectory()) {
+            for (File file : directory.listFiles()) {
+                deleteDirectory(file);
+            }
+        }
+
+        // 删除文件或空文件夹
+        directory.delete();
+    }
+
+
 }
