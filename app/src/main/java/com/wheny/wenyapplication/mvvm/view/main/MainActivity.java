@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.chenenyu.router.annotation.InjectParam;
 import com.chenenyu.router.annotation.Route;
+import com.pb.test.TestPb;
 import com.wheny.wenyapplication.R;
 import com.wheny.wenyapplication.mvvm.view.TestFragment.TestFragmentActivity;
 import com.wheny.wenyapplication.mvvm.view.testHanlder.TestHandlerActivity;
@@ -15,6 +16,7 @@ import com.wheny.wenyapplication.mvvm.view.test_delegation.TestDeleActivity;
 import com.wheny.wenyapplication.mvvm.view.test_drawable.TestDrawableActivity;
 import com.wheny.wenyapplication.mvvm.view.tf.TFActivity;
 import com.wheny.wenyapplication.test_coroutines.TestCoroutinesActivity;
+import com.wheny.wenyapplication.test_pb.TestPbActivity;
 import com.wheny.whenyannotationapilib.ViewModelInjector;
 import com.wheny.whenyannotationlib.InjectViewModel;
 import com.wheny.whenylibrary.TestAni;
@@ -97,6 +99,10 @@ public class MainActivity extends AppCompatActivity implements VmContract {
         });
         findViewById(R.id.test_012).setOnClickListener(v->{
             Intent intent = new Intent(MainActivity.this, TestDrawableActivity.class);
+            startActivity(intent);
+        });
+        findViewById(R.id.test_013).setOnClickListener(v->{
+            Intent intent = new Intent(MainActivity.this, TestPbActivity.class);
             startActivity(intent);
         });
     }

@@ -4,9 +4,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    
-    <application
 
+    <application
         android:name=".application.App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,9 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".mvvm.view.test_drawable.TestDrawableActivity"
-            >
+            android:name=".TestPbActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
         </activity>
+        <activity android:name=".mvvm.view.test_drawable.TestDrawableActivity"></activity>
         <activity android:name=".mvvm.view.test_delegation.TestDeleActivity" />
         <activity android:name=".mvvm.view.tf.TFActivity" />
         <activity android:name=".mvvm.view.testHanlder.TestHandlerActivity" />
@@ -26,6 +29,7 @@
         <activity android:name=".mvvm.view.databinding.TestDataBindingActivity" />
         <activity android:name=".mvvm.view.list.TestListActivity" />
         <activity android:name=".mvvm.view.login.LoginActivity" />
+        <activity android:name=".test_pb.TestPbActivity" />
         <activity android:name=".mvvm.view.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

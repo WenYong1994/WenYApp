@@ -3,6 +3,7 @@ apply plugin: 'kotlin-parcelize'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'com.chenenyu.router'
+apply plugin: 'com.google.protobuf'
 
 android {
     compileSdkVersion 30
@@ -57,7 +58,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     kapt project(':wheny_compiler_lib')//引入注解处理器模块
     implementation project(':wheny_annotation_lib')//引入自己定义的注解
-
+    implementation 'com.google.protobuf:protobuf-java-util:3.5.1'
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

@@ -11,7 +11,7 @@ import java.io.File;
  **/
 public  class FileUtils {
 
-    public static boolean enableLog = true;
+    public static boolean enableLog = false;
 
     public static String getCompilerPath(String path){
         File file = new File(path);

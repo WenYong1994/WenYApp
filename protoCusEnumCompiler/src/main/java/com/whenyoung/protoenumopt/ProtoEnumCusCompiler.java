@@ -6,6 +6,8 @@ import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.comments.BlockComment;
 import com.github.javaparser.ast.comments.Comment;
+import com.github.javaparser.ast.stmt.BlockStmt;
+import com.github.javaparser.ast.stmt.Statement;
 import com.whenyoung.protoenumopt.utils.ClassNameExtractor;
 import com.whenyoung.protoenumopt.utils.DynamicCompiler;
 import com.whenyoung.protoenumopt.utils.FileUtils;
@@ -33,7 +35,22 @@ import java.util.Map;
  **/
 public class ProtoEnumCusCompiler {
     public static void main(String[] args) {
+        String action = "remove";
+        boolean enableLog = false;
+        for (String arg : args) {
+            if (arg.startsWith("action")) {
+                action = arg.replaceAll("action:", "").trim();
+            }
+            if (arg.startsWith("enableLog")) {
+                try {
+                    enableLog = Boolean.parseBoolean(arg.replaceAll("enableLog:", "false").trim());
+                } catch (Exception e) {
+                }
+            }
+        }
+        FileUtils.enableLog = enableLog;
         FileUtils.println(Arrays.toString(args));
+
         String currentPath = System.getProperty("user.dir");
         FileUtils.println("ProtoEnumCusCompiler currentPath:" + currentPath);
         // 获取当前path
@@ -53,7 +70,11 @@ public class ProtoEnumCusCompiler {
         for (File pbFile : pbFiles) {
             String absName = pbFile.getAbsoluteFile().getPath();
             FileUtils.println("ProtoEnumCusCompiler pbFile:" + absName);
-            removePbEnumGetter(absName);
+            if (action.equals("replace")) {
+                setPbEnumToInt(absName);
+            } else {
+                removePbEnumGetter(absName);
+            }
         }
 
 
@@ -130,13 +151,86 @@ public class ProtoEnumCusCompiler {
                 //删除生成的编译class文件
                 File file = new File(compilerPath);
                 deleteDirectory(file);
-            } catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         System.out.println("ProtoEnumCusCompiler -------------end");
     }
 
+    public static void setPbEnumToInt(String pbFileName) {
+        String compilerPath = FileUtils.getCompilerPath(pbFileName);
+        try {
+            FileUtils.println("ProtoEnumCusCompiler -------------end");
+
+            DynamicCompiler.compile(pbFileName, compilerPath);
+            Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
+
+            URLClassLoader classLoader = new URLClassLoader(new URL[]{new File(compilerPath).toURI().toURL()});
+            List<String> allClassname = ClassNameExtractor.extractFullClassNames(pbFileName);
+            for (String clazzName : allClassname) {
+                try {
+                    Class clazz = classLoader.loadClass(clazzName);
+                    // 枚举内部的方法跳过
+                    if (clazz.isEnum()) {
+                        continue;
+                    }
+                    for (Method method : clazz.getMethods()) {
+                        // 将返回值是枚举类型的方法干掉,只保留返回int类型的
+                        if (method.getReturnType().isEnum()) {
+                            Map<String, Method> map = wellRemoveMethodClazzs.get(clazzName);
+                            if (map == null) {
+                                map = new HashMap<>();
+                                wellRemoveMethodClazzs.put(clazz.getName(), map);
+                            }
+                            map.put(method.getName(), method);
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (wellRemoveMethodClazzs.size() > 0) {
+                Path path = Paths.get(pbFileName);
+                CompilationUnit outCu = StaticJavaParser.parse(path);
+                for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
+                    String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
+                    if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
+                        //这个类有被需要被移除的方法才处理
+                        Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
+                        for (MethodDeclaration method : classOrInterface.getMethods()) {
+                            if (wellRemoveMethods.containsKey(method.getNameAsString())) {
+                                // 将返回枚举的方法。变成返回int
+                                method.setType(int.class);
+                                System.out.println("TProtoEnumOptMain  well remove class===== " + fullClassName );
+                                BlockStmt oldBlockStmt = method.getBody().orElse(null);
+                                if (oldBlockStmt != null && oldBlockStmt.getStatements() != null && oldBlockStmt.getStatements().size() > 0) {
+                                    method.removeBody();
+                                    Statement statement = StaticJavaParser.parseStatement("return " + method.getNameAsString() + "Value();");
+                                    BlockStmt blockStmt = new BlockStmt();
+                                    blockStmt.addStatement(statement);
+                                    method.setBody(blockStmt);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Files.write(path, outCu.toString().getBytes());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                //删除生成的编译class文件
+                File file = new File(compilerPath);
+                deleteDirectory(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("ProtoEnumCusCompiler -------------end");
+    }
 
     public static void findAllPb(ArrayList<File> files, File file) {
         if (file == null || !file.exists()) {

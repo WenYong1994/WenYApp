@@ -42,6 +42,7 @@ class TestCoroutinesActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_coroutines)
+
         Log.e(TAG, "主线程id：${mainLooper.thread.id}")
         test()
         Log.e(TAG, "协程执行结束")
