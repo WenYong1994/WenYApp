@@ -1,4 +1,4 @@
 include ':app', ':whenylibrary', ':whenynetlibrary', ':whenydblibary', ':wheny_compiler_lib', ':wheny_annotation_lib', ':wheny_annotation_apilib'
 rootProject.name='WenYApplication'
-include ':protoEnumOpt'
+include ':protoCusEnumCompiler'
 include ':proto'

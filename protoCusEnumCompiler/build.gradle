@@ -1,0 +1,29 @@
+plugins {
+    id 'java'
+}
+
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 11
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'com.google.protobuf:protobuf-java:3.17.3'
+//    implementation 'org.javassist:javassist:3.28.0-GA'
+    implementation 'org.codehaus.groovy:groovy-eclipse-compiler:3.6.0-03'
+    implementation 'com.github.javaparser:javaparser-core:3.23.1'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'com.whenyoung.protoenumopt.ProtoEnumCusCompiler'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
