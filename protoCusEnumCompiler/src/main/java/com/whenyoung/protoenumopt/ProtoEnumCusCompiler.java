@@ -2,6 +2,7 @@ package com.whenyoung.protoenumopt;
 
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Modifier;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
@@ -44,6 +45,7 @@ public class ProtoEnumCusCompiler {
         String fixCodeStr =
                 "public class DummyClass{\n" +
                         "    public void dummyMethod(){\n" +
+                        "    System.out.println(\"-----------------\"+descriptorData);" +
                         "        for (Descriptors.Descriptor messageType : getDescriptor().getMessageTypes()) {\n" +
                         "            for (Descriptors.FieldDescriptor field : messageType.getFields()) {\n" +
                         "                if (field.getType() == Descriptors.FieldDescriptor.Type.ENUM) {\n" +
@@ -52,6 +54,9 @@ public class ProtoEnumCusCompiler {
                         "                        Field typeField = fieldClass.getDeclaredField(\"type\");\n" +
                         "                        typeField.setAccessible(true);\n" +
                         "                        typeField.set(field, Descriptors.FieldDescriptor.Type.INT32);\n" +
+                        "                        Field defaultValueField = fieldClass.getDeclaredField(\"defaultValue\");\n" +
+                        "                        defaultValueField.setAccessible(true);\n" +
+                        "                        defaultValueField.set(field, 0);\n" +
                         "                    } catch (NoSuchFieldException e) {\n" +
                         "                        e.printStackTrace();\n" +
                         "                    } catch (IllegalAccessException e) {\n" +
@@ -227,59 +232,9 @@ public class ProtoEnumCusCompiler {
                 Path path = Paths.get(pbFileName);
                 CompilationUnit outCu = StaticJavaParser.parse(path);
                 // 遍历找出 返回枚举的方法改成返回 int
-                for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
-                    String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
-                    if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
-                        //这个类有被需要被移除的方法才处理
-                        Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
-                        for (MethodDeclaration method : classOrInterface.getMethods()) {
-                            if (wellRemoveMethods.containsKey(method.getNameAsString())) {
-                                String oldReturnType = method.getType().asString();
-                                // 将返回枚举的方法。变成返回int
-                                method.setType(int.class);
-                                BlockStmt oldBlockStmt = method.getBody().orElse(null);
-                                if (oldBlockStmt != null && oldBlockStmt.getStatements() != null && oldBlockStmt.getStatements().size() > 0) {
-                                    method.removeBody();
-                                    Statement statement = StaticJavaParser.parseStatement("return " + method.getNameAsString() + "Value();");
-                                    BlockStmt blockStmt = new BlockStmt();
-                                    blockStmt.addStatement(statement);
-                                    method.setBody(blockStmt);
-                                    String oldCommentStr = "";
-                                    Comment oldComment = method.getComment().orElse(null);
-                                    if (oldComment != null) {
-                                        oldCommentStr = oldComment.toString()
-                                                .replaceAll("/\\*\\*", "")
-                                                .replaceAll("/\\*", "")
-                                                .replaceAll("\\*", "")
-                                                .replaceAll("/", "")
-                                                .replaceAll("\\n", "")
-                                                .replaceAll("\\*/", "");
-                                    }
-                                    method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + oldReturnType + " now change return type to int \n\t\t");
-                                }
-                            }
-                        }
-                    }
-                }
+                setReturnTypeToInt(wellRemoveMethodClazzs, outCu);
                 // 这里是需要修改描述文件里面 对字段描述类型为 enum 的 改成 int32
-                ClassOrInterfaceDeclaration outerClass = outCu.findFirst(ClassOrInterfaceDeclaration.class).orElse(null);
-                if (outerClass != null) {
-                    String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(outerClass);
-                    System.out.println("ProtoEnumOptMain  add fix filed type class: " + fullClassName);
-                    // 查找最外层类的static代码块
-                    outerClass.getChildNodes().stream()
-                            .filter(node -> node instanceof InitializerDeclaration)
-                            .map(node -> (InitializerDeclaration) node)
-                            .filter(InitializerDeclaration::isStatic)
-                            .findFirst()
-                            .ifPresent(staticBlock -> {
-                                if (needAddStatement != null && staticBlock.getBody() != null && staticBlock.getBody().getStatements() != null) {
-                                    staticBlock.getBody().getStatements().addAll(needAddStatement);
-                                }
-                            });
-                    outCu.addImport("com.google.protobuf.Descriptors");
-                    outCu.addImport("java.lang.reflect.Field");
-                }
+                changeFiedEnumTypeToInt(outCu);
                 // 覆盖写入文件
                 Files.write(path, outCu.toString().getBytes());
             }
@@ -295,6 +250,91 @@ public class ProtoEnumCusCompiler {
             }
         }
         System.out.println("ProtoEnumCusCompiler -------------end");
+    }
+
+    private static void changeFiedEnumTypeToInt(CompilationUnit outCu) {
+        ClassOrInterfaceDeclaration outerClass = outCu.findFirst(ClassOrInterfaceDeclaration.class).orElse(null);
+        if (outerClass != null) {
+            // 查找最外层类的static代码块
+            outerClass.getChildNodes().stream()
+                    .filter(node -> node instanceof InitializerDeclaration)
+                    .map(node -> (InitializerDeclaration) node)
+                    .filter(InitializerDeclaration::isStatic)
+                    .findFirst()
+                    .ifPresent(staticBlock -> {
+                        if (needAddStatement != null && staticBlock.getBody() != null && staticBlock.getBody().getStatements() != null) {
+                            // 添加到倒数第二行
+                            int insertIndex = 0;
+                            for (int i = 0; i < staticBlock.getBody().getStatements().size(); i++) {
+                                Statement statement = staticBlock.getBody().getStatements().get(i);
+                                if(statement.toString().trim().startsWith("com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom")){
+                                    insertIndex = i+1;
+                                }
+                            }
+                            staticBlock.getBody().getStatements().addAll(insertIndex,needAddStatement);
+
+                        }
+                    });
+            outCu.addImport("com.google.protobuf.Descriptors");
+            outCu.addImport("java.lang.reflect.Field");
+
+
+        }
+    }
+
+    private static void setReturnTypeToInt(Map<String, Map<String, Method>> wellRemoveMethodClazzs, CompilationUnit outCu) {
+        for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
+            String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
+            if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
+                //这个类有被需要被移除的方法才处理
+                Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
+                for (MethodDeclaration method : classOrInterface.getMethods()) {
+                    if (wellRemoveMethods.containsKey(method.getNameAsString())) {
+                        String oldReturnType = method.getType().asString();
+                        // 将返回枚举的方法。变成返回int
+                        method.setType(int.class);
+                        BlockStmt oldBlockStmt = method.getBody().orElse(null);
+                        if (oldBlockStmt != null && oldBlockStmt.getStatements() != null && oldBlockStmt.getStatements().size() > 0) {
+                            method.removeBody();
+                            Statement statement = StaticJavaParser.parseStatement("return " + method.getNameAsString() + "Value();");
+                            BlockStmt blockStmt = new BlockStmt();
+                            blockStmt.addStatement(statement);
+                            method.setBody(blockStmt);
+                            String oldCommentStr = "";
+                            Comment oldComment = method.getComment().orElse(null);
+
+
+                            // 处理注释
+                            if (oldComment != null) {
+                                oldCommentStr = oldComment.toString()
+                                        .replaceAll("/\\*\\*", "")
+                                        .replaceAll("/\\*", "")
+                                        .replaceAll("\\*", "")
+                                        .replaceAll("/", "")
+                                        .replaceAll("\\n", "")
+                                        .replaceAll("\\*/", "");
+                            }
+                            method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + oldReturnType + " now change return type to int \n\t\t");
+                        }
+
+//                         为build方法添加setEnum(int value) 方法。因为get方法返回值改成了 int
+                        if (fullClassName.endsWith("$Builder")) {
+
+                            method.findAncestor(ClassOrInterfaceDeclaration.class).ifPresent(classOrInterfaceDeclaration -> {
+                                String simpleEnumName = oldReturnType.substring(oldReturnType.lastIndexOf(".")+1);
+                                // 为该类添加新方法
+                                MethodDeclaration newMethod =
+                                        classOrInterfaceDeclaration.addMethod("set"+simpleEnumName, Modifier.Keyword.PUBLIC);
+                                newMethod.setType("Builder");
+                                newMethod.addParameter("int", "value");
+                                newMethod.setBody(StaticJavaParser.parseBlock("{ return set" + simpleEnumName + "(" + simpleEnumName + ".forNumber(value)); }"));
+                                newMethod.setBlockComment("为了兼容 将getEnum方法返回的enum的类型 改成了int，所以需要在build方法中添加对应的set方法");
+                            });
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public static void findAllPb(ArrayList<File> files, File file) {

@@ -15,6 +15,7 @@ class TestPbActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_test_pb)
 
+
         findViewById<View>(R.id.test_pb).setOnClickListener {
             testPb()
         }
@@ -28,7 +29,7 @@ class TestPbActivity : AppCompatActivity() {
             .addJob("coder1")
             .addJob("coder2")
             .build()
-        originTestBean.allFields
+//        originTestBean.allFields
         val sexValue = originTestBean.sexValue
         val sex = Sex.forNumber(sexValue)
         // 获取枚举
