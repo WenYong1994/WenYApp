@@ -13,6 +13,7 @@ message CCCBean{
   repeated string job = 3;
   BEnum b = 4;
   DEnum d = 5;
+  BEnum b1 = 6;
 }
 
 

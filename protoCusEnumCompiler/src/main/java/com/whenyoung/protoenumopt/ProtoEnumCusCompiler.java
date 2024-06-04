@@ -291,6 +291,7 @@ public class ProtoEnumCusCompiler {
                 for (MethodDeclaration method : classOrInterface.getMethods()) {
                     if (wellRemoveMethods.containsKey(method.getNameAsString())) {
                         String oldReturnType = method.getType().asString();
+                        String filedName = method.getNameAsString().substring(3);
                         // 将返回枚举的方法。变成返回int
                         method.setType(int.class);
                         BlockStmt oldBlockStmt = method.getBody().orElse(null);
@@ -322,12 +323,15 @@ public class ProtoEnumCusCompiler {
 
                             method.findAncestor(ClassOrInterfaceDeclaration.class).ifPresent(classOrInterfaceDeclaration -> {
                                 String simpleEnumName = oldReturnType.substring(oldReturnType.lastIndexOf(".")+1);
+                                // 这里获取的其实不是 枚举名。而是参数名
+
+
                                 // 为该类添加新方法
                                 MethodDeclaration newMethod =
-                                        classOrInterfaceDeclaration.addMethod("set"+simpleEnumName, Modifier.Keyword.PUBLIC);
+                                        classOrInterfaceDeclaration.addMethod("set"+filedName, Modifier.Keyword.PUBLIC);
                                 newMethod.setType("Builder");
                                 newMethod.addParameter("int", "value");
-                                newMethod.setBody(StaticJavaParser.parseBlock("{ return set" + simpleEnumName + "(" + simpleEnumName + ".forNumber(value)); }"));
+                                newMethod.setBody(StaticJavaParser.parseBlock("{ return set" + filedName + "(" + simpleEnumName + ".forNumber(value)); }"));
                                 newMethod.setBlockComment("为了兼容 将getEnum方法返回的enum的类型 改成了int，所以需要在build方法中添加对应的set方法");
                             });
                         }
