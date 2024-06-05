@@ -6,8 +6,38 @@ message TestBean{
   string name = 2;
   repeated string job = 3;
   Sex sex = 4;
+  Sex sex_b_type = 5;
+  Sex sex_c_type = 6;
+  Type type = 7;
 }
 
+message PbA{
+  int64 id = 1;
+  string name = 2;
+  repeated string job = 3;
+  Sex sex = 4;
+  Sex sex_b_type = 5;
+  Sex sex_c_type = 6;
+  Type type = 7;
+}
+
+message PbB{
+  int64 id = 1;
+  string name = 2;
+  repeated string job = 3;
+  Sex sex = 4;
+  Sex sex_b_type = 5;
+  Type type = 6;
+}
+
+
 enum Sex {
-  man = 0;female = 1;
+  man = 0;
+  female = 1;
+}
+
+enum Type {
+  type1 = 0;
+  type2 = 1;
+  type3 = 2;
 }
