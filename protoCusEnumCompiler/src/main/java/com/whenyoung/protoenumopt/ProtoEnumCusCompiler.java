@@ -41,9 +41,31 @@ public class ProtoEnumCusCompiler {
 
     static NodeList<Statement> needAddStatement;
 
+    /**
+     * 脚本一共做了以下几件事情
+     *
+     * 1、调用 findAllPb 收集所有pb类
+     * 2、遍历所有pb类
+     *
+     * 3、 a、判断 action 如果是 remove 调用 removePbEnumGetter 方法移除 getEnum方法
+     *
+     *    b、判断 action 是 replace 调用 setPbEnumToInt 方法
+     *          以下步骤解释 cation为replace的过程
+     *
+     *          1、调用setReturnTypeToInt 方法 内部 先将 getEnum 方法返回值改成int 并添加注释
+     *
+     *          2、调用setReturnTypeToInt 方法 内部 然后
+     *             为$Builder类添加 setEnum(int value) 方法，因为兼容我门把EnumField 改成了int，否则pb框架会报错
+     *
+     *          3、调用changeFiedEnumTypeToInt 方法 在 pb生成的最外层外部类的static代码块
+     *             插入代码，插入代码逻辑是使用反射遍历所有filed 把 enum的类型改为int，并且把defaultValue改成0
+     *
+     * */
+
+
     static {
         String fixCodeStr =
-                "public class DummyClass{\n" +
+                        "public class DummyClass{\n" +
                         "    public void dummyMethod(){\n" +
                         "    System.out.println(\"-----------------\"+descriptorData);" +
                         "        for (Descriptors.Descriptor messageType : getDescriptor().getMessageTypes()) {\n" +
@@ -52,7 +74,7 @@ public class ProtoEnumCusCompiler {
                         "                    Class fieldClass = field.getClass();\n" +
                         "                    try {\n" +
                         "                        Field typeField = fieldClass.getDeclaredField(\"type\");\n" +
-                        "                        typeField.setAccessible(true);\n" +
+                        "                        typeField.setAccessible(true);\n" + "             " +
                         "                        typeField.set(field, Descriptors.FieldDescriptor.Type.INT32);\n" +
                         "                        Field defaultValueField = fieldClass.getDeclaredField(\"defaultValue\");\n" +
                         "                        defaultValueField.setAccessible(true);\n" +
@@ -256,25 +278,20 @@ public class ProtoEnumCusCompiler {
         ClassOrInterfaceDeclaration outerClass = outCu.findFirst(ClassOrInterfaceDeclaration.class).orElse(null);
         if (outerClass != null) {
             // 查找最外层类的static代码块
-            outerClass.getChildNodes().stream()
-                    .filter(node -> node instanceof InitializerDeclaration)
-                    .map(node -> (InitializerDeclaration) node)
-                    .filter(InitializerDeclaration::isStatic)
-                    .findFirst()
-                    .ifPresent(staticBlock -> {
-                        if (needAddStatement != null && staticBlock.getBody() != null && staticBlock.getBody().getStatements() != null) {
-                            // 添加到倒数第二行
-                            int insertIndex = 0;
-                            for (int i = 0; i < staticBlock.getBody().getStatements().size(); i++) {
-                                Statement statement = staticBlock.getBody().getStatements().get(i);
-                                if(statement.toString().trim().startsWith("com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom")){
-                                    insertIndex = i+1;
-                                }
-                            }
-                            staticBlock.getBody().getStatements().addAll(insertIndex,needAddStatement);
-
+            outerClass.getChildNodes().stream().filter(node -> node instanceof InitializerDeclaration).map(node -> (InitializerDeclaration) node).filter(InitializerDeclaration::isStatic).findFirst().ifPresent(staticBlock -> {
+                if (needAddStatement != null && staticBlock.getBody() != null && staticBlock.getBody().getStatements() != null) {
+                    // 添加到倒数第二行
+                    int insertIndex = 0;
+                    for (int i = 0; i < staticBlock.getBody().getStatements().size(); i++) {
+                        Statement statement = staticBlock.getBody().getStatements().get(i);
+                        if (statement.toString().trim().startsWith("com.google.protobuf.Descriptors.FileDescriptor.internalBuildGeneratedFileFrom")) {
+                            insertIndex = i + 1;
                         }
-                    });
+                    }
+                    staticBlock.getBody().getStatements().addAll(insertIndex, needAddStatement);
+
+                }
+            });
             outCu.addImport("com.google.protobuf.Descriptors");
             outCu.addImport("java.lang.reflect.Field");
 
@@ -291,7 +308,10 @@ public class ProtoEnumCusCompiler {
                 for (MethodDeclaration method : classOrInterface.getMethods()) {
                     if (wellRemoveMethods.containsKey(method.getNameAsString())) {
                         String oldReturnType = method.getType().asString();
-                        String filedName = method.getNameAsString().substring(3);
+                        // 获取变量名，例如 setXxxx 那么变量名就是 xxxx    这里获取的是首字母大写！！！！！
+                        // 注意这里proto3 默认会把变量名转成首字母小写，所以不用考虑原变量名为大写的情况，全是首字母小写
+                        String upperFiledName = method.getNameAsString().substring(3);
+
                         // 将返回枚举的方法。变成返回int
                         method.setType(int.class);
                         BlockStmt oldBlockStmt = method.getBody().orElse(null);
@@ -307,31 +327,25 @@ public class ProtoEnumCusCompiler {
 
                             // 处理注释
                             if (oldComment != null) {
-                                oldCommentStr = oldComment.toString()
-                                        .replaceAll("/\\*\\*", "")
-                                        .replaceAll("/\\*", "")
-                                        .replaceAll("\\*", "")
-                                        .replaceAll("/", "")
-                                        .replaceAll("\\n", "")
-                                        .replaceAll("\\*/", "");
+                                oldCommentStr = oldComment.toString().replaceAll("/\\*\\*", "").replaceAll("/\\*", "").replaceAll("\\*", "").replaceAll("/", "").replaceAll("\\n", "").replaceAll("\\*/", "");
                             }
                             method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + oldReturnType + " now change return type to int \n\t\t");
                         }
 
 //                         为build方法添加setEnum(int value) 方法。因为get方法返回值改成了 int
                         if (fullClassName.endsWith("$Builder")) {
-
                             method.findAncestor(ClassOrInterfaceDeclaration.class).ifPresent(classOrInterfaceDeclaration -> {
-                                String simpleEnumName = oldReturnType.substring(oldReturnType.lastIndexOf(".")+1);
-                                // 这里获取的其实不是 枚举名。而是参数名
-
-
+                                // 将变量名首字母小写
+                                String lowerFiledName = upperFiledName.substring(0, 1).toLowerCase();
+                                if (upperFiledName.length() > 1) {
+                                    lowerFiledName = lowerFiledName + upperFiledName.substring(1);
+                                }
                                 // 为该类添加新方法
-                                MethodDeclaration newMethod =
-                                        classOrInterfaceDeclaration.addMethod("set"+filedName, Modifier.Keyword.PUBLIC);
+                                MethodDeclaration newMethod = classOrInterfaceDeclaration.addMethod("set" + upperFiledName, Modifier.Keyword.PUBLIC);
                                 newMethod.setType("Builder");
                                 newMethod.addParameter("int", "value");
-                                newMethod.setBody(StaticJavaParser.parseBlock("{ return set" + filedName + "(" + simpleEnumName + ".forNumber(value)); }"));
+                                String setEnumFiledMethod = "{\n" + lowerFiledName + "_ = value;\n" + "                onChanged();\n" + "                return this;" + "\n}";
+                                newMethod.setBody(StaticJavaParser.parseBlock(setEnumFiledMethod));
                                 newMethod.setBlockComment("为了兼容 将getEnum方法返回的enum的类型 改成了int，所以需要在build方法中添加对应的set方法");
                             });
                         }

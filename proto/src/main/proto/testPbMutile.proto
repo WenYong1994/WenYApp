@@ -12,17 +12,21 @@ message CCCBean{
   string name = 2;
   repeated string job = 3;
   BEnum b = 4;
-  DEnum d = 5;
-  BEnum b1 = 6;
+  DEnum enumParamsD = 5;
+  BEnum bB = 6;
+  DEnum D= 7;
+  DEnum D_aaa_ccc = 8;
 }
 
 
 enum BEnum {
-  a = 0;
-  b = 1;
+  ba = 0;
+  bb = 1;
+  bc = 2;
 }
 
 enum DEnum{
-  c = 0;
-  d = 1;
+  da = 0;
+  ab = 1;
+  dc = 2;
 }
