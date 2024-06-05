@@ -132,91 +132,8 @@ public class ProtoEnumCusCompiler {
             if (action.equals("replace")) {
                 System.out.println("ProtoEnumCusCompiler replace pbFile:" + absName);
                 setPbEnumToInt(absName);
-            } else {
-                System.out.println("ProtoEnumCusCompile remove pbFile:" + absName);
-                removePbEnumGetter(absName);
             }
         }
-
-
-    }
-
-    public static void removePbEnumGetter(String pbFileName) {
-        String compilerPath = FileUtils.getCompilerPath(pbFileName);
-        try {
-            FileUtils.println("ProtoEnumCusCompiler -------------end");
-            Path path = Paths.get(pbFileName);
-            CompilationUnit outCu = StaticJavaParser.parse(path);
-            DynamicCompiler.compile(pbFileName, compilerPath);
-            Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
-
-            URLClassLoader classLoader = new URLClassLoader(new URL[]{new File(compilerPath).toURI().toURL()});
-            List<String> allClassname = ClassNameExtractor.extractFullClassNames(outCu);
-            for (String clazzName : allClassname) {
-//                FileUtils.println("ProtoEnumCusCompiler clazzName:===============" + clazzName);
-                try {
-                    Class clazz = classLoader.loadClass(clazzName);
-                    // 枚举内部的方法跳过
-                    if (clazz.isEnum()) {
-                        continue;
-                    }
-                    for (Method method : clazz.getMethods()) {
-                        // 将返回值是枚举类型的方法干掉,只保留返回int类型的
-                        if (method.getReturnType().isEnum()) {
-                            Map<String, Method> map = wellRemoveMethodClazzs.get(clazzName);
-                            if (map == null) {
-                                map = new HashMap<>();
-                                wellRemoveMethodClazzs.put(clazz.getName(), map);
-                            }
-//                            FileUtils.println("ProtoEnumCusCompiler well remove class:" + clazzName+" methodName:"+method.getName()) ;
-                            map.put(method.getName(), method);
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            if (wellRemoveMethodClazzs.size() > 0) {
-
-                for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
-                    String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
-                    if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
-                        //这个类有被需要被移除的方法才处理
-                        System.out.println("ProtoEnumOptMain  well remove class=====" + fullClassName);
-                        Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
-                        for (MethodDeclaration method : classOrInterface.getMethods()) {
-                            if (wellRemoveMethods.containsKey(method.getNameAsString())) {
-                                method.getComment().ifPresent(Comment::remove);
-                                String newMethodStr = method.toString().replaceAll("/\\*\\*", "");
-                                newMethodStr = newMethodStr.replaceAll("/\\*", "");
-                                newMethodStr = newMethodStr.replaceAll("\\*/", "");
-                                String commentedMethod = newMethodStr;
-                                BlockComment blockComment = new BlockComment(commentedMethod);
-                                System.out.println("TProtoEnumOptMain  well remove method:" + method.getNameAsString());
-                                method.getParentNode().ifPresent(node -> {
-                                    node.addOrphanComment(new BlockComment("this method is removed please use " + method.getNameAsString() + "Value()"));
-                                    node.addOrphanComment(blockComment);
-                                    method.remove();
-                                });
-                            }
-                        }
-                    }
-                }
-
-                Files.write(path, outCu.toString().getBytes());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                //删除生成的编译class文件
-                File file = new File(compilerPath);
-                deleteDirectory(file);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("ProtoEnumCusCompiler -------------end");
     }
 
     public static void setPbEnumToInt(String pbFileName) {
@@ -239,7 +156,7 @@ public class ProtoEnumCusCompiler {
                         continue;
                     }
                     for (Method method : clazz.getMethods()) {
-                        // 将返回值是枚举类型的方法干掉,只保留返回int类型的，并且是getXXXEnum方法
+                        // 将返回值是枚举类型的方法并且是getXXXEnum方法 改变返回值为int
                         if (method.getReturnType().isEnum()&&method.getName().startsWith("get")) {
                             Map<String, Method> map = wellRemoveMethodClazzs.get(clazzName);
                             if (map == null) {
@@ -324,12 +241,16 @@ public class ProtoEnumCusCompiler {
                             blockStmt.addStatement(statement);
                             method.setBody(blockStmt);
                             String oldCommentStr = "";
-                            Comment oldComment = method.getComment().orElse(null);
-
-
                             // 处理注释
+                            Comment oldComment = method.getComment().orElse(null);
                             if (oldComment != null) {
-                                oldCommentStr = oldComment.toString().replaceAll("/\\*\\*", "").replaceAll("/\\*", "").replaceAll("\\*", "").replaceAll("/", "").replaceAll("\\n", "").replaceAll("\\*/", "");
+                                oldCommentStr = oldComment.toString()
+                                        .replaceAll("/\\*\\*", "")
+                                        .replaceAll("/\\*", "")
+                                        .replaceAll("\\*", "")
+                                        .replaceAll("/", "")
+                                        .replaceAll("\\n", "")
+                                        .replaceAll("\\*/", "");
                             }
                             method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + oldReturnType + " now change return type to int \n\t\t");
                         }
