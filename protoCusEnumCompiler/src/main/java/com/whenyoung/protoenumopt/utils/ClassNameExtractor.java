@@ -27,15 +27,8 @@ import java.util.function.Function;
  **/
 public class ClassNameExtractor {
 
-    public static List<String> extractFullClassNames(String sourceFilePath) throws IOException, ParseException {
-        FileInputStream in = new FileInputStream(sourceFilePath);
 
-        CompilationUnit cu;
-        try {
-            cu = new JavaParser().parse(in).getResult().get();
-        } finally {
-            in.close();
-        }
+    public static List<String> extractFullClassNames(CompilationUnit cu) throws IOException, ParseException {
 
         List<String> fullClassNames = new ArrayList<>();
         VoidVisitorAdapter<List<String>> classNameCollector = new VoidVisitorAdapter<List<String>>() {

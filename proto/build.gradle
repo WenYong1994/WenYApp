@@ -72,9 +72,9 @@ task onPbAfter{
     doFirst {
         println("generateProtoTasks-----------onPbAfter-----doFirst--start")
         // 这里可以执行对生成的java类处理
-//        exec{
-//            commandLine 'sh', './script/custom_plugin.sh'
-//        }
+        exec{
+            commandLine 'sh', './script/custom_plugin.sh'
+        }
         println("generateProtoTasks-----------onPbAfter-----doFirst--end")
     }
     doLast {

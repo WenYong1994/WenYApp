@@ -145,12 +145,13 @@ public class ProtoEnumCusCompiler {
         String compilerPath = FileUtils.getCompilerPath(pbFileName);
         try {
             FileUtils.println("ProtoEnumCusCompiler -------------end");
-
+            Path path = Paths.get(pbFileName);
+            CompilationUnit outCu = StaticJavaParser.parse(path);
             DynamicCompiler.compile(pbFileName, compilerPath);
             Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
 
             URLClassLoader classLoader = new URLClassLoader(new URL[]{new File(compilerPath).toURI().toURL()});
-            List<String> allClassname = ClassNameExtractor.extractFullClassNames(pbFileName);
+            List<String> allClassname = ClassNameExtractor.extractFullClassNames(outCu);
             for (String clazzName : allClassname) {
 //                FileUtils.println("ProtoEnumCusCompiler clazzName:===============" + clazzName);
                 try {
@@ -176,8 +177,7 @@ public class ProtoEnumCusCompiler {
                 }
             }
             if (wellRemoveMethodClazzs.size() > 0) {
-                Path path = Paths.get(pbFileName);
-                CompilationUnit outCu = StaticJavaParser.parse(path);
+
                 for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
                     String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
                     if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
@@ -226,8 +226,11 @@ public class ProtoEnumCusCompiler {
             DynamicCompiler.compile(pbFileName, compilerPath);
             Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
 
+            Path path = Paths.get(pbFileName);
+            CompilationUnit outCu = StaticJavaParser.parse(path);
+
             URLClassLoader classLoader = new URLClassLoader(new URL[]{new File(compilerPath).toURI().toURL()});
-            List<String> allClassname = ClassNameExtractor.extractFullClassNames(pbFileName);
+            List<String> allClassname = ClassNameExtractor.extractFullClassNames(outCu);
             for (String clazzName : allClassname) {
                 try {
                     Class clazz = classLoader.loadClass(clazzName);
@@ -251,8 +254,7 @@ public class ProtoEnumCusCompiler {
                 }
             }
             if (wellRemoveMethodClazzs.size() > 0) {
-                Path path = Paths.get(pbFileName);
-                CompilationUnit outCu = StaticJavaParser.parse(path);
+
                 // 遍历找出 返回枚举的方法改成返回 int
                 setReturnTypeToInt(wellRemoveMethodClazzs, outCu);
                 // 这里是需要修改描述文件里面 对字段描述类型为 enum 的 改成 int32
