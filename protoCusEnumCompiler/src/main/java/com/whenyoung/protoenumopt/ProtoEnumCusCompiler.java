@@ -239,8 +239,8 @@ public class ProtoEnumCusCompiler {
                         continue;
                     }
                     for (Method method : clazz.getMethods()) {
-                        // 将返回值是枚举类型的方法干掉,只保留返回int类型的
-                        if (method.getReturnType().isEnum()) {
+                        // 将返回值是枚举类型的方法干掉,只保留返回int类型的，并且是getXXXEnum方法
+                        if (method.getReturnType().isEnum()&&method.getName().startsWith("get")) {
                             Map<String, Method> map = wellRemoveMethodClazzs.get(clazzName);
                             if (map == null) {
                                 map = new HashMap<>();
