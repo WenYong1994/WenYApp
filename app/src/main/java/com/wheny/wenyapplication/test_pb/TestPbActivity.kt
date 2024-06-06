@@ -118,6 +118,7 @@ class TestPbActivity : AppCompatActivity() {
             .setSw5("")
             .setAsw2(true)
             .build()
+        oriPb.swCase
         val json = JsonFormat.printer().print(oriPb)
 
         val jsonNew = JSONObject(json).apply {

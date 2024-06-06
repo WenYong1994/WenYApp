@@ -19,6 +19,7 @@ import com.whenyoung.protoenumopt.utils.FileUtils;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
@@ -41,7 +42,7 @@ import java.util.Map;
 public class ProtoEnumCusCompiler {
 
     static NodeList<Statement> needAddStatement;
-    static String oneOfEnumClassFullName = "com.google.protobuf.Internal.EnumLite";
+    static Class enumLiteClass = com.google.protobuf.Internal.EnumLite.class;
 
     /**
      * 脚本一共做了以下几件事情
@@ -81,10 +82,6 @@ public class ProtoEnumCusCompiler {
                         "                        Field defaultValueField = fieldClass.getDeclaredField(\"defaultValue\");\n" +
                         "                        defaultValueField.setAccessible(true);\n" +
                         "                        defaultValueField.set(field,0);\n" +
-//                        "                        // 取消掉OneOf\n" +
-//                        "                        Field containingOneofField = fieldClass.getDeclaredField(\"containingOneof\");\n" +
-//                        "                        containingOneofField.setAccessible(true);\n" +
-//                        "                        containingOneofField.set(field, null);\n" +
                         "                    } catch (NoSuchFieldException e) {\n" +
                         "                        e.printStackTrace();\n" +
                         "                    } catch (IllegalAccessException e) {\n" +
@@ -145,7 +142,6 @@ public class ProtoEnumCusCompiler {
     public static void setPbEnumToInt(String pbFileName) {
         String compilerPath = FileUtils.getCompilerPath(pbFileName);
         try {
-            Class enumLiteClass = com.google.protobuf.Internal.EnumLite.class;
             DynamicCompiler.compile(pbFileName, compilerPath);
             Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
 
@@ -164,11 +160,16 @@ public class ProtoEnumCusCompiler {
                     for (Method method : clazz.getMethods()) {
                         // 将返回值是枚举类型的方法并且是getXXXEnum方法 改变返回值为int
                         if (method.getReturnType().isEnum() && method.getName().startsWith("get")) {
-                            // 如果这个类有getEnumValue() 才是枚举,否则是oneOf生成的，不做处理
-                            try {
-                                Method getEnumValueMethod = getEnumValueMethod = clazz.getMethod(method.getName() + "Value");
-                                System.out.println("find method:" + method.getName() + "Value is :" + getEnumValueMethod);
-                            } catch (Exception e) {
+                            // 如果 实现的是 com.google.protobuf.ProtocolMessageEnum 才是枚举
+                            // 如果 实现的是 com.google.protobuf.Internal.EnumLite 就是oneOf生成的 XXXCase ,这种不处理
+                            boolean needJump = false;
+                            for (Class<?> anInterface : method.getReturnType().getInterfaces()) {
+                                if(enumLiteClass.getName().equals(anInterface.getName())){
+                                    needJump = true;
+                                    break;
+                                }
+                            }
+                            if (needJump){
                                 continue;
                             }
                             Map<String, Method> map = wellRemoveMethodClazzs.get(clazzName);
@@ -287,37 +288,10 @@ public class ProtoEnumCusCompiler {
                                 String setEnumFiledMethod = "{\n" + finalLowerFiledName + "_ = value;\n" + "                onChanged();\n" + "                return this;" + "\n}";
                                 newMethod.setBody(StaticJavaParser.parseBlock(setEnumFiledMethod));
                                 newMethod.setBlockComment("为了兼容 将getEnum方法返回的enum的类型 改成了int，所以需要在build方法中添加对应的set方法");
-                                /** 这里不处理oneOf的情况 */
-                                // 还需要考虑 oneof 的情况，需要修改 mergeFrom 的switch(other.getEnumCase())语句
-//                                handleOneofSwitch(classOrInterface, currentEnumTypeName, upperFiledName, classOrInterfaceDeclaration);
                             });
                         }
                     }
                     //
-                }
-            }
-        }
-    }
-
-    private static void handleOneofSwitch(ClassOrInterfaceDeclaration classOrInterface, String currentEnumTypeName, String upperFiledName, ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
-        for (MethodDeclaration methodDeclaration : classOrInterfaceDeclaration.findAll(MethodDeclaration.class)) {
-            if (methodDeclaration.getNameAsString().equals("mergeFrom")
-                    && methodDeclaration.getParameters().size() == 1) {
-                // 找到mergeFrom(Bean other) 方法，此方法存在于Bean.Builder 中，且入参是 此Builder的外部类
-                ClassOrInterfaceDeclaration beanClass = classOrInterface.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null);
-                if (beanClass != null && beanClass.getFullyQualifiedName().orElse("").equals(methodDeclaration.getParameters().get(0).getType().asString())) {
-                    methodDeclaration.getBody().ifPresent(body -> {
-                        for (Statement statement : body.getStatements()) {
-                            // 找到 switch(other.getEnumCase()) 这一行
-                            String changeLineCode = "switch(other.get" + upperFiledName + "())";
-                            String newLineCode = "switch(" + currentEnumTypeName + ".forNumber(other.get" + upperFiledName + "()))";
-                            if (statement.toString().startsWith(changeLineCode)) {
-                                String newCode = statement.toString().replace(changeLineCode, newLineCode);
-                                Statement newStatement = StaticJavaParser.parseStatement(newCode);
-                                statement.replace(newStatement);
-                            }
-                        }
-                    });
                 }
             }
         }
@@ -343,14 +317,12 @@ public class ProtoEnumCusCompiler {
         if (!directory.exists()) {
             return;
         }
-
         // 如果是文件夹，首先删除其中的文件和子文件夹
         if (directory.isDirectory()) {
             for (File file : directory.listFiles()) {
                 deleteDirectory(file);
             }
         }
-
         // 删除文件或空文件夹
         directory.delete();
     }
