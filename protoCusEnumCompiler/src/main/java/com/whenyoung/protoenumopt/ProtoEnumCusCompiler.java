@@ -7,10 +7,12 @@ import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
 import com.github.javaparser.ast.body.InitializerDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
-import com.github.javaparser.ast.comments.BlockComment;
+import com.github.javaparser.ast.body.TypeDeclaration;
 import com.github.javaparser.ast.comments.Comment;
 import com.github.javaparser.ast.stmt.BlockStmt;
 import com.github.javaparser.ast.stmt.Statement;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.Type;
 import com.whenyoung.protoenumopt.utils.ClassNameExtractor;
 import com.whenyoung.protoenumopt.utils.DynamicCompiler;
 import com.whenyoung.protoenumopt.utils.FileUtils;
@@ -27,7 +29,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 
 /**
@@ -40,6 +41,7 @@ import java.util.Optional;
 public class ProtoEnumCusCompiler {
 
     static NodeList<Statement> needAddStatement;
+    static String oneOfEnumClassFullName = "com.google.protobuf.Internal.EnumLite";
 
     /**
      * 脚本一共做了以下几件事情
@@ -65,7 +67,7 @@ public class ProtoEnumCusCompiler {
 
     static {
         String fixCodeStr =
-                        "public class DummyClass{\n" +
+                "public class DummyClass{\n" +
                         "    public void dummyMethod(){\n" +
                         "    System.out.println(\"-----------------\"+descriptorData);" +
                         "        for (Descriptors.Descriptor messageType : getDescriptor().getMessageTypes()) {\n" +
@@ -78,7 +80,11 @@ public class ProtoEnumCusCompiler {
                         "                        typeField.set(field, Descriptors.FieldDescriptor.Type.INT32);\n" +
                         "                        Field defaultValueField = fieldClass.getDeclaredField(\"defaultValue\");\n" +
                         "                        defaultValueField.setAccessible(true);\n" +
-                        "                        defaultValueField.set(field, 0);\n" +
+                        "                        defaultValueField.set(field,0);\n" +
+//                        "                        // 取消掉OneOf\n" +
+//                        "                        Field containingOneofField = fieldClass.getDeclaredField(\"containingOneof\");\n" +
+//                        "                        containingOneofField.setAccessible(true);\n" +
+//                        "                        containingOneofField.set(field, null);\n" +
                         "                    } catch (NoSuchFieldException e) {\n" +
                         "                        e.printStackTrace();\n" +
                         "                    } catch (IllegalAccessException e) {\n" +
@@ -139,7 +145,7 @@ public class ProtoEnumCusCompiler {
     public static void setPbEnumToInt(String pbFileName) {
         String compilerPath = FileUtils.getCompilerPath(pbFileName);
         try {
-
+            Class enumLiteClass = com.google.protobuf.Internal.EnumLite.class;
             DynamicCompiler.compile(pbFileName, compilerPath);
             Map<String, Map<String, Method>> wellRemoveMethodClazzs = new HashMap();
 
@@ -157,7 +163,14 @@ public class ProtoEnumCusCompiler {
                     }
                     for (Method method : clazz.getMethods()) {
                         // 将返回值是枚举类型的方法并且是getXXXEnum方法 改变返回值为int
-                        if (method.getReturnType().isEnum()&&method.getName().startsWith("get")) {
+                        if (method.getReturnType().isEnum() && method.getName().startsWith("get")) {
+                            // 如果这个类有getEnumValue() 才是枚举,否则是oneOf生成的，不做处理
+                            try {
+                                Method getEnumValueMethod = getEnumValueMethod = clazz.getMethod(method.getName() + "Value");
+                                System.out.println("find method:" + method.getName() + "Value is :" + getEnumValueMethod);
+                            } catch (Exception e) {
+                                continue;
+                            }
                             Map<String, Method> map = wellRemoveMethodClazzs.get(clazzName);
                             if (map == null) {
                                 map = new HashMap<>();
@@ -219,6 +232,7 @@ public class ProtoEnumCusCompiler {
     }
 
     private static void setReturnTypeToInt(Map<String, Map<String, Method>> wellRemoveMethodClazzs, CompilationUnit outCu) {
+//        Map<String,Boolean> enumIsOneOf = new HashMap<>();
         for (ClassOrInterfaceDeclaration classOrInterface : outCu.findAll(ClassOrInterfaceDeclaration.class)) {
             String fullClassName = ClassNameExtractor.getFullNameWithJavaParser(classOrInterface);
             if (wellRemoveMethodClazzs.containsKey(fullClassName)) {
@@ -226,17 +240,23 @@ public class ProtoEnumCusCompiler {
                 Map<String, Method> wellRemoveMethods = wellRemoveMethodClazzs.get(fullClassName);
                 for (MethodDeclaration method : classOrInterface.getMethods()) {
                     if (wellRemoveMethods.containsKey(method.getNameAsString())) {
-                        String oldReturnType = method.getType().asString();
+                        // 被处理的枚举
+                        Type currentEnumType = method.getType();
+                        String currentEnumTypeName = method.getType().asString();
+
                         // 获取变量名，例如 setXxxx 那么变量名就是 xxxx    这里获取的是首字母大写！！！！！
                         // 注意这里proto3 默认会把变量名转成首字母小写，所以不用考虑原变量名为大写的情况，全是首字母小写
                         String upperFiledName = method.getNameAsString().substring(3);
-
+                        String lowerFiledName = upperFiledName.substring(0, 1).toLowerCase();
+                        if (upperFiledName.length() > 1) {
+                            lowerFiledName = lowerFiledName + upperFiledName.substring(1);
+                        }
                         // 将返回枚举的方法。变成返回int
                         method.setType(int.class);
                         BlockStmt oldBlockStmt = method.getBody().orElse(null);
                         if (oldBlockStmt != null && oldBlockStmt.getStatements() != null && oldBlockStmt.getStatements().size() > 0) {
                             method.removeBody();
-                            Statement statement = StaticJavaParser.parseStatement("return " + method.getNameAsString() + "Value();");
+                            Statement statement = StaticJavaParser.parseStatement("return " + lowerFiledName + "_;");
                             BlockStmt blockStmt = new BlockStmt();
                             blockStmt.addStatement(statement);
                             method.setBody(blockStmt);
@@ -252,27 +272,52 @@ public class ProtoEnumCusCompiler {
                                         .replaceAll("\\n", "")
                                         .replaceAll("\\*/", "");
                             }
-                            method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + oldReturnType + " now change return type to int \n\t\t");
+                            method.setBlockComment("* \n\t\t* " + oldCommentStr + " \n\t\t* old return type is " + currentEnumTypeName + " now change return type to int \n\t\t");
                         }
 
 //                         为build方法添加setEnum(int value) 方法。因为get方法返回值改成了 int
                         if (fullClassName.endsWith("$Builder")) {
+                            String finalLowerFiledName = lowerFiledName;
                             method.findAncestor(ClassOrInterfaceDeclaration.class).ifPresent(classOrInterfaceDeclaration -> {
                                 // 将变量名首字母小写
-                                String lowerFiledName = upperFiledName.substring(0, 1).toLowerCase();
-                                if (upperFiledName.length() > 1) {
-                                    lowerFiledName = lowerFiledName + upperFiledName.substring(1);
-                                }
                                 // 为该类添加新方法
                                 MethodDeclaration newMethod = classOrInterfaceDeclaration.addMethod("set" + upperFiledName, Modifier.Keyword.PUBLIC);
                                 newMethod.setType("Builder");
-                                newMethod.addParameter("int", "value");
-                                String setEnumFiledMethod = "{\n" + lowerFiledName + "_ = value;\n" + "                onChanged();\n" + "                return this;" + "\n}";
+                                newMethod.addParameter(int.class, "value");
+                                String setEnumFiledMethod = "{\n" + finalLowerFiledName + "_ = value;\n" + "                onChanged();\n" + "                return this;" + "\n}";
                                 newMethod.setBody(StaticJavaParser.parseBlock(setEnumFiledMethod));
                                 newMethod.setBlockComment("为了兼容 将getEnum方法返回的enum的类型 改成了int，所以需要在build方法中添加对应的set方法");
+                                /** 这里不处理oneOf的情况 */
+                                // 还需要考虑 oneof 的情况，需要修改 mergeFrom 的switch(other.getEnumCase())语句
+//                                handleOneofSwitch(classOrInterface, currentEnumTypeName, upperFiledName, classOrInterfaceDeclaration);
                             });
                         }
                     }
+                    //
+                }
+            }
+        }
+    }
+
+    private static void handleOneofSwitch(ClassOrInterfaceDeclaration classOrInterface, String currentEnumTypeName, String upperFiledName, ClassOrInterfaceDeclaration classOrInterfaceDeclaration) {
+        for (MethodDeclaration methodDeclaration : classOrInterfaceDeclaration.findAll(MethodDeclaration.class)) {
+            if (methodDeclaration.getNameAsString().equals("mergeFrom")
+                    && methodDeclaration.getParameters().size() == 1) {
+                // 找到mergeFrom(Bean other) 方法，此方法存在于Bean.Builder 中，且入参是 此Builder的外部类
+                ClassOrInterfaceDeclaration beanClass = classOrInterface.findAncestor(ClassOrInterfaceDeclaration.class).orElse(null);
+                if (beanClass != null && beanClass.getFullyQualifiedName().orElse("").equals(methodDeclaration.getParameters().get(0).getType().asString())) {
+                    methodDeclaration.getBody().ifPresent(body -> {
+                        for (Statement statement : body.getStatements()) {
+                            // 找到 switch(other.getEnumCase()) 这一行
+                            String changeLineCode = "switch(other.get" + upperFiledName + "())";
+                            String newLineCode = "switch(" + currentEnumTypeName + ".forNumber(other.get" + upperFiledName + "()))";
+                            if (statement.toString().startsWith(changeLineCode)) {
+                                String newCode = statement.toString().replace(changeLineCode, newLineCode);
+                                Statement newStatement = StaticJavaParser.parseStatement(newCode);
+                                statement.replace(newStatement);
+                            }
+                        }
+                    });
                 }
             }
         }

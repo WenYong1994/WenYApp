@@ -29,19 +29,19 @@ android {
                     java {
                     }
                 }
-                task.doLast{
+                task.doLast {
                     println("generateProtoTasks---${task.name}----end")
                 }
-                task.doFirst{
+                task.doFirst {
                     println("generateProtoTasks---${task.name}----start")
                 }
 //                task.dependsOn onPbBefore
 //                onPbBefore.finalizedBy task
-                if(task.name == "generateReleaseProto"){
+                if (task.name == "generateReleaseProto") {
                     task.finalizedBy onPbAfter
                     onPbAfter.dependsOn task
                 }
-                if(task.name == "generateDebugProto"){
+                if (task.name == "generateDebugProto") {
                     task.finalizedBy onPbAfter
                     onPbAfter.dependsOn task
                 }
@@ -62,18 +62,23 @@ dependencies {
     println("TestTask执行dependencies")
 }
 
-task onPbBefore{
+task onPbBefore {
     doFirst {
         println("generateProtoTasks--------onPbBefore")
     }
 }
 
-task onPbAfter{
+task onPbAfter {
     doFirst {
         println("generateProtoTasks-----------onPbAfter-----doFirst--start")
         // 这里可以执行对生成的java类处理
-        exec{
+        exec {
+            def startTime = System.currentTimeMillis()
+            println("generateProtoTasksTime------ startTime:${startTime}")
             commandLine 'sh', './script/custom_plugin.sh'
+            def endTime = System.currentTimeMillis()
+            println("generateProtoTasksTime-------endTime:${endTime}")
+            println("generateProtoTasksTime-------taskTime:${endTime - startTime}")
         }
         println("generateProtoTasks-----------onPbAfter-----doFirst--end")
     }

@@ -9,6 +9,11 @@ message TestBean{
   Sex sex_b_type = 5;
   Sex sex_c_type = 6;
   Type type = 7;
+  enum Type {
+    type1 = 0;
+    type2 = 1;
+    type3 = 2;
+  }
 }
 
 message PbA{
@@ -18,7 +23,27 @@ message PbA{
   Sex sex = 4;
   Sex sex_b_type = 5;
   Sex sex_c_type = 6;
-  Type type = 7;
+  TypeA type = 7;
+
+  oneof sw{
+    int32 sw1 = 10;
+    bool sw2 = 13;
+    int32  sw4 = 14;
+    string  sw5 = 15;
+  }
+
+  oneof swa{
+    int32 asw1 = 16;
+    bool asw2 = 17;
+    int32  asw4 = 18;
+    string  asw5 = 19;
+  }
+
+  enum TypeA {
+    type1 = 0;
+    type2 = 1;
+    type3 = 2;
+  }
 }
 
 message PbB{
@@ -28,16 +53,22 @@ message PbB{
   Sex sex = 4;
   Sex sex_b_type = 5;
   Type type = 6;
-}
+  oneof sw{
+    bool sw1 = 12;
+    bool sw2 = 13;
+    bool sw3 = 14;
+  }
+  Sex sexCase = 15;
 
+  enum Type {
+    type1 = 0;
+    type2 = 1;
+    type3 = 2;
+  }
+}
 
 enum Sex {
   man = 0;
   female = 1;
 }
 
-enum Type {
-  type1 = 0;
-  type2 = 1;
-  type3 = 2;
-}

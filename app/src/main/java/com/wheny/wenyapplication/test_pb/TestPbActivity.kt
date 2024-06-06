@@ -8,6 +8,7 @@ import com.pb.test.TestPb
 import com.pb.test.TestPb.Sex
 import com.wheny.wenyapplication.R
 import com.google.protobuf.util.JsonFormat
+import com.pb.test.TestPb.PbB
 import com.pb.test.TestPbMutile
 import org.json.JSONObject
 
@@ -106,14 +107,38 @@ class TestPbActivity : AppCompatActivity() {
     }
 
 
-    private fun testPb3(){
-        val json = "{\"b\":3}"
-        val newJsonBuilder = TestPbMutile.CCCBean.newBuilder()
-        JsonFormat.parser().merge(json, newJsonBuilder)
-        val jsonPb = newJsonBuilder.build()
-        val value = jsonPb.bValue
-        val b = jsonPb.b
-        jsonPb.b.number
+    private fun testPb3() {
+        val oriPb = TestPb.PbA.newBuilder()
+            .setId(1)
+            .setName("pba")
+            .setSex(Sex.man)
+            .setSexBType(2)
+            .setSexCType(3)
+            .setType(TestPb.PbA.TypeA.type3)
+            .setSw5("")
+            .setAsw2(true)
+            .sets
+            .build()
+        val json = JsonFormat.printer().print(oriPb)
+
+        val jsonNew = JSONObject(json).apply {
+            // 这里修改sex值为 3
+            put("sex", 3)
+            put("id", 2)
+        }.toString()
+        val pbBuilder = TestPb.PbA.newBuilder()
+        JsonFormat.parser().merge(jsonNew,pbBuilder)
+        val pb = pbBuilder.build()
+        val str = pb.toString()
+        val id = pb.id
+        val sex = pb.sex // 这里没没有修改前返回的是枚举
+        val sexValue = pb.sexValue
+        val sexB = pb.sexBType // 这里没没有修改前返回的是枚举
+        val sexC = pb.sexCType // 这里没没有修改前返回的是枚举
+        Log.e("testPb3", "bytesPb:${pb}")
+
+
+
     }
 
 }
