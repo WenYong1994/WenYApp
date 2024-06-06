@@ -117,7 +117,6 @@ class TestPbActivity : AppCompatActivity() {
             .setType(TestPb.PbA.TypeA.type3)
             .setSw5("")
             .setAsw2(true)
-            .sets
             .build()
         val json = JsonFormat.printer().print(oriPb)
 
