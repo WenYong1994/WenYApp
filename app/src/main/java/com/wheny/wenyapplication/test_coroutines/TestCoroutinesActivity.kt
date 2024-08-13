@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.pb.test.TestPb
-import com.test.wy.TestPbJava
 import com.wheny.wenyapplication.R
 import com.wheny.wenyapplication.view.MixColorRoundProgress
 import io.reactivex.Flowable
@@ -28,7 +27,6 @@ import io.reactivex.functions.Consumer
 import kotlinx.coroutines.*
 import okhttp3.internal.toImmutableList
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.resume
 import kotlin.math.absoluteValue
@@ -37,7 +35,12 @@ class TestCoroutinesActivity : AppCompatActivity() {
 
     val TAG = "test_coroutines"
 
-    val accounts = CopyOnWriteArrayList<A>()
+    val accounts = ArrayList<A>()
+
+    fun testL() {
+        accounts.filter { it.i > 0 }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +60,30 @@ class TestCoroutinesActivity : AppCompatActivity() {
         webvie.settings.javaScriptEnabled = true
         webvie.loadUrl("https://echarts.apache.org/examples/zh/editor.html?c=line-simple")
         val x: Int? = null
+        testList()
+        TestRR().test()
+    }
+
+
+
+    var i = 0
+
+    val rr = object : RR() {
+        override fun r() {
+            Log.e("testRRRR", "-------------${i}")
+        }
+    }
+
+    data class MyI(val i :Int)
+
+
+    abstract class RR {
+        abstract fun r()
+    }
+
+    private fun testList() {
         accounts.add(A(1))
-//        accounts.add(x)
+        //        accounts.add(x)
         Log.e("testList", accounts.toString())
         val l1 = accounts.toImmutableList()
         Log.e("testList", l1.toString())
@@ -70,9 +95,9 @@ class TestCoroutinesActivity : AppCompatActivity() {
                     delay(2)
                     val l = accounts
                     l.firstOrNull {
-                        if(it == null){
-                            Log.e("testList-null",l.toString())
-                            Log.e("testList-null","null e is:${it.toString()}")
+                        if (it == null) {
+                            Log.e("testList-null", l.toString())
+                            Log.e("testList-null", "null e is:${it.toString()}")
                         }
                         Log.e("testList", "indexA:${t}: ${it?.i}")
                         false
@@ -105,9 +130,9 @@ class TestCoroutinesActivity : AppCompatActivity() {
                     delay(1)
                     val l = accounts
                     l.firstOrNull {
-                        if(it == null){
-                            Log.e("testList-null",l.toString())
-                            Log.e("testList-null","null e is:${it.toString()}")
+                        if (it == null) {
+                            Log.e("testList-null", l.toString())
+                            Log.e("testList-null", "null e is:${it.toString()}")
                         }
                         Log.e("testList", "indexD:${t}: ${it?.i}")
                         false
@@ -116,6 +141,7 @@ class TestCoroutinesActivity : AppCompatActivity() {
             }
         }
     }
+
     var count = 0
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
